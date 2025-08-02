@@ -3,8 +3,9 @@ from sqlalchemy.sql import func
 from ...db.session import Base
 from sqlalchemy.orm import Mapped, mapped_column
 
-class Permission(Base):
-    __tablename__ = "permissions"
+
+class Role(Base):
+    __tablename__ = "roles"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
