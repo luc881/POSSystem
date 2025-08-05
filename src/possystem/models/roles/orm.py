@@ -1,7 +1,7 @@
 from sqlalchemy import String, BigInteger, TIMESTAMP
 from sqlalchemy.sql import func
 from ...db.session import Base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Role(Base):
@@ -11,3 +11,5 @@ class Role(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
+
+    users: Mapped[list["User"]] = relationship("User", back_populates="role")

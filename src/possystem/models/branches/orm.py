@@ -1,8 +1,7 @@
 from sqlalchemy import String, BigInteger, Boolean, TIMESTAMP
 from sqlalchemy.sql import func
 from ...db.session import Base
-from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Branch(Base):
     __tablename__ = "branches"
@@ -14,3 +13,5 @@ class Branch(Base):
     created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
     deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+
+    users: Mapped[list["User"]] = relationship("User", back_populates="branch")
