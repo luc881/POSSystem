@@ -1,7 +1,7 @@
 from sqlalchemy import String, BigInteger, Text, TIMESTAMP, Boolean
 from sqlalchemy.sql import func
 from ...db.session import Base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Unit(Base):
@@ -14,4 +14,6 @@ class Unit(Base):
     created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
     deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+
+    product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="unit")
 

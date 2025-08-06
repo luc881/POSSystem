@@ -33,3 +33,4 @@ class Product(Base):
     sku: Mapped[str] = mapped_column(String(100), nullable=True)
 
     category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="products")
+    product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="product")

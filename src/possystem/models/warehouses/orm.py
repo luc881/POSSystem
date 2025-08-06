@@ -17,3 +17,4 @@ class Warehouse(Base):
 
     branch: Mapped["Branch"] = relationship("Branch", back_populates="warehouses")
     product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="warehouse")
+    product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="warehouse")
