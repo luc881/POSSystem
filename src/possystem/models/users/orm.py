@@ -37,3 +37,4 @@ class User(Base):
         back_populates="user",
         foreign_keys="[PurchaseDetail.user_entrega]"
     )
+    transports: Mapped[list["Transport"]] = relationship("Transport", back_populates="user")
