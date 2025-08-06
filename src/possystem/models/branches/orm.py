@@ -19,4 +19,4 @@ class Branch(Base):
     product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="branch")
     clients: Mapped[list["Client"]] = relationship("Client", back_populates="branch")
     sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="branch")
-
+    purchases = relationship("Purchase", back_populates="branch")

@@ -19,3 +19,4 @@ class Supplier(Base):
     ruc: Mapped[str] = mapped_column(String(50), nullable=True)  # Unique taxpayer ID
 
     # Add relationships here if you have related tables
+    purchases = relationship("Purchase", back_populates="supplier")
