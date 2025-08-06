@@ -30,3 +30,4 @@ class User(Base):
     branch: Mapped["Branch"] = relationship("Branch", back_populates="users")
     clients: Mapped[list["Client"]] = relationship("Client", back_populates="user")
     sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")
+    refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="user")
