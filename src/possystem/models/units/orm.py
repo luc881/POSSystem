@@ -22,4 +22,15 @@ class Unit(Base):
     transport_details: Mapped[list["TransportDetail"]] = relationship(
         "TransportDetail", back_populates="unit"
     )
+    conversions_from: Mapped[list["UnitConversion"]] = relationship(
+        "UnitConversion",
+        back_populates="unit",
+        foreign_keys="[UnitConversion.unit_id]"
+    )
+    conversions_to: Mapped[list["UnitConversion"]] = relationship(
+        "UnitConversion",
+        back_populates="unit_to",
+        foreign_keys="[UnitConversion.unit_to_id]"
+    )
+
 
