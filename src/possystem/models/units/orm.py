@@ -18,4 +18,5 @@ class Unit(Base):
     product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="unit")
     product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="unit")
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="unit")
+    purchase_details = relationship("PurchaseDetail", back_populates="unit")
 
