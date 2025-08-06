@@ -1,7 +1,5 @@
-from sqlalchemy import (
-    Column, BigInteger, SmallInteger, String, Double, Text, TIMESTAMP, ForeignKey
-)
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+from sqlalchemy import BigInteger, SmallInteger, String, Double, TIMESTAMP, Text, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from ...db.session import Base
 
@@ -26,10 +24,8 @@ class Purchase(Base):
     deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
-    # Relationships (assuming you have these models)
-    warehouse = relationship("Warehouse", back_populates="purchases")
-    user = relationship("User", back_populates="purchases")
-    branch = relationship("Branch", back_populates="purchases")
+    # Relationships
     supplier = relationship("Supplier", back_populates="purchases")
-
-
+    branch = relationship("Branch", back_populates="purchases")
+    user = relationship("User", back_populates="purchases")
+    warehouse = relationship("Warehouse", back_populates="purchases")
