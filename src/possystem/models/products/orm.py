@@ -41,3 +41,6 @@ class Product(Base):
     transport_details: Mapped[list["TransportDetail"]] = relationship(
         "TransportDetail", back_populates="product"
     )
+    conversions: Mapped[list["Conversion"]] = relationship(
+        "Conversion", back_populates="product"
+    )

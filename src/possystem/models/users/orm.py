@@ -48,3 +48,6 @@ class User(Base):
         back_populates="user_departure",
         foreign_keys="[TransportDetail.user_departure_id]"
     )
+    conversions: Mapped[list["Conversion"]] = relationship(
+        "Conversion", back_populates="user"
+    )

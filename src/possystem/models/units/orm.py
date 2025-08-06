@@ -32,5 +32,11 @@ class Unit(Base):
         back_populates="unit_to",
         foreign_keys="[UnitConversion.unit_to_id]"
     )
+    conversions_from: Mapped[list["Conversion"]] = relationship(
+        "Conversion", back_populates="unit_start", foreign_keys="[Conversion.unit_start_id]"
+    )
+    conversions_to: Mapped[list["Conversion"]] = relationship(
+        "Conversion", back_populates="unit_end", foreign_keys="[Conversion.unit_end_id]"
+    )
 
 

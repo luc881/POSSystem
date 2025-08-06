@@ -31,3 +31,6 @@ class Warehouse(Base):
         back_populates="warehouse_destination",
         foreign_keys="[Transport.warehouse_destination_id]"
     )
+    conversions: Mapped[list["Conversion"]] = relationship(
+        "Conversion", back_populates="warehouse"
+    )
