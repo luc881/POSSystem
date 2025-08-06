@@ -17,4 +17,5 @@ class Branch(Base):
     users: Mapped[list["User"]] = relationship("User", back_populates="branch")
     warehouses: Mapped[list["Warehouse"]] = relationship("Warehouse", back_populates="branch")
     product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="branch")
+    clients: Mapped[list["Client"]] = relationship("Client", back_populates="branch")
 

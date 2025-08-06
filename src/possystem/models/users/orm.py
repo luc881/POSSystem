@@ -28,3 +28,4 @@ class User(Base):
     # Relationship to Role
     role: Mapped["Role"] = relationship("Role", back_populates="users")
     branch: Mapped["Branch"] = relationship("Branch", back_populates="users")
+    clients: Mapped[list["Client"]] = relationship("Client", back_populates="user")
