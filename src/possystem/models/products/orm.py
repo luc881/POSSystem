@@ -1,7 +1,7 @@
-from sqlalchemy import String, BigInteger, Double, SmallInteger, Text, TIMESTAMP, Boolean
+from sqlalchemy import String, BigInteger, Double, SmallInteger, Text, TIMESTAMP, Boolean, ForeignKey
 from sqlalchemy.sql import func
 from ...db.session import Base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class Product(Base):
@@ -10,7 +10,11 @@ class Product(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(250), nullable=False)
     image: Mapped[str] = mapped_column(String(250), nullable=True)
-    product_category_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    product_category_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("product_categories.id", ondelete="CASCADE"),
+        nullable=False
+    )
     price_general: Mapped[float] = mapped_column(Double, nullable=False)
     price_company: Mapped[float] = mapped_column(Double, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
@@ -27,3 +31,5 @@ class Product(Base):
     updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
     deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     sku: Mapped[str] = mapped_column(String(100), nullable=True)
+
+    category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="products")
