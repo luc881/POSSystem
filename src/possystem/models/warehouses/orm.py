@@ -34,3 +34,6 @@ class Warehouse(Base):
     conversions: Mapped[list["Conversion"]] = relationship(
         "Conversion", back_populates="warehouse"
     )
+    stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
+        "ProductStockInitial", back_populates="warehouse"
+    )
