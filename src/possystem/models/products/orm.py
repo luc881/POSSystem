@@ -34,3 +34,4 @@ class Product(Base):
 
     category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="products")
     product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="product")
+    product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="product")
