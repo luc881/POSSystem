@@ -4,11 +4,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ...db.session import Base
 
 class RefundProduct(Base):
-    __tablename__ = "refund_products"  # corrected to 'refund' instead of 'refound'
+    __tablename__ = "refund_products"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     product_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("products.id"), nullable=False)
-    unit_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    unit_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("units.id"), nullable=True)  # FK to units
     warehouse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"), nullable=True)
     quantity: Mapped[float] = mapped_column(Double, nullable=False)
     sale_detail_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("sale_details.id"), nullable=True)
@@ -24,8 +24,9 @@ class RefundProduct(Base):
     deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     state_clone: Mapped[int] = mapped_column(SmallInteger, nullable=True)
 
-    # Relationships (add these to referenced models as needed)
+    # Relationships
     product: Mapped["Product"] = relationship("Product", back_populates="refund_products")
+    unit: Mapped["Unit"] = relationship("Unit", back_populates="refund_products")  # NEW
     warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="refund_products")
     sale_detail: Mapped["SaleDetail"] = relationship("SaleDetail", back_populates="refund_products")
     client: Mapped["Client"] = relationship("Client", back_populates="refund_products")
