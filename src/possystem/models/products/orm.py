@@ -38,3 +38,6 @@ class Product(Base):
     sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="product")
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="product")
     purchase_details = relationship("PurchaseDetail", back_populates="product")
+    transport_details: Mapped[list["TransportDetail"]] = relationship(
+        "TransportDetail", back_populates="product"
+    )

@@ -34,3 +34,7 @@ class Transport(Base):
         back_populates="destination_transports",
         foreign_keys=[warehouse_destination_id]
     )
+    details: Mapped[list["TransportDetail"]] = relationship(
+        "TransportDetail", back_populates="transport"
+    )
+
