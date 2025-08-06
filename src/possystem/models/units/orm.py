@@ -1,29 +1,17 @@
-from sqlalchemy import String, BigInteger, Double, SmallInteger, Text, TIMESTAMP, Boolean
+from sqlalchemy import String, BigInteger, Text, TIMESTAMP, Boolean
 from sqlalchemy.sql import func
 from ...db.session import Base
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-class Product(Base):
-    __tablename__ = "products"
+class Unit(Base):
+    __tablename__ = "units"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    title: Mapped[str] = mapped_column(String(250), nullable=False)
-    image: Mapped[str] = mapped_column(String(250), nullable=True)
-    product_category_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
-    price_general: Mapped[float] = mapped_column(Double, nullable=False)
-    price_company: Mapped[float] = mapped_column(Double, nullable=False)
+    name: Mapped[str] = mapped_column(String(250), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    is_discount: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    max_discount: Mapped[float] = mapped_column(Double, nullable=True)  # in %
-    is_gift: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    allow_without_stock: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    stock_state: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)  # 1 available, 2 low stock, 3 out of stock
-    warranty_days: Mapped[float] = mapped_column(Double, nullable=True)
-    is_taxable: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    tax_percentage: Mapped[float] = mapped_column(Double, nullable=True)
     created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
     deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
-    sku: Mapped[str] = mapped_column(String(100), nullable=True)
+
