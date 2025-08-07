@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from .db.session import engine, Base
 # from .api import types, regions, pkmspecies
+from .api.routes import permissions
 
 app = FastAPI()
 
@@ -13,6 +14,8 @@ Base.metadata.create_all(bind=engine)
 def health_check():
     """Health check endpoint."""
     return {"status": "ok", "message": "API is running"}
+
+app.include_router(permissions.router)
 
 # app.include_router(types.router)
 # app.include_router(regions.router)
