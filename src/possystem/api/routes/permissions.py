@@ -30,6 +30,25 @@ async def read_all(db: db_dependency):
     permissions = db.query(Permission).all()
     return permissions
 
+
+@router.post('/',
+            status_code=status.HTTP_201_CREATED,
+            response_model=PermissionResponse,
+            summary="Create a new permission",
+            description="Adds a new permission to the database. The permission name must be unique.")
+async def create_permission(db: db_dependency, permission_request: PermissionCreate):
+    permission_model = Permission(**permission_request.model_dump())
+
+    permission_found = db.query(Permission).filter(Permission.name.ilike(permission_model.name)).first()
+
+    if permission_found:
+        raise HTTPException(status_code=409, detail='Permission already exists')
+
+    db.add(permission_model)
+    db.commit()
+    db.refresh(permission_model)
+    return permission_model
+
 # @router.post(    '/',
 #             status_code=status.HTTP_201_CREATED,
 #             response_model=TypesResponse,
