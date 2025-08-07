@@ -49,22 +49,38 @@ async def create_permission(db: db_dependency, permission_request: PermissionCre
     db.refresh(permission_model)
     return permission_model
 
-# @router.post(    '/',
-#             status_code=status.HTTP_201_CREATED,
-#             response_model=TypesResponse,
-#             summary="Create a new Pokémon type",
-#             description="Adds a new Pokémon type to the database. The type name must be unique and in lowercase.")
-# async def create_type(db: db_dependency, type_request: TypesRequest):
-#     type_model = Types(**type_request.model_dump())
-#
-#     type_found = db.query(Types).filter(Types.name.ilike(type_model.name)).first()
-#
-#     if type_found:
-#         raise HTTPException(status_code=409, detail='Type already exists')
-#
-#     db.add(type_model)
-#     db.commit()
-#     db.refresh(type_model)  # Refresh to get the ID and other generated fields
-#     return type_model
+@router.put('/{permission_id}',
+            response_model=PermissionResponse,
+            summary="Update an existing permission",
+            description="Updates the details of an existing permission by ID. Only the name can be updated.")
+async def update_permission(permission_id: int, db: db_dependency, permission_request: PermissionUpdate):
+    permission = db.query(Permission).filter(Permission.id == permission_id).first()
 
+    if not permission:
+        raise HTTPException(status_code=404, detail='Permission not found')
 
+    if permission_request.name:
+        existing_permission = db.query(Permission).filter(Permission.name.ilike(permission_request.name)).first()
+        if existing_permission and existing_permission.id != permission_id:
+            raise HTTPException(status_code=409, detail='Permission name already exists')
+
+    for key, value in permission_request.model_dump(exclude_unset=True).items():
+        setattr(permission, key, value)
+
+    db.commit()
+    db.refresh(permission)
+    return permission
+
+@router.delete('/{permission_id}',
+            status_code=status.HTTP_200_OK,
+            summary="Delete a permission",
+            description="Deletes a permission by ID. This will remove the permission from the database.")
+async def delete_permission(permission_id: int, db: db_dependency):
+    permission = db.query(Permission).filter(Permission.id == permission_id).first()
+
+    if not permission:
+        raise HTTPException(status_code=404, detail='Permission not found')
+
+    db.delete(permission)
+    db.commit()
+    return {"detail": "Permission deleted successfully"}
