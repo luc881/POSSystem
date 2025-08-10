@@ -8,7 +8,6 @@ from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePe
 # from .auth import get_current_user
 from ...models.permissions.orm import Permission  # Import Permission ORM
 from sqlalchemy.orm import selectinload
-from sqlalchemy.orm import selectinload
 
 
 router = APIRouter(
@@ -48,7 +47,7 @@ async def read_all_with_permissions(db: db_dependency):
             response_model=RoleResponse,
             summary="Create a new role",
             description="Adds a new role to the database. The role name must be unique.")
-async def create_permission(db: db_dependency, role_request: RoleCreate):
+async def create_role(db: db_dependency, role_request: RoleCreate):
     role_model = Role(**role_request.model_dump())
 
     role_found = db.query(Role).filter(Role.name.ilike(role_model.name)).first()
@@ -60,7 +59,7 @@ async def create_permission(db: db_dependency, role_request: RoleCreate):
     db.commit()
     db.refresh(role_model)
     return role_model
-@router.put('/{permission_id}',
+@router.put('/{role_id}',
             response_model=RoleResponse,
             summary="Update an existing permission",
             description="Updates the details of an existing permission by ID. Only the name can be updated.")
@@ -82,11 +81,11 @@ async def update_permission(permission_id: int, db: db_dependency, permission_re
     db.refresh(permission)
     return permission
 
-@router.delete('/{permission_id}',
+@router.delete('/{role_id}',
             status_code=status.HTTP_200_OK,
             summary="Delete a permission",
             description="Deletes a permission by ID. This will remove the permission from the database.")
-async def delete_permission(role_id: int, db: db_dependency):
+async def delete_role(role_id: int, db: db_dependency):
     role = db.query(Role).filter(Role.id == role_id).first()
 
     if not role:
