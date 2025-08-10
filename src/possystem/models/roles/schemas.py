@@ -11,13 +11,13 @@ class RoleBase(BaseModel):
 # Request schemas
 class RoleCreate(RoleBase):
     """Schema for creating a new role"""
-    permission_ids: Optional[List[int]] = Field(default=[], description="List of permission IDs to assign to this role")
+    # permission_ids: Optional[List[int]] = Field(default=[], description="List of permission IDs to assign to this role")
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "name": "admin",
-                "permission_ids": [1, 2, 3]
+                # "permission_ids": [1, 2, 3]
             }
         }
     }
@@ -26,13 +26,13 @@ class RoleCreate(RoleBase):
 class RoleUpdate(BaseModel):
     """Schema for updating an existing role"""
     name: Optional[str] = Field(None, max_length=255, min_length=1, description="Role name")
-    permission_ids: Optional[List[int]] = Field(None, description="List of permission IDs to assign to this role")
+    # permission_ids: Optional[List[int]] = Field(None, description="List of permission IDs to assign to this role")
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "name": "admin_updated",
-                "permission_ids": [1, 2, 4]
+                # "permission_ids": [1, 2, 4]
             }
         }
     }
