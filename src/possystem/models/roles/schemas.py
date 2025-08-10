@@ -82,6 +82,9 @@ class RoleWithPermissions(RoleResponse):
         }
     }
 
+class RolePermissionAssociation(BaseModel):
+    permission_id: int
+
 
 # Forward reference resolution
 from typing import TYPE_CHECKING

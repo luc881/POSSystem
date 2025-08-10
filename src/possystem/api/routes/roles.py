@@ -4,8 +4,9 @@ from ...models.roles.orm import Role
 from typing import Annotated
 from sqlalchemy.orm import Session
 from ...db.session import SessionLocal
-from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate
+from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePermissionAssociation
 # from .auth import get_current_user
+from ...models.permissions.orm import Permission  # Import Permission ORM
 
 router = APIRouter(
     prefix="/roles",
@@ -49,6 +50,33 @@ async def create_permission(db: db_dependency, role_request: RoleCreate):
     db.refresh(role_model)
     return role_model
 
+@router.post("/{role_id}/permissions",
+            status_code=status.HTTP_200_OK,
+            response_model=RoleResponse,
+            summary="Associate a permission to a role",
+            description="Links an existing permission to an existing role.")
+async def add_permission_to_role(role_id: int, request: RolePermissionAssociation, db: db_dependency):
+    # 1. Find the role
+    role = db.query(Role).filter(Role.id == role_id).first()
+    if not role:
+        raise HTTPException(status_code=404, detail="Role not found")
+
+    # 2. Find the permission
+    permission = db.query(Permission).filter(Permission.id == request.permission_id).first()
+    if not permission:
+        raise HTTPException(status_code=404, detail="Permission not found")
+
+    # 3. Check if already associated
+    if permission in role.permissions:
+        raise HTTPException(status_code=409, detail="Permission already associated with role")
+
+    # 4. Append and commit
+    role.permissions.append(permission)
+    db.commit()
+    db.refresh(role)
+
+    return role
+
 @router.put('/{permission_id}',
             response_model=RoleResponse,
             summary="Update an existing permission",
@@ -84,3 +112,8 @@ async def delete_permission(role_id: int, db: db_dependency):
     db.delete(role)
     db.commit()
     return {"detail": "Role deleted successfully"}
+
+
+
+
+
