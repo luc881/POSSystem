@@ -7,6 +7,9 @@ from ...db.session import SessionLocal
 from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePermissionAssociation, RoleWithPermissions
 # from .auth import get_current_user
 from ...models.permissions.orm import Permission  # Import Permission ORM
+from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload
+
 
 router = APIRouter(
     prefix="/roles",
@@ -29,6 +32,15 @@ db_dependency = Annotated[Session, Depends(get_db)]
             status_code=status.HTTP_200_OK)
 async def read_all(db: db_dependency):
     roles = db.query(Role).all()
+    return roles
+
+@router.get('/permissions',
+            response_model=list[RoleWithPermissions],
+            summary="List all roles with permissions",
+            description="Retrieve all roles along with their associated permissions.",
+            status_code=status.HTTP_200_OK)
+async def read_all_with_permissions(db: db_dependency):
+    roles = db.query(Role).options(selectinload(Role.permissions)).all()
     return roles
 
 @router.post('/',
@@ -95,6 +107,7 @@ async def read_by_id_with_permissions(role_id: int, db: db_dependency):
         raise HTTPException(status_code=404, detail='Role not found')
 
     return role
+
 @router.post("/{role_id}/permissions",
             status_code=status.HTTP_200_OK,
             response_model=RoleResponse,

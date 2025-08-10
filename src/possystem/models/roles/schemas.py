@@ -88,7 +88,7 @@ class RolePermissionAssociation(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "permission_ids": 1
+                "permission_id": 1
             }
         }
     }
