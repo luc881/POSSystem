@@ -85,6 +85,14 @@ class RoleWithPermissions(RoleResponse):
 class RolePermissionAssociation(BaseModel):
     permission_id: int
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "permission_ids": 1
+            }
+        }
+    }
+
 
 # Forward reference resolution
 from typing import TYPE_CHECKING
