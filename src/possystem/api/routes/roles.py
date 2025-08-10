@@ -4,7 +4,7 @@ from ...models.roles.orm import Role
 from typing import Annotated
 from sqlalchemy.orm import Session
 from ...db.session import SessionLocal
-from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePermissionAssociation
+from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePermissionAssociation, RoleWithPermissions
 # from .auth import get_current_user
 from ...models.permissions.orm import Permission  # Import Permission ORM
 
@@ -30,6 +30,18 @@ db_dependency = Annotated[Session, Depends(get_db)]
 async def read_all(db: db_dependency):
     roles = db.query(Role).all()
     return roles
+
+@router.get('/{role_id}',
+            response_model=RoleWithPermissions,
+            summary="Get a role by ID",
+            description="Retrieve a specific role by its ID, including associated permissions.")
+async def read_by_id(role_id: int, db: db_dependency):
+    role = db.query(Role).filter(Role.id == role_id).first()
+
+    if not role:
+        raise HTTPException(status_code=404, detail='Role not found')
+
+    return role
 
 
 @router.post('/',
