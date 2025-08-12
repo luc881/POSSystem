@@ -3,7 +3,7 @@ from starlette import status
 from ...models.branches.orm import Branch  # Import Branch ORM
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...models.branches.schemas import BranchResponse,BranchBase # Import UserResponse schema
+from ...models.branches.schemas import BranchResponse, BranchBase, BranchUpdate # Import UserResponse schema
 from ...db.session import get_db  # Use the shared one
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -41,3 +41,22 @@ async def create_branch(db: db_dependency, branch_request: BranchBase):
     db.commit()
     db.refresh(branch_model)
     return branch_model
+
+@router.put('/{branch_id}',
+            status_code=status.HTTP_200_OK,
+            response_model=BranchResponse,
+            summary="Update a branch",
+            description="Updates an existing branch in the database.")
+async def update_branch(branch_id: int, db: db_dependency, branch_request: BranchUpdate):
+    branch_model = db.query(Branch).filter(Branch.id == branch_id).first()
+
+    if not branch_model:
+        raise HTTPException(status_code=404, detail='Branch not found')
+
+    for key, value in branch_request.model_dump(exclude_unset=True).items():
+        setattr(branch_model, key, value)
+
+    db.commit()
+    db.refresh(branch_model)
+    return branch_model
+
