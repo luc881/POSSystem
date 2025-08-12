@@ -60,3 +60,16 @@ async def update_branch(branch_id: int, db: db_dependency, branch_request: Branc
     db.refresh(branch_model)
     return branch_model
 
+@router.delete('/{branch_id}',
+            status_code=status.HTTP_204_NO_CONTENT,
+            summary="Delete a branch",
+            description="Deletes an existing branch from the database.")
+async def delete_branch(branch_id: int, db: db_dependency):
+    branch_model = db.query(Branch).filter(Branch.id == branch_id).first()
+
+    if not branch_model:
+        raise HTTPException(status_code=404, detail='Branch not found')
+
+    db.delete(branch_model)
+    db.commit()
+    return None
