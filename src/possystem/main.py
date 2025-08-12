@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from .db.session import engine, Base
 # from .api import types, regions, pkmspecies
-from .api.routes import permissions, roles
+from .api.routes import permissions, roles, users
 
 app = FastAPI()
 
@@ -22,6 +22,7 @@ def health_check():
 
 app.include_router(permissions.router)
 app.include_router(roles.router)
+app.include_router(users.router)
 
 # app.include_router(types.router)
 # app.include_router(regions.router)

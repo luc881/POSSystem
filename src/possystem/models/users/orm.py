@@ -1,6 +1,7 @@
-from sqlalchemy import String, BigInteger, SmallInteger, TIMESTAMP, ForeignKey
+from sqlalchemy import String, BigInteger, SmallInteger, TIMESTAMP, ForeignKey, Boolean
 from sqlalchemy.sql import func
-from POSSystem.src.possystem.db.session import Base
+from ...db.session import Base
+from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class User(Base):
@@ -10,23 +11,23 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     surname: Mapped[str] = mapped_column(String(255), nullable=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    email_verified_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    email_verified_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     remember_token: Mapped[str] = mapped_column(String(100), nullable=True)
-    created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
-    updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
-    role_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("roles.id"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
+    # role_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("roles.id"), nullable=True)
     avatar: Mapped[str] = mapped_column(String(255), nullable=True)
-    branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"))
+    # branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"))
     phone: Mapped[str] = mapped_column(String(50), nullable=True)
     type_document: Mapped[str] = mapped_column(String(50), nullable=True)
     n_document: Mapped[str] = mapped_column(String(50), nullable=True)
-    deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
-    state: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)  # 1 = activo, 2 = inactivo
+    deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    state: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)  # True = activo, False = inactivo
     gender: Mapped[str] = mapped_column(String(5), nullable=True)  # M = masculino, F = femenino
 
     # Relationship to Role
-    role: Mapped["Role"] = relationship("Role", back_populates="users")
+    # role: Mapped["Role"] = relationship("Role", back_populates="users")
     # branch: Mapped["Branch"] = relationship("Branch", back_populates="users")
     # clients: Mapped[list["Client"]] = relationship("Client", back_populates="user")
     # sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")

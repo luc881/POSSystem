@@ -7,18 +7,15 @@ from ...db.session import SessionLocal
 from ...models.permissions.schemas import PermissionCreate, PermissionUpdate, PermissionResponse, PermissionWithRoles
 # from .auth import get_current_user
 
+from ...db.session import get_db  # Use the shared one
+
+db_dependency = Annotated[Session, Depends(get_db)]
+
 router = APIRouter(
     prefix="/permissions",
     tags=["Permissions"]
 )
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
-db_dependency = Annotated[Session, Depends(get_db)]
 # user_dependency = Annotated[dict, Depends(get_current_user)]
 
 @router.get('/',

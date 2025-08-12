@@ -9,19 +9,16 @@ from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePe
 from ...models.permissions.orm import Permission  # Import Permission ORM
 from sqlalchemy.orm import selectinload
 
+from ...db.session import get_db  # Use the shared one
+
+db_dependency = Annotated[Session, Depends(get_db)]
+
 
 router = APIRouter(
     prefix="/roles",
     tags=["Roles"]
 )
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
-db_dependency = Annotated[Session, Depends(get_db)]
 # user_dependency = Annotated[dict, Depends(get_current_user)]
 
 @router.get('/',

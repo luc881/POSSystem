@@ -15,7 +15,7 @@ class Role(Base):
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
 
-    users: Mapped[list["User"]] = relationship("User", back_populates="role")
+    # users: Mapped[list["User"]] = relationship("User", back_populates="role")
 
     permissions: Mapped[list["Permission"]] = relationship(
         "Permission",
