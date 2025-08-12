@@ -4,7 +4,7 @@ from ...models.users.orm import User  # Import User ORM
 from typing import Annotated
 from sqlalchemy.orm import Session
 from ...db.session import SessionLocal
-from ...models.users.schemas import UserResponse, UserCreate  # Import UserResponse schema
+from ...models.users.schemas import UserResponse, UserCreate, UserUpdate  # Import UserResponse schema
 # from .auth import get_current_user
 from ...models.permissions.orm import Permission  # Import Permission ORM
 from sqlalchemy.orm import selectinload
@@ -53,3 +53,45 @@ async def create_user(user: UserCreate, db: db_dependency):
     db.refresh(new_user)
 
     return new_user
+
+
+@router.put('/{user_id}',
+            response_model=UserResponse,
+            summary="Update a user",
+            description="Update an existing user's details by their ID.",
+            status_code=status.HTTP_200_OK)
+async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
+    existing_user = db.query(User).filter(User.id == user_id).first()
+
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    for key, value in user.model_dump(exclude_unset=True).items():
+        setattr(existing_user, key, value)
+
+    db.commit()
+    db.refresh(existing_user)
+
+    return existing_user
+
+
+@router.delete('/{user_id}',
+            status_code=status.HTTP_204_NO_CONTENT,
+            summary="Delete a user",
+            description="Delete an existing user by their ID.")
+async def delete_user(user_id: int, db: db_dependency):
+    existing_user = db.query(User).filter(User.id == user_id).first()
+
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    db.delete(existing_user)
+    db.commit()
+
+    return None
