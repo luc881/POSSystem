@@ -10,6 +10,11 @@ Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
+@app.get('/', tags=["Root"])
+def root():
+    """Root endpoint."""
+    return {"message": "Welcome to the POS System API"}
+
 @app.get('/healthcheck', tags=["Health Check"])
 def health_check():
     """Health check endpoint."""

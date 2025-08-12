@@ -50,6 +50,7 @@ async def create_permission(db: db_dependency, permission_request: PermissionCre
     return permission_model
 
 @router.put('/{permission_id}',
+            status_code=status.HTTP_200_OK,
             response_model=PermissionResponse,
             summary="Update an existing permission",
             description="Updates the details of an existing permission by ID. Only the name can be updated.")

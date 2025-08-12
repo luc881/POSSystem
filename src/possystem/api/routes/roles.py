@@ -60,26 +60,27 @@ async def create_role(db: db_dependency, role_request: RoleCreate):
     db.refresh(role_model)
     return role_model
 @router.put('/{role_id}',
+            status_code=status.HTTP_200_OK,
             response_model=RoleResponse,
-            summary="Update an existing permission",
-            description="Updates the details of an existing permission by ID. Only the name can be updated.")
-async def update_permission(permission_id: int, db: db_dependency, permission_request: RoleUpdate):
-    permission = db.query(Role).filter(Role.id == permission_id).first()
+            summary="Update an existing role",
+            description="Updates the details of an existing role by ID. Only the name can be updated.")
+async def update_role(role_id: int, db: db_dependency, role_request: RoleUpdate):
+    role = db.query(Role).filter(Role.id == role_id).first()
 
-    if not permission:
+    if not role:
         raise HTTPException(status_code=404, detail='Role not found')
 
-    if permission_request.name:
-        existing_permission = db.query(Role).filter(Role.name.ilike(permission_request.name)).first()
-        if existing_permission and existing_permission.id != permission_id:
+    if role_request.name:
+        existing_role = db.query(Role).filter(Role.name.ilike(role_request.name)).first()
+        if existing_role and existing_role.id != role_id:
             raise HTTPException(status_code=409, detail='Role name already exists')
 
-    for key, value in permission_request.model_dump(exclude_unset=True).items():
-        setattr(permission, key, value)
+    for key, value in role_request.model_dump(exclude_unset=True).items():
+        setattr(role, key, value)
 
     db.commit()
-    db.refresh(permission)
-    return permission
+    db.refresh(role)
+    return role
 
 @router.delete('/{role_id}',
             status_code=status.HTTP_200_OK,
@@ -109,7 +110,7 @@ async def read_by_id_with_permissions(role_id: int, db: db_dependency):
 
 @router.post("/{role_id}/permissions",
             status_code=status.HTTP_200_OK,
-            response_model=RoleResponse,
+            response_model=RoleWithPermissions,
             summary="Associate a permission to a role",
             description="Links an existing permission to an existing role.")
 async def add_permission_to_role(role_id: int, request: RolePermissionAssociation, db: db_dependency):

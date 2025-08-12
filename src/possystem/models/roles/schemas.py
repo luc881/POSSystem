@@ -14,6 +14,7 @@ class RoleCreate(RoleBase):
     # permission_ids: Optional[List[int]] = Field(default=[], description="List of permission IDs to assign to this role")
 
     model_config = {
+        "extra": "forbid",
         "json_schema_extra": {
             "example": {
                 "name": "admin",
@@ -29,6 +30,7 @@ class RoleUpdate(BaseModel):
     # permission_ids: Optional[List[int]] = Field(None, description="List of permission IDs to assign to this role")
 
     model_config = {
+        "extra": "forbid",
         "json_schema_extra": {
             "example": {
                 "name": "admin_updated",
