@@ -30,6 +30,22 @@ async def read_all(db: db_dependency):
     users = db.query(User).all()
     return users
 
+@router.get('/{user_id}',
+            response_model=UserResponse,
+            summary="Get user by ID",
+            description="Retrieve a user by their unique ID.",
+            status_code=status.HTTP_200_OK)
+async def read_user_by_id(user_id: int, db: db_dependency):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    return user
+
 
 @router.post('/',
             response_model=UserResponse,

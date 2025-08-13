@@ -8,7 +8,7 @@ class UserBase(BaseModel):
     surname: Optional[str] = Field(None, max_length=255, description="Apellido del usuario")
     email: EmailStr = Field(..., max_length=255, description="Correo electrónico")
     avatar: Optional[str] = Field(None, max_length=255, description="URL del avatar")
-    # branch_id: int = Field(..., description="ID de la sucursal")
+    branch_id: Optional[int] = Field(None, gt=0, description="ID de la sucursal")
     phone: Optional[str] = Field(None, max_length=50, description="Número telefónico")
     type_document: Optional[str] = Field(None, max_length=50, description="Tipo de documento")
     n_document: Optional[str] = Field(None, max_length=50, description="Número de documento")
@@ -46,6 +46,7 @@ class UserUpdate(BaseModel):
     password: Optional[str] = Field(None, min_length=6, max_length=255)
     avatar: Optional[str] = Field(None, max_length=255)
     phone: Optional[str] = Field(None, max_length=50)
+    branch_id: Optional[int] = Field(None, gt=0)
     type_document: Optional[str] = Field(None, max_length=50)
     n_document: Optional[str] = Field(None, max_length=50)
     state: Optional[bool] = True
