@@ -3,9 +3,7 @@ from starlette import status
 from ...models.roles.orm import Role
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...db.session import SessionLocal
 from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePermissionAssociation, RoleWithPermissions
-# from .auth import get_current_user
 from ...models.permissions.orm import Permission  # Import Permission ORM
 from sqlalchemy.orm import selectinload
 

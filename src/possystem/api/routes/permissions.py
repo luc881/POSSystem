@@ -3,10 +3,7 @@ from starlette import status
 from ...models.permissions.orm import Permission
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...db.session import SessionLocal
 from ...models.permissions.schemas import PermissionCreate, PermissionUpdate, PermissionResponse, PermissionWithRoles
-# from .auth import get_current_user
-
 from ...db.session import get_db  # Use the shared one
 
 db_dependency = Annotated[Session, Depends(get_db)]

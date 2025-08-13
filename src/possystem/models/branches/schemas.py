@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 
+
 # ---------------------------
 # Base (campos compartidos)
 # ---------------------------
@@ -84,6 +85,42 @@ class BranchResponse(BranchBase):
     }
 
 
+class BranchWithUsersResponse(BranchResponse):
+    users: list["UserResponse"] = Field(default_factory=list, description="Lista de usuarios asociados a la sucursal")
+
+    model_config = {
+        "from_attributes": True,  # Permite usar .from_orm / en Pydantic v2: from_attributes
+        "json_schema_extra": {
+            "example": {
+                "id": 10,
+                "name": "Sucursal Centro",
+                "address": "Av. Principal 123, CDMX",
+                "is_active": True,
+                "created_at": "2024-07-01T10:15:00",
+                "updated_at": "2024-07-05T09:00:00",
+                "deleted_at": None,
+                "users": [
+                    {
+                        "id": 1,
+                        "name": "Juan",
+                        "surname": "Pérez",
+                        "email": "juan.perez@example.com",
+                        "email_verified_at": "2024-06-01T12:34:56",
+                        "avatar": "http://example.com/avatar.jpg",
+                        "phone": "5551234567",
+                        "type_document": "INE",
+                        "n_document": "ABC123456",
+                        "state": True,
+                        "gender": "M",
+                        "created_at": "2024-06-01T12:00:00",
+                        "updated_at": "2024-06-02T10:00:00",
+                        "deleted_at": None,
+                    }
+                ]
+            }
+        }
+    }
+
 # ---------------------------
 # (Opcional) Respuesta extendida con métricas ligeras
 # Útil para listados si quieres devolver conteos relacionados sin anidar objetos pesados
@@ -147,3 +184,9 @@ class BranchListResponse(BaseModel):
             }
         }
     }
+
+# Forward reference resolution
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..users.schemas import UserResponse

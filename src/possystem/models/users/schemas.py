@@ -91,6 +91,7 @@ class UserResponse(UserBase):
                 "created_at": "2024-06-01T12:00:00",
                 "updated_at": "2024-06-02T10:00:00",
                 "deleted_at": None,
+                "branch_id": None
             }
         }
     }

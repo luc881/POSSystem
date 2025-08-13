@@ -3,7 +3,7 @@ from starlette import status
 from ...models.branches.orm import Branch  # Import Branch ORM
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...models.branches.schemas import BranchResponse, BranchBase, BranchUpdate # Import UserResponse schema
+from ...models.branches.schemas import BranchResponse, BranchBase, BranchUpdate,BranchWithUsersResponse # Import UserResponse schema
 from ...db.session import get_db  # Use the shared one
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -79,6 +79,18 @@ async def delete_branch(branch_id: int, db: db_dependency):
             summary="Get a branch by ID",
             description="Retrieve a specific branch by its ID.")
 async def read_by_id(branch_id: int, db: db_dependency):
+    branch_model = db.query(Branch).filter(Branch.id == branch_id).first()
+
+    if not branch_model:
+        raise HTTPException(status_code=404, detail='Branch not found')
+
+    return branch_model
+
+@router.get('/{branch_id}/users',
+            summary="Get users by branch ID",
+            description="Retrieve all users associated with a specific branch by its ID.",
+            response_model = BranchWithUsersResponse)
+async def read_users_by_branch(branch_id: int, db: db_dependency):
     branch_model = db.query(Branch).filter(Branch.id == branch_id).first()
 
     if not branch_model:
