@@ -14,11 +14,11 @@ class UserBase(BaseModel):
     n_document: Optional[str] = Field(None, max_length=50, description="Número de documento")
     state: Optional[bool] = Field(True, description="Estado del usuario (True = activo, False = inactivo)")
     gender: Optional[str] = Field(None, max_length=5, description="Género (M/F)")
+    role_id: Optional[int] = Field(None, gt=0, description="ID del rol asignado")
 
 # Esquema para creación (password obligatorio, email_verified_at y deleted_at no se envían al crear)
 class UserCreate(UserBase):
     password: str = Field(..., min_length=6, max_length=255, description="Contraseña del usuario")
-    # role_id: Optional[int] = Field(None, description="ID del rol asignado")
 
     model_config ={
         "extra": "forbid",
@@ -33,7 +33,9 @@ class UserCreate(UserBase):
                 "type_document": "INE",
                 "n_document": "ABC123456",
                 "state": True,
-                "gender": "M"
+                "gender": "M",
+                "branch_id": 1,
+                "role_id": 2
             }
         }
     }
@@ -47,6 +49,7 @@ class UserUpdate(BaseModel):
     avatar: Optional[str] = Field(None, max_length=255)
     phone: Optional[str] = Field(None, max_length=50)
     branch_id: Optional[int] = Field(None, gt=0)
+    role_id: Optional[int] = Field(None, gt=0)
     type_document: Optional[str] = Field(None, max_length=50)
     n_document: Optional[str] = Field(None, max_length=50)
     state: Optional[bool] = True
@@ -91,7 +94,8 @@ class UserResponse(UserBase):
                 "created_at": "2024-06-01T12:00:00",
                 "updated_at": "2024-06-02T10:00:00",
                 "deleted_at": None,
-                "branch_id": None
+                "branch_id": None,
+                "role_id": None
             }
         }
     }

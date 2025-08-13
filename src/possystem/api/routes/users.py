@@ -5,6 +5,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from ...models.users.schemas import UserResponse, UserCreate, UserUpdate  # Import UserResponse schema
 from ...models.branches.orm import Branch  # Import Branch ORM
+from ...models.roles.orm import Role  # Import Role ORM
 
 from ...db.session import get_db  # Use the shared one
 
@@ -67,6 +68,13 @@ async def create_user(user: UserCreate, db: db_dependency):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Branch not found"
             )
+    if user.role_id is not None:
+        role = db.query(Role).filter(Role.id == user.role_id).first()
+        if not role:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Role not found"
+            )
 
     new_user = User(**user.model_dump())
     db.add(new_user)
@@ -96,6 +104,14 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Branch not found"
             )
+    if user.role_id is not None:
+        role = db.query(Role).filter(Role.id == user.role_id).first()
+        if not role:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Role not found"
+            )
+
 
     for key, value in user.model_dump(exclude_unset=True).items():
         setattr(existing_user, key, value)

@@ -16,7 +16,7 @@ class User(Base):
     remember_token: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
-    # role_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("roles.id"), nullable=True)
+    role_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("roles.id"), nullable=True)
     avatar: Mapped[str] = mapped_column(String(255), nullable=True)
     branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"), nullable=True)
     phone: Mapped[str] = mapped_column(String(50), nullable=True)
@@ -27,7 +27,7 @@ class User(Base):
     gender: Mapped[str] = mapped_column(String(5), nullable=True)  # M = masculino, F = femenino
 
     # Relationship to Role
-    # role: Mapped["Role"] = relationship("Role", back_populates="users")
+    role: Mapped["Role"] = relationship("Role", back_populates="users")
     branch: Mapped["Branch"] = relationship("Branch", back_populates="users")
     # clients: Mapped[list["Client"]] = relationship("Client", back_populates="user")
     # sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")
