@@ -73,3 +73,15 @@ async def delete_branch(branch_id: int, db: db_dependency):
     db.delete(branch_model)
     db.commit()
     return None
+
+@router.get('/{branch_id}',
+            response_model=BranchResponse,
+            summary="Get a branch by ID",
+            description="Retrieve a specific branch by its ID.")
+async def read_by_id(branch_id: int, db: db_dependency):
+    branch_model = db.query(Branch).filter(Branch.id == branch_id).first()
+
+    if not branch_model:
+        raise HTTPException(status_code=404, detail='Branch not found')
+
+    return branch_model
