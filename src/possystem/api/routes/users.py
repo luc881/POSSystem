@@ -3,11 +3,8 @@ from starlette import status
 from ...models.users.orm import User  # Import User ORM
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...db.session import SessionLocal
 from ...models.users.schemas import UserResponse, UserCreate, UserUpdate  # Import UserResponse schema
-# from .auth import get_current_user
-from ...models.permissions.orm import Permission  # Import Permission ORM
-from sqlalchemy.orm import selectinload
+from ...models.branches.orm import Branch  # Import Branch ORM
 
 from ...db.session import get_db  # Use the shared one
 
@@ -63,6 +60,14 @@ async def create_user(user: UserCreate, db: db_dependency):
             detail="User with this email already exists"
         )
 
+    if user.branch_id is not None:
+        branch = db.query(Branch).filter(Branch.id == user.branch_id).first()
+        if not branch:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Branch not found"
+            )
+
     new_user = User(**user.model_dump())
     db.add(new_user)
     db.commit()
@@ -84,6 +89,13 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
+    if user.branch_id is not None:
+        branch = db.query(Branch).filter(Branch.id == user.branch_id).first()
+        if not branch:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Branch not found"
+            )
 
     for key, value in user.model_dump(exclude_unset=True).items():
         setattr(existing_user, key, value)
