@@ -15,7 +15,7 @@ class Branch(Base):
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
 
-    users: Mapped[list["User"]] = relationship("User", back_populates="branch")
+    users: Mapped[list["User"]] = relationship("User", back_populates="branch", lazy="selectin")
     # warehouses: Mapped[list["Warehouse"]] = relationship("Warehouse", back_populates="branch")
     # product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="branch")
     # clients: Mapped[list["Client"]] = relationship("Client", back_populates="branch")

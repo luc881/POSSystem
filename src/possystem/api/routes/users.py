@@ -1,9 +1,9 @@
-from fastapi import Depends, HTTPException, APIRouter
+from fastapi import Depends, HTTPException, APIRouter, Query
 from starlette import status
 from ...models.users.orm import User  # Import User ORM
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...models.users.schemas import UserResponse, UserCreate, UserUpdate, UserDetailsResponse  # Import UserResponse schema
+from ...models.users.schemas import UserResponse, UserCreate, UserUpdate, UserDetailsResponse, UserSearchParams
 from ...models.branches.orm import Branch  # Import Branch ORM
 from ...models.roles.orm import Role  # Import Role ORM
 
@@ -28,6 +28,35 @@ async def read_all(db: db_dependency):
     users = db.query(User).all()
     return users
 
+@router.get(
+    "/search",
+    response_model=list[UserResponse],
+    summary="Search users",
+    description="Search users by name, surname, email, branch, role, or state.",
+    status_code=status.HTTP_200_OK
+)
+async def search_users(
+    db: db_dependency,
+    filters: UserSearchParams = Depends()
+):
+    query = db.query(User)
+
+    if filters.name:
+        query = query.filter(User.name.ilike(f"%{filters.name}%"))
+    if filters.surname:
+        query = query.filter(User.surname.ilike(f"%{filters.surname}%"))
+    if filters.email:
+        query = query.filter(User.email.ilike(f"%{filters.email}%"))
+    if filters.branch_id:
+        query = query.filter(User.branch_id == filters.branch_id)
+    if filters.role_id:
+        query = query.filter(User.role_id == filters.role_id)
+    if filters.state is not None:
+        query = query.filter(User.state == filters.state)
+
+    return query.all()
+
+
 @router.get('/{user_id}',
             response_model=UserResponse,
             summary="Get user by ID",
@@ -50,17 +79,8 @@ async def read_user_by_id(user_id: int, db: db_dependency):
             description="Retrieve user along with role, permissions, and branch.",
             status_code=status.HTTP_200_OK)
 async def read_user_details(user_id: int, db: db_dependency):
-    from sqlalchemy.orm import joinedload
 
-    user = (
-        db.query(User)
-        .options(
-            joinedload(User.role).joinedload(Role.permissions),
-            joinedload(User.branch)
-        )
-        .filter(User.id == user_id)
-        .first()
-    )
+    user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
         raise HTTPException(
@@ -69,6 +89,7 @@ async def read_user_details(user_id: int, db: db_dependency):
         )
 
     return user
+
 
 
 

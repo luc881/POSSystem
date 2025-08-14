@@ -17,5 +17,6 @@ class Permission(Base):
     roles: Mapped[list["Role"]] = relationship(
         "Role",
         secondary=role_has_permissions,  # pivot table name
-        back_populates="permissions"
+        back_populates="permissions",
+        lazy="selectin"
     )

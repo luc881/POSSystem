@@ -149,6 +149,14 @@ class UserDetailsResponse(UserResponse):
         }
     }
 
+class UserSearchParams(BaseModel):
+    name: Optional[str] = Field(None, max_length=255, description="Filter by first name")
+    surname: Optional[str] = Field(None, max_length=255, description="Filter by surname")
+    email: Optional[str] = Field(None, max_length=255, description="Filter by email")
+    branch_id: Optional[int] = Field(None, gt=0, description="Filter by branch ID")
+    role_id: Optional[int] = Field(None, gt=0, description="Filter by role ID")
+    state: Optional[bool] = Field(None, description="Filter by user state (True=active, False=inactive)")
+
 # Forward reference resolution
 from typing import TYPE_CHECKING
 
