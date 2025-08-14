@@ -34,8 +34,20 @@ async def read_all(db: db_dependency):
             description="Retrieve all roles along with their associated permissions.",
             status_code=status.HTTP_200_OK)
 async def read_all_with_permissions(db: db_dependency):
-    roles = db.query(Role).options(selectinload(Role.permissions)).all()
+    roles = db.query(Role).all()
     return roles
+
+@router.get('/{role_id}',
+            response_model=RoleWithPermissions,
+            summary="Get a role by ID",
+            description="Retrieve a specific role by its ID, including associated permissions.")
+async def read_by_id_with_permissions(role_id: int, db: db_dependency):
+    role = db.query(Role).filter(Role.id == role_id).first()
+
+    if not role:
+        raise HTTPException(status_code=404, detail='Role not found')
+
+    return role
 
 @router.post('/',
             status_code=status.HTTP_201_CREATED,
@@ -91,17 +103,7 @@ async def delete_role(role_id: int, db: db_dependency):
     db.commit()
     return {"detail": "Role deleted successfully"}
 
-@router.get('/{role_id}',
-            response_model=RoleWithPermissions,
-            summary="Get a role by ID",
-            description="Retrieve a specific role by its ID, including associated permissions.")
-async def read_by_id_with_permissions(role_id: int, db: db_dependency):
-    role = db.query(Role).filter(Role.id == role_id).first()
 
-    if not role:
-        raise HTTPException(status_code=404, detail='Role not found')
-
-    return role
 
 @router.post("/{role_id}/permissions",
             status_code=status.HTTP_200_OK,

@@ -99,3 +99,60 @@ class UserResponse(UserBase):
             }
         }
     }
+
+class UserDetailsResponse(UserResponse):
+    role: Optional['RoleWithPermissions'] = None
+    branch: Optional['BranchResponse'] = None
+
+    model_config = {
+        "from_attributes": True,
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "name": "Juan",
+                "surname": "Pérez",
+                "email": "juan.perez@example.com",
+                "email_verified_at": "2024-06-01T12:34:56",
+                "avatar": "http://example.com/avatar.jpg",
+                "phone": "5551234567",
+                "type_document": "INE",
+                "n_document": "ABC123456",
+                "state": True,
+                "gender": "M",
+                "created_at": "2024-06-01T12:00:00",
+                "updated_at": "2024-06-02T10:00:00",
+                "deleted_at": None,
+                "branch": {
+                    "id": 10,
+                    "name": "Sucursal Centro",
+                    "address": "Av. Principal 123, CDMX",
+                    "is_active": True,
+                    "created_at": "2024-07-01T10:15:00",
+                    "updated_at": "2024-07-05T09:00:00",
+                    "deleted_at": None
+                },
+                "role": {
+                    "id": 1,
+                    "name": "admin",
+                    "created_at": "2024-06-01T12:34:56",
+                    "updated_at": "2024-06-02T10:00:00",
+                    "permissions": [
+                        {
+                            "id": 1,
+                            "name": "edit_users",
+                            "created_at": "2024-06-01T12:34:56",
+                            "updated_at": "2024-06-02T10:00:00"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+
+# Forward reference resolution
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..roles.schemas import RoleWithPermissions
+    from ..branches.schemas import BranchResponse
+

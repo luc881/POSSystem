@@ -27,8 +27,8 @@ class User(Base):
     gender: Mapped[str] = mapped_column(String(5), nullable=True)  # M = masculino, F = femenino
 
     # Relationship to Role
-    role: Mapped["Role"] = relationship("Role", back_populates="users")
-    branch: Mapped["Branch"] = relationship("Branch", back_populates="users")
+    role: Mapped["Role"] = relationship("Role", back_populates="users", lazy="selectin")
+    branch: Mapped["Branch"] = relationship("Branch", back_populates="users", lazy="selectin")
     # clients: Mapped[list["Client"]] = relationship("Client", back_populates="user")
     # sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")
     # refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="user")

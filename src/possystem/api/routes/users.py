@@ -3,7 +3,7 @@ from starlette import status
 from ...models.users.orm import User  # Import User ORM
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...models.users.schemas import UserResponse, UserCreate, UserUpdate  # Import UserResponse schema
+from ...models.users.schemas import UserResponse, UserCreate, UserUpdate, UserDetailsResponse  # Import UserResponse schema
 from ...models.branches.orm import Branch  # Import Branch ORM
 from ...models.roles.orm import Role  # Import Role ORM
 
@@ -43,6 +43,33 @@ async def read_user_by_id(user_id: int, db: db_dependency):
         )
 
     return user
+
+@router.get("/{user_id}/details",
+            response_model=UserDetailsResponse,
+            summary="Get detailed user info",
+            description="Retrieve user along with role, permissions, and branch.",
+            status_code=status.HTTP_200_OK)
+async def read_user_details(user_id: int, db: db_dependency):
+    from sqlalchemy.orm import joinedload
+
+    user = (
+        db.query(User)
+        .options(
+            joinedload(User.role).joinedload(Role.permissions),
+            joinedload(User.branch)
+        )
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    return user
+
 
 
 @router.post('/',
