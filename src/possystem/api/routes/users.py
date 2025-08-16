@@ -9,6 +9,10 @@ from ...models.roles.orm import Role  # Import Role ORM
 
 from ...db.session import get_db  # Use the shared one
 
+from passlib.context import CryptContext
+
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 db_dependency = Annotated[Session, Depends(get_db)]
 
 router = APIRouter(
@@ -99,6 +103,8 @@ async def read_user_details(user_id: int, db: db_dependency):
             description="Create a new user with the provided details.",
             status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserCreate, db: db_dependency):
+
+    user.password = bcrypt_context.hash(user.password)  # Hash the password before storing
 
     existing_user = db.query(User).filter(User.email == user.email).first()
 

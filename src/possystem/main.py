@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .db.session import engine, Base
-from .api.routes import permissions, roles, users, branches
+from .api.routes import permissions, roles, users, branches, auth
 
 app = FastAPI()
 
@@ -19,8 +19,10 @@ def health_check():
     """Health check endpoint."""
     return {"status": "ok", "message": "API is running"}
 
+app.include_router(auth.router)
 app.include_router(permissions.router)
 app.include_router(roles.router)
 app.include_router(users.router)
 app.include_router(branches.router)
+
 
