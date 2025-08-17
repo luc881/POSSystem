@@ -1,13 +1,7 @@
 from fastapi import FastAPI
-from .db.session import engine, Base
 from .api.routes import permissions, roles, users, branches, auth
 
 app = FastAPI()
-
-# TEMP: Drop and recreate all tables (for dev only!)
-Base.metadata.drop_all(bind=engine)
-
-Base.metadata.create_all(bind=engine)
 
 @app.get('/', tags=["Root"])
 def root():
@@ -24,5 +18,3 @@ app.include_router(permissions.router)
 app.include_router(roles.router)
 app.include_router(users.router)
 app.include_router(branches.router)
-
-
