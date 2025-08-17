@@ -53,7 +53,6 @@ async def search_users(
     filters: UserSearchParams = Depends()
 ):
     query = db.query(User)
-
     if filters.name:
         query = query.filter(User.name.ilike(f"%{filters.name}%"))
     if filters.surname:
@@ -66,7 +65,6 @@ async def search_users(
         query = query.filter(User.role_id == filters.role_id)
     if filters.state is not None:
         query = query.filter(User.state == filters.state)
-
     return query.all()
 
 
@@ -79,14 +77,13 @@ async def search_users(
             )
 async def read_user_by_id(user_id: int, db: db_dependency):
     user = db.query(User).filter(User.id == user_id).first()
-
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-
     return user
+
 
 @router.get("/{user_id}/details",
             response_model=UserDetailsResponse,
@@ -95,15 +92,12 @@ async def read_user_by_id(user_id: int, db: db_dependency):
             status_code=status.HTTP_200_OK,
             dependencies=CAN_READ_USERS)
 async def read_user_details(user_id: int, db: db_dependency):
-
     user = db.query(User).filter(User.id == user_id).first()
-
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-
     return user
 
 
@@ -111,13 +105,12 @@ async def read_user_details(user_id: int, db: db_dependency):
             response_model=UserResponse,
             summary="Create a new user",
             description="Create a new user with the provided details.",
-            status_code=status.HTTP_201_CREATED)
+            status_code=status.HTTP_201_CREATED,
+            dependencies = CAN_CREATE_USERS)
 async def create_user(user: UserCreate, db: db_dependency):
 
     user.password = bcrypt_context.hash(user.password)  # Hash the password before storing
-
     existing_user = db.query(User).filter(User.email == user.email).first()
-
 
     if existing_user:
         raise HTTPException(
@@ -152,7 +145,8 @@ async def create_user(user: UserCreate, db: db_dependency):
             response_model=UserResponse,
             summary="Update a user",
             description="Update an existing user's details by their ID.",
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_UPDATE_USERS)
 async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
     existing_user = db.query(User).filter(User.id == user_id).first()
 
@@ -189,7 +183,8 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
 @router.delete('/{user_id}',
             status_code=status.HTTP_204_NO_CONTENT,
             summary="Delete a user",
-            description="Delete an existing user by their ID.")
+            description="Delete an existing user by their ID.",
+            dependencies=CAN_DELETE_USERS)
 async def delete_user(user_id: int, db: db_dependency):
     existing_user = db.query(User).filter(User.id == user_id).first()
 
