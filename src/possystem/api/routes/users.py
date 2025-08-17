@@ -6,29 +6,33 @@ from sqlalchemy.orm import Session
 from ...models.users.schemas import UserResponse, UserCreate, UserUpdate, UserDetailsResponse, UserSearchParams
 from ...models.branches.orm import Branch  # Import Branch ORM
 from ...models.roles.orm import Role  # Import Role ORM
-
 from ...db.session import get_db  # Use the shared one
-
 from passlib.context import CryptContext
+from ...utils.security import require_permission
+from ...utils.security import decode_jwt_token
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[dict, Depends(decode_jwt_token)]
+
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
 
-# user_dependency = Annotated[dict, Depends(get_current_user)]
+
 
 
 @router.get('/',
             response_model=list[UserResponse],
             summary="List all users",
             description="Retrieve all users currently stored in the database.",
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK,
+            dependencies=[Depends(require_permission("users.read"))]
+            )
 async def read_all(db: db_dependency):
+
     users = db.query(User).all()
     return users
 
