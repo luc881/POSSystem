@@ -10,10 +10,16 @@ from ...db.session import get_db  # Use the shared one
 from passlib.context import CryptContext
 from ...utils.security import require_permission
 from ...utils.security import decode_jwt_token
+from ...utils.permissions import CAN_READ_USERS, CAN_CREATE_USERS, CAN_UPDATE_USERS, CAN_DELETE_USERS
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(decode_jwt_token)]
+
+user_get = [Depends(require_permission("users.read"))]  # Ensure read permission is required
+user_post = [Depends(require_permission("users.create"))]  # Ensure create permission is required
+user_put = [Depends(require_permission("users.update"))]  # Ensure update permission is required
+user_delete = [Depends(require_permission("users.delete"))]  # Ensure delete permission is required
 
 
 router = APIRouter(
@@ -29,10 +35,9 @@ router = APIRouter(
             summary="List all users",
             description="Retrieve all users currently stored in the database.",
             status_code=status.HTTP_200_OK,
-            dependencies=[Depends(require_permission("users.read"))]
+            dependencies=CAN_READ_USERS
             )
 async def read_all(db: db_dependency):
-
     users = db.query(User).all()
     return users
 
@@ -41,8 +46,8 @@ async def read_all(db: db_dependency):
     response_model=list[UserResponse],
     summary="Search users",
     description="Search users by name, surname, email, branch, role, or state.",
-    status_code=status.HTTP_200_OK
-)
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_READ_USERS)
 async def search_users(
     db: db_dependency,
     filters: UserSearchParams = Depends()
@@ -69,7 +74,9 @@ async def search_users(
             response_model=UserResponse,
             summary="Get user by ID",
             description="Retrieve a user by their unique ID.",
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_USERS
+            )
 async def read_user_by_id(user_id: int, db: db_dependency):
     user = db.query(User).filter(User.id == user_id).first()
 
@@ -85,7 +92,8 @@ async def read_user_by_id(user_id: int, db: db_dependency):
             response_model=UserDetailsResponse,
             summary="Get detailed user info",
             description="Retrieve user along with role, permissions, and branch.",
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_USERS)
 async def read_user_details(user_id: int, db: db_dependency):
 
     user = db.query(User).filter(User.id == user_id).first()
@@ -97,8 +105,6 @@ async def read_user_details(user_id: int, db: db_dependency):
         )
 
     return user
-
-
 
 
 @router.post('/',
