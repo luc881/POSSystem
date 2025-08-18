@@ -5,6 +5,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from ...models.permissions.schemas import PermissionCreate, PermissionUpdate, PermissionResponse, PermissionWithRoles
 from ...db.session import get_db  # Use the shared one
+from ...utils.permissions import CAN_READ_PERMISSIONS, CAN_CREATE_PERMISSIONS, CAN_UPDATE_PERMISSIONS, CAN_DELETE_PERMISSIONS
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -19,7 +20,9 @@ router = APIRouter(
             response_model=list[PermissionResponse],
             summary="List all permissions",
             description="Retrieve all permissions currently stored in the database.",
-            status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_PERMISSIONS
+            )
 async def read_all(db: db_dependency):
     permissions = db.query(Permission).all()
     return permissions
@@ -29,7 +32,8 @@ async def read_all(db: db_dependency):
             status_code=status.HTTP_201_CREATED,
             response_model=PermissionResponse,
             summary="Create a new permission",
-            description="Adds a new permission to the database. The permission name must be unique.")
+            description="Adds a new permission to the database. The permission name must be unique.",
+            dependencies=CAN_CREATE_PERMISSIONS)
 async def create_permission(db: db_dependency, permission_request: PermissionCreate):
     permission_model = Permission(**permission_request.model_dump())
 
@@ -47,7 +51,8 @@ async def create_permission(db: db_dependency, permission_request: PermissionCre
             status_code=status.HTTP_200_OK,
             response_model=PermissionResponse,
             summary="Update an existing permission",
-            description="Updates the details of an existing permission by ID. Only the name can be updated.")
+            description="Updates the details of an existing permission by ID. Only the name can be updated.",
+            dependencies=CAN_UPDATE_PERMISSIONS)
 async def update_permission(permission_id: int, db: db_dependency, permission_request: PermissionUpdate):
     permission = db.query(Permission).filter(Permission.id == permission_id).first()
 
@@ -69,7 +74,8 @@ async def update_permission(permission_id: int, db: db_dependency, permission_re
 @router.delete('/{permission_id}',
             status_code=status.HTTP_200_OK,
             summary="Delete a permission",
-            description="Deletes a permission by ID. This will remove the permission from the database.")
+            description="Deletes a permission by ID. This will remove the permission from the database.",
+            dependencies=CAN_DELETE_PERMISSIONS)
 async def delete_permission(permission_id: int, db: db_dependency):
     permission = db.query(Permission).filter(Permission.id == permission_id).first()
 
