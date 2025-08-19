@@ -16,8 +16,8 @@ router = APIRouter(
     tags=["Roles"]
 )
 
-# user_dependency = Annotated[dict, Depends(get_current_user)]
 
+# user_dependency = Annotated[dict, Depends(get_current_user)]
 @router.get('/',
             response_model=list[RoleResponse],
             summary="List all roles",
@@ -29,6 +29,7 @@ async def read_all(db: db_dependency):
     roles = db.query(Role).all()
     return roles
 
+
 @router.get('/permissions',
             response_model=list[RoleWithPermissions],
             summary="List all roles with permissions",
@@ -39,6 +40,7 @@ async def read_all(db: db_dependency):
 async def read_all_with_permissions(db: db_dependency):
     roles = db.query(Role).all()
     return roles
+
 
 @router.get('/{role_id}',
             response_model=RoleWithPermissions,
@@ -53,6 +55,7 @@ async def read_by_id_with_permissions(role_id: int, db: db_dependency):
         raise HTTPException(status_code=404, detail='Role not found')
 
     return role
+
 
 @router.post('/',
             status_code=status.HTTP_201_CREATED,
@@ -72,6 +75,7 @@ async def create_role(db: db_dependency, role_request: RoleCreate,):
     db.commit()
     db.refresh(role_model)
     return role_model
+
 
 @router.post("/{role_id}/permissions",
             status_code=status.HTTP_200_OK,
@@ -101,6 +105,7 @@ async def add_permission_to_role(role_id: int, request: RolePermissionAssociatio
 
     return role
 
+
 @router.put('/{role_id}',
             status_code=status.HTTP_200_OK,
             response_model=RoleResponse,
@@ -124,6 +129,7 @@ async def update_role(role_id: int, db: db_dependency, role_request: RoleUpdate)
     db.commit()
     db.refresh(role)
     return role
+
 
 @router.delete('/{role_id}',
             status_code=status.HTTP_200_OK,

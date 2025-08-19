@@ -17,32 +17,34 @@ class Unit(Base):
 
     product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="unit")
     product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="unit")
-    refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="unit")
-    purchase_details = relationship("PurchaseDetail", back_populates="unit")
-    transport_details: Mapped[list["TransportDetail"]] = relationship(
-        "TransportDetail", back_populates="unit"
-    )
-    conversions_from: Mapped[list["UnitConversion"]] = relationship(
-        "UnitConversion",
-        back_populates="unit",
-        foreign_keys="[UnitConversion.unit_id]"
-    )
-    conversions_to: Mapped[list["UnitConversion"]] = relationship(
-        "UnitConversion",
-        back_populates="unit_to",
-        foreign_keys="[UnitConversion.unit_to_id]"
-    )
-    conversions_from: Mapped[list["Conversion"]] = relationship(
-        "Conversion", back_populates="unit_start", foreign_keys="[Conversion.unit_start_id]"
-    )
-    conversions_to: Mapped[list["Conversion"]] = relationship(
-        "Conversion", back_populates="unit_end", foreign_keys="[Conversion.unit_end_id]"
-    )
-    stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
-        "ProductStockInitial", back_populates="unit"
-    )
-    sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
-        "SaleDetailAttention", back_populates="unit"
-    )
+
+
+    # refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="unit")
+    # purchase_details = relationship("PurchaseDetail", back_populates="unit")
+    # transport_details: Mapped[list["TransportDetail"]] = relationship(
+    #     "TransportDetail", back_populates="unit"
+    # )
+    # conversions_from: Mapped[list["UnitConversion"]] = relationship(
+    #     "UnitConversion",
+    #     back_populates="unit",
+    #     foreign_keys="[UnitConversion.unit_id]"
+    # )
+    # conversions_to: Mapped[list["UnitConversion"]] = relationship(
+    #     "UnitConversion",
+    #     back_populates="unit_to",
+    #     foreign_keys="[UnitConversion.unit_to_id]"
+    # )
+    # conversions_from: Mapped[list["Conversion"]] = relationship(
+    #     "Conversion", back_populates="unit_start", foreign_keys="[Conversion.unit_start_id]"
+    # )
+    # conversions_to: Mapped[list["Conversion"]] = relationship(
+    #     "Conversion", back_populates="unit_end", foreign_keys="[Conversion.unit_end_id]"
+    # )
+    # stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
+    #     "ProductStockInitial", back_populates="unit"
+    # )
+    # sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
+    #     "SaleDetailAttention", back_populates="unit"
+    # )
 
 
