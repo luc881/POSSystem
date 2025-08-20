@@ -45,3 +45,38 @@ async def create(product_category: ProductCategoryCreate, db: db_dependency):
     db.refresh(new_category)
     return new_category
 
+@router.put(
+    "/{category_id}",
+    response_model=ProductCategoryResponse,
+    summary="Update an existing product category",
+    description="Update the details of an existing product category.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_PRODUCT_CATEGORIES
+)
+async def update(category_id: int, product_category: ProductCategoryUpdate, db: db_dependency):
+    existing_category = db.query(ProductCategory).filter(ProductCategory.id == category_id).first()
+    if not existing_category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product category not found."
+        )
+    if product_category.name:
+        name_conflict = db.query(ProductCategory).filter(
+            ProductCategory.name == product_category.name,
+            ProductCategory.id != category_id
+        ).first()
+        if name_conflict:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Another product category with this name already exists."
+            )
+        existing_category.name = product_category.name
+    if product_category.image is not None:
+        existing_category.image = product_category.image
+    if product_category.is_active is not None:
+        existing_category.is_active = product_category.is_active
+
+    db.commit()
+    db.refresh(existing_category)
+    return existing_category
+
