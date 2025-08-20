@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 class WarehouseBase(BaseModel):
     name: str = Field(..., max_length=250, description="Nombre del almacén")
     address: str = Field(..., max_length=250, description="Dirección del almacén")
-    branch_id: int = Field(..., gt=0, description="ID de la sucursal asociada")
+    branch_id: Optional[int] = Field(None, gt=0, description="ID de la sucursal asociada")
     is_active: Optional[bool] = Field(True, description="Estado del almacén (True = activo, False = inactivo)")
 
 

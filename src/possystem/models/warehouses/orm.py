@@ -2,6 +2,7 @@ from sqlalchemy import String, BigInteger, SmallInteger, TIMESTAMP, ForeignKey, 
 from sqlalchemy.sql import func
 from ...db.session import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
 
 class Warehouse(Base):
     __tablename__ = "warehouses"
@@ -9,8 +10,8 @@ class Warehouse(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(250), nullable=False)
     address: Mapped[str] = mapped_column(String(250), nullable=False)
-    branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"), nullable=False)  # FK to branches
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"), nullable=True)  # FK to branches
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
