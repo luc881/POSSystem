@@ -38,3 +38,15 @@ CAN_CREATE_WAREHOUSES = [Depends(require_permission("warehouses.create"))]
 CAN_UPDATE_WAREHOUSES = [Depends(require_permission("warehouses.update"))]
 CAN_DELETE_WAREHOUSES = [Depends(require_permission("warehouses.delete"))]
 
+# Permissions for product operations
+CAN_READ_PRODUCTS = [Depends(require_permission("products.read"))]
+CAN_CREATE_PRODUCTS = [Depends(require_permission("products.create"))]
+CAN_UPDATE_PRODUCTS = [Depends(require_permission("products.update"))]
+CAN_DELETE_PRODUCTS = [Depends(require_permission("products.delete"))]
+
+# Permissions for product category operations
+CAN_READ_PRODUCT_CATEGORIES = [Depends(require_permission("productscategories.read"))]
+CAN_CREATE_PRODUCT_CATEGORIES = [Depends(require_permission("productscategories.create"))]
+CAN_UPDATE_PRODUCT_CATEGORIES = [Depends(require_permission("productscategories.update"))]
+CAN_DELETE_PRODUCT_CATEGORIES = [Depends(require_permission("productscategories.delete"))]
+

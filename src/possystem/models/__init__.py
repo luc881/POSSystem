@@ -10,3 +10,10 @@ BranchWithUsersResponse.model_rebuild()
 BranchResponse.model_rebuild()
 UserResponse.model_rebuild()
 UserDetailsResponse.model_rebuild()
+
+from .users.orm import User
+from .roles.orm import Role
+from .permissions.orm import Permission
+from .branches.orm import Branch
+from .product_categories.orm import ProductCategory
+from .warehouses.orm import Warehouse
