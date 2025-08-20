@@ -32,3 +32,9 @@ CAN_CREATE_UNITS = [Depends(require_permission("units.create"))]
 CAN_UPDATE_UNITS = [Depends(require_permission("units.update"))]
 CAN_DELETE_UNITS = [Depends(require_permission("units.delete"))]
 
+# Permissions for warehouse operations
+CAN_READ_WAREHOUSES = [Depends(require_permission("warehouses.read"))]
+CAN_CREATE_WAREHOUSES = [Depends(require_permission("warehouses.create"))]
+CAN_UPDATE_WAREHOUSES = [Depends(require_permission("warehouses.update"))]
+CAN_DELETE_WAREHOUSES = [Depends(require_permission("warehouses.delete"))]
+
