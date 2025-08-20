@@ -17,6 +17,7 @@ from .permissions.orm import Permission
 from .branches.orm import Branch
 from .product_categories.orm import ProductCategory
 from .warehouses.orm import Warehouse
+from .products.orm import Product
 
 
 # when you have all coorect you can try
