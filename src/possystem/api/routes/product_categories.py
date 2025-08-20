@@ -80,3 +80,20 @@ async def update(category_id: int, product_category: ProductCategoryUpdate, db: 
     db.refresh(existing_category)
     return existing_category
 
+@router.delete(
+    "/{category_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a product category",
+    description="Delete an existing product category by its ID.",
+    dependencies=CAN_DELETE_PRODUCT_CATEGORIES
+)
+async def delete(category_id: int, db: db_dependency):
+    existing_category = db.query(ProductCategory).filter(ProductCategory.id == category_id).first()
+    if not existing_category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product category not found."
+        )
+    db.delete(existing_category)
+    db.commit()
+    return None
