@@ -50,3 +50,34 @@ async def create_unit(unit: UnitCreate, db: db_dependency):
     db.refresh(new_unit)
     return new_unit
 
+@router.put('/{unit_id}',
+            response_model=UnitResponse,
+            summary="Update an existing unit",
+            description="Update the details of an existing unit.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_UPDATE_UNITS
+            )
+async def update_unit(unit_id: int, unit: UnitUpdate, db: db_dependency):
+    existing_unit = db.query(Unit).filter(Unit.id == unit_id).first()
+    if not existing_unit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Unit not found."
+        )
+
+    # Check if the name is being changed and if the new name already exists
+    if unit.name and unit.name != existing_unit.name:
+        name_exists = db.query(Unit).filter(Unit.name == unit.name).first()
+        if name_exists:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Unit with this name already exists."
+            )
+
+    for key, value in unit.model_dump(exclude_unset=True).items():
+        setattr(existing_unit, key, value)
+
+    db.commit()
+    db.refresh(existing_unit)
+    return existing_unit
+
