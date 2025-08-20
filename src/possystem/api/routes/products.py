@@ -71,3 +71,18 @@ async def update_product(product_id: int, product: ProductUpdate, db: db_depende
     db.refresh(existing_product)
     return existing_product
 
+@router.delete("/{product_id}",
+            summary="Delete a product",
+            description="Delete a product by its ID.",
+            status_code=status.HTTP_204_NO_CONTENT,
+            dependencies=CAN_DELETE_PRODUCTS)
+async def delete_product(product_id: int, db: db_dependency):
+    existing_product = db.query(Product).filter(Product.id == product_id).first()
+    if not existing_product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product not found."
+        )
+    db.delete(existing_product)
+    db.commit()
+    return {"detail": "Product deleted successfully."}
