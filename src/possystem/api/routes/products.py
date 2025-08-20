@@ -44,3 +44,30 @@ async def create_product(product: ProductCreate, db: db_dependency):
     db.commit()
     db.refresh(new_product)
     return new_product
+
+@router.put("/{product_id}",
+            response_model=ProductResponse,
+            summary="Update an existing product",
+            description="Update the details of an existing product.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_UPDATE_PRODUCTS)
+async def update_product(product_id: int, product: ProductUpdate, db: db_dependency):
+    existing_product = db.query(Product).filter(Product.id == product_id).first()
+    if not existing_product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product not found."
+        )
+    if product.sku and product.sku != existing_product.sku:
+        sku_exists = db.query(Product).filter(Product.sku == product.sku).first()
+        if sku_exists:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Product with this SKU already exists."
+            )
+    for key, value in product.model_dump().items():
+        setattr(existing_product, key, value)
+    db.commit()
+    db.refresh(existing_product)
+    return existing_product
+
