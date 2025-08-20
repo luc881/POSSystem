@@ -2,6 +2,7 @@ from sqlalchemy import BigInteger, Double, SmallInteger, TIMESTAMP, ForeignKey
 from sqlalchemy.sql import func
 from ...db.session import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
 
 class ProductWallet(Base):
     __tablename__ = "product_wallets"
