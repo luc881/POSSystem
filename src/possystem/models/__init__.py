@@ -17,3 +17,36 @@ from .permissions.orm import Permission
 from .branches.orm import Branch
 from .product_categories.orm import ProductCategory
 from .warehouses.orm import Warehouse
+
+
+# when you have all coorect you can try
+# # src/possystem/models/__init__.py
+# import pkgutil
+# import importlib
+# from .session import Base  # Your SQLAlchemy declarative base
+# from pydantic import BaseModel
+#
+# # -------------------------------------------------
+# # 1️⃣ Automatically import all submodules inside models
+# # -------------------------------------------------
+# package_name = __name__
+#
+# for finder, name, ispkg in pkgutil.iter_modules(__path__):
+#     full_module_name = f"{package_name}.{name}"
+#     module = importlib.import_module(full_module_name)
+#
+#     # Optional: If the module has an 'orm' submodule, import it too
+#     try:
+#         importlib.import_module(f"{full_module_name}.orm")
+#     except ModuleNotFoundError:
+#         pass
+#
+# # -------------------------------------------------
+# # 2️⃣ Rebuild all Pydantic forward references
+# # -------------------------------------------------
+# for subclass in BaseModel.__subclasses__():
+#     try:
+#         subclass.model_rebuild()
+#     except Exception:
+#         # Ignore models that don't have forward references
+#         pass
