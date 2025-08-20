@@ -29,3 +29,24 @@ async def read_all(db: db_dependency):
     units = db.query(Unit).all()
     return units
 
+@router.post('/',
+            response_model=UnitResponse,
+            summary="Create a new unit",
+            description="Create a new unit with the provided details.",
+            status_code=status.HTTP_201_CREATED,
+            dependencies=CAN_CREATE_UNITS
+            )
+async def create_unit(unit: UnitCreate, db: db_dependency):
+    existing_unit = db.query(Unit).filter(Unit.name == unit.name).first()
+    if existing_unit:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unit with this name already exists."
+        )
+
+    new_unit = Unit(**unit.model_dump())
+    db.add(new_unit)
+    db.commit()
+    db.refresh(new_unit)
+    return new_unit
+
