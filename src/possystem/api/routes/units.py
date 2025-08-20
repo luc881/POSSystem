@@ -81,3 +81,20 @@ async def update_unit(unit_id: int, unit: UnitUpdate, db: db_dependency):
     db.refresh(existing_unit)
     return existing_unit
 
+@router.delete('/{unit_id}',
+            summary="Delete a unit",
+            description="Delete a unit by its ID.",
+            status_code=status.HTTP_204_NO_CONTENT,
+            dependencies=CAN_DELETE_UNITS
+            )
+async def delete_unit(unit_id: int, db: db_dependency):
+    existing_unit = db.query(Unit).filter(Unit.id == unit_id).first()
+    if not existing_unit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Unit not found."
+        )
+
+    db.delete(existing_unit)
+    db.commit()
+    return {"detail": "Unit deleted successfully."}
