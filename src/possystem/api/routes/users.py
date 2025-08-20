@@ -1,20 +1,17 @@
 from fastapi import Depends, HTTPException, APIRouter, Query
 from starlette import status
-from ...models.users.orm import User  # Import User ORM
+from ...models.users.orm import User
 from typing import Annotated
 from sqlalchemy.orm import Session
 from ...models.users.schemas import UserResponse, UserCreate, UserUpdate, UserDetailsResponse, UserSearchParams
-from ...models.branches.orm import Branch  # Import Branch ORM
-from ...models.roles.orm import Role  # Import Role ORM
-from ...db.session import get_db  # Use the shared one
+from ...models.branches.orm import Branch
+from ...models.roles.orm import Role
+from ...db.session import get_db
 from passlib.context import CryptContext
-from ...utils.security import decode_jwt_token
 from ...utils.permissions import CAN_READ_USERS, CAN_CREATE_USERS, CAN_UPDATE_USERS, CAN_DELETE_USERS
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 db_dependency = Annotated[Session, Depends(get_db)]
-user_dependency = Annotated[dict, Depends(decode_jwt_token)]
-
 
 router = APIRouter(
     prefix="/users",

@@ -25,3 +25,10 @@ CAN_READ_ROLES = [Depends(require_permission("roles.read"))]
 CAN_CREATE_ROLES = [Depends(require_permission("roles.create"))]
 CAN_UPDATE_ROLES = [Depends(require_permission("roles.update"))]
 CAN_DELETE_ROLES = [Depends(require_permission("roles.delete"))]
+
+# Permissions for unit operations
+CAN_READ_UNITS = [Depends(require_permission("units.read"))]
+CAN_CREATE_UNITS = [Depends(require_permission("units.create"))]
+CAN_UPDATE_UNITS = [Depends(require_permission("units.update"))]
+CAN_DELETE_UNITS = [Depends(require_permission("units.delete"))]
+
