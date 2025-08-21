@@ -133,3 +133,23 @@ async def update(
     db.refresh(product_warehouse)
     return product_warehouse
 
+@router.delete(
+    "/{product_warehouse_id}",
+    summary="Delete a product warehouse",
+    description="Delete an existing product warehouse by its ID.",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=CAN_DELETE_PRODUCT_WAREHOUSES
+)
+async def delete(
+    product_warehouse_id: int,
+    db: db_dependency
+):
+    # Fetch existing product warehouse
+    product_warehouse = db.query(ProductWarehouse).filter_by(id=product_warehouse_id).first()
+    if not product_warehouse:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product warehouse not found.")
+
+    # Soft delete by setting deleted_at
+    product_warehouse.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    return {"detail": "Product warehouse deleted successfully."}
