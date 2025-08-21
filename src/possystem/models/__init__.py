@@ -22,6 +22,7 @@ from .warehouses.orm import Warehouse
 from .products.orm import Product
 from .product_warehouses.orm import ProductWarehouse
 from .units.orm import Unit
+from .product_wallets.orm import ProductWallet
 
 
 # when you have all coorect you can try

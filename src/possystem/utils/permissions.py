@@ -56,5 +56,12 @@ CAN_CREATE_PRODUCT_WAREHOUSES = [Depends(require_permission("productwarehouses.c
 CAN_UPDATE_PRODUCT_WAREHOUSES = [Depends(require_permission("productwarehouses.update"))]
 CAN_DELETE_PRODUCT_WAREHOUSES = [Depends(require_permission("productwarehouses.delete"))]
 
+# Permissions for product wallet operations
+CAN_READ_PRODUCT_WALLETS = [Depends(require_permission("productwallets.read"))]
+CAN_CREATE_PRODUCT_WALLETS = [Depends(require_permission("productwallets.create"))]
+CAN_UPDATE_PRODUCT_WALLETS = [Depends(require_permission("productwallets.update"))]
+CAN_DELETE_PRODUCT_WALLETS = [Depends(require_permission("productwallets.delete"))]
+
+
 
 
