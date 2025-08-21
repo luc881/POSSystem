@@ -29,3 +29,45 @@ async def read_all(db: db_dependency):
     product_warehouses = db.query(ProductWarehouse).all()
     return product_warehouses
 
+@router.post(
+    "/",
+    response_model=ProductWarehouseResponse,
+    summary="Create a new product warehouse",
+    description="Create a new product warehouse with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_PRODUCT_WAREHOUSES
+)
+async def create(
+    product_warehouse: ProductWarehouseCreate,
+    db: db_dependency
+):
+    # Validate product exists
+    if not db.query(Product).filter_by(id=product_warehouse.product_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product ID does not exist.")
+
+    # Validate warehouse exists
+    if not db.query(Warehouse).filter_by(id=product_warehouse.warehouse_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Warehouse ID does not exist.")
+
+    # Validate unit exists
+    if not db.query(Unit).filter_by(id=product_warehouse.unit_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unit ID does not exist.")
+
+    # Check for existing product-warehouse-unit combination
+    existing_pw = db.query(ProductWarehouse).filter_by(
+        product_id=product_warehouse.product_id,
+        warehouse_id=product_warehouse.warehouse_id,
+        unit_id=product_warehouse.unit_id
+    ).first()
+    if existing_pw:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This product is already assigned to this warehouse with the same unit."
+        )
+
+    # Create new ProductWarehouse record
+    new_product_warehouse = ProductWarehouse(**product_warehouse.model_dump())
+    db.add(new_product_warehouse)
+    db.commit()
+    db.refresh(new_product_warehouse)
+    return new_product_warehouse
