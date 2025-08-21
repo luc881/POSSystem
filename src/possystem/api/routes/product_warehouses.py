@@ -71,3 +71,65 @@ async def create(
     db.commit()
     db.refresh(new_product_warehouse)
     return new_product_warehouse
+
+@router.put(
+    "/{product_warehouse_id}",
+    response_model=ProductWarehouseResponse,
+    summary="Update an existing product warehouse",
+    description="Update the details of an existing product warehouse.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_PRODUCT_WAREHOUSES
+)
+async def update(
+    product_warehouse_id: int,
+    product_warehouse_update: ProductWarehouseUpdate,
+    db: db_dependency
+):
+    # Fetch existing product warehouse
+    product_warehouse = db.query(ProductWarehouse).filter_by(id=product_warehouse_id).first()
+    if not product_warehouse:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product warehouse not found.")
+
+    # Validate product exists if provided
+    if product_warehouse_update.product_id and not db.query(Product).filter_by(id=product_warehouse_update.product_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product ID does not exist.")
+
+    # Validate warehouse exists if provided
+    if product_warehouse_update.warehouse_id and not db.query(Warehouse).filter_by(id=product_warehouse_update.warehouse_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Warehouse ID does not exist.")
+
+    # Validate unit exists if provided
+    if product_warehouse_update.unit_id and not db.query(Unit).filter_by(id=product_warehouse_update.unit_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unit ID does not exist.")
+
+    # Check for duplicates (only if keys are being updated)
+    if (
+        product_warehouse_update.product_id or
+        product_warehouse_update.warehouse_id or
+        product_warehouse_update.unit_id
+    ):
+        new_product_id = product_warehouse_update.product_id or product_warehouse.product_id
+        new_warehouse_id = product_warehouse_update.warehouse_id or product_warehouse.warehouse_id
+        new_unit_id = product_warehouse_update.unit_id or product_warehouse.unit_id
+
+        duplicate = db.query(ProductWarehouse).filter(
+            ProductWarehouse.product_id == new_product_id,
+            ProductWarehouse.warehouse_id == new_warehouse_id,
+            ProductWarehouse.unit_id == new_unit_id,
+            ProductWarehouse.id != product_warehouse_id
+        ).first()
+        if duplicate:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Another product warehouse with the same product, warehouse, and unit already exists."
+            )
+
+    # Apply updates
+    update_data = product_warehouse_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(product_warehouse, key, value)
+
+    db.commit()
+    db.refresh(product_warehouse)
+    return product_warehouse
+
