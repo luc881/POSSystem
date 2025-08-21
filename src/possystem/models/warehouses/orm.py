@@ -17,8 +17,7 @@ class Warehouse(Base):
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
 
     branch: Mapped["Branch"] = relationship("Branch", back_populates="warehouses")
-    # product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="warehouse")
-    # product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="warehouse")
+    product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="warehouse")
     # sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="warehouse")
     # refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="warehouse")
     # purchases = relationship("Purchase", back_populates="warehouse")

@@ -50,3 +50,11 @@ CAN_CREATE_PRODUCT_CATEGORIES = [Depends(require_permission("productscategories.
 CAN_UPDATE_PRODUCT_CATEGORIES = [Depends(require_permission("productscategories.update"))]
 CAN_DELETE_PRODUCT_CATEGORIES = [Depends(require_permission("productscategories.delete"))]
 
+# Permissions for product warehouse operations
+CAN_READ_PRODUCT_WAREHOUSES = [Depends(require_permission("productwarehouses.read"))]
+CAN_CREATE_PRODUCT_WAREHOUSES = [Depends(require_permission("productwarehouses.create"))]
+CAN_UPDATE_PRODUCT_WAREHOUSES = [Depends(require_permission("productwarehouses.update"))]
+CAN_DELETE_PRODUCT_WAREHOUSES = [Depends(require_permission("productwarehouses.delete"))]
+
+
+

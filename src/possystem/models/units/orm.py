@@ -16,7 +16,7 @@ class Unit(Base):
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
 
-    # product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="unit")
+    product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="unit")
     # product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="unit")
 
 
