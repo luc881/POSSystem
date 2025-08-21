@@ -30,3 +30,41 @@ async def read_all(db: db_dependency):
     product_wallets = db.query(ProductWallet).all()
     return product_wallets
 
+@router.post(
+    "/",
+    response_model=ProductWalletResponse,
+    summary="Create a new product wallet",
+    description="Create a new product wallet with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_PRODUCT_WALLETS
+)
+async def create(
+    product_wallet: ProductWalletCreate,
+    db: db_dependency
+):
+    # Validate product exists
+    if not db.query(Product).filter_by(id=product_wallet.product_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product ID does not exist.")
+    # Validate unit exists
+    if not db.query(Unit).filter_by(id=product_wallet.unit_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unit ID does not exist.")
+    # Validate branch exists
+    if not db.query(Branch).filter_by(id=product_wallet.branch_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Branch ID does not exist.")
+
+
+    # Check for existing product-unit-branch-type_client combination
+    existing_pw = db.query(ProductWallet).filter_by(
+        product_id=product_wallet.product_id,
+        unit_id=product_wallet.unit_id,
+        branch_id=product_wallet.branch_id,
+        type_client=product_wallet.type_client
+    ).first()
+    if existing_pw:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product wallet with the same product, unit, branch, and client type already exists.")
+
+    new_product_wallet = ProductWallet(**product_wallet.model_dump())
+    db.add(new_product_wallet)
+    db.commit()
+    db.refresh(new_product_wallet)
+    return new_product_wallet
