@@ -127,3 +127,24 @@ async def update(
     db.commit()
     db.refresh(existing_wallet)
     return existing_wallet
+
+@router.delete(
+    "/{product_wallet_id}",
+    summary="Delete a product wallet",
+    description="Delete a product wallet by its ID.",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=CAN_DELETE_PRODUCT_WALLETS
+)
+async def delete(
+    product_wallet_id: int,
+    db: db_dependency
+):
+    product_wallet = db.query(ProductWallet).filter_by(id=product_wallet_id).first()
+    if not product_wallet:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product wallet not found.")
+
+    # Soft delete by setting deleted_at
+    product_wallet.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+
+    return {"detail": "Product wallet deleted successfully."}
