@@ -68,3 +68,62 @@ async def create(
     db.commit()
     db.refresh(new_product_wallet)
     return new_product_wallet
+
+@router.put(
+    "/{product_wallet_id}",
+    response_model=ProductWalletResponse,
+    summary="Update an existing product wallet",
+    description="Update the details of an existing product wallet.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_PRODUCT_WALLETS
+)
+async def update(
+    product_wallet_id: int,
+    product_wallet: ProductWalletUpdate,
+    db: db_dependency
+):
+    existing_wallet = db.query(ProductWallet).filter_by(id=product_wallet_id).first()
+    if not existing_wallet:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product wallet not found.")
+
+    # Validate product exists
+    if product_wallet.product_id is not None:
+        if not db.query(Product).filter_by(id=product_wallet.product_id).first():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product ID does not exist.")
+
+    # Validate unit exists
+    if product_wallet.unit_id is not None:
+        if not db.query(Unit).filter_by(id=product_wallet.unit_id).first():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unit ID does not exist.")
+
+    # Validate branch exists
+    if product_wallet.branch_id is not None:
+        if not db.query(Branch).filter_by(id=product_wallet.branch_id).first():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Branch ID does not exist.")
+
+    # Check for duplicates (only if keys are being updated)
+    if any([
+        product_wallet.product_id is not None and product_wallet.product_id != existing_wallet.product_id,
+        product_wallet.unit_id is not None and product_wallet.unit_id != existing_wallet.unit_id,
+        product_wallet.branch_id is not None and product_wallet.branch_id != existing_wallet.branch_id,
+        product_wallet.type_client is not None and product_wallet.type_client != existing_wallet.type_client,
+    ]):
+        duplicate_check = db.query(ProductWallet).filter_by(
+            product_id=product_wallet.product_id,
+            unit_id=product_wallet.unit_id,
+            branch_id=product_wallet.branch_id,
+            type_client=product_wallet.type_client
+        ).first()
+
+        if duplicate_check and duplicate_check.id != existing_wallet.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Product wallet with the same product, unit, branch, and client type already exists.")
+
+    # Update fields
+    for key, value in product_wallet.model_dump(exclude_unset=True).items():
+        setattr(existing_wallet, key, value)
+
+    existing_wallet.updated_at = datetime.now(timezone.utc)
+
+    db.commit()
+    db.refresh(existing_wallet)
+    return existing_wallet
