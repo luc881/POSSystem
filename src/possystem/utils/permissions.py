@@ -62,6 +62,12 @@ CAN_CREATE_PRODUCT_WALLETS = [Depends(require_permission("productwallets.create"
 CAN_UPDATE_PRODUCT_WALLETS = [Depends(require_permission("productwallets.update"))]
 CAN_DELETE_PRODUCT_WALLETS = [Depends(require_permission("productwallets.delete"))]
 
+# Permissions for product stock initial operations
+CAN_READ_PRODUCT_STOCK_INITIALS = [Depends(require_permission("productstockinitials.read"))]
+CAN_CREATE_PRODUCT_STOCK_INITIALS = [Depends(require_permission("productstockinitials.create"))]
+CAN_UPDATE_PRODUCT_STOCK_INITIALS = [Depends(require_permission("productstockinitials.update"))]
+CAN_DELETE_PRODUCT_STOCK_INITIALS = [Depends(require_permission("productstockinitials.delete"))]
+
 
 
 

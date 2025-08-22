@@ -41,9 +41,9 @@ class Unit(Base):
     # conversions_to: Mapped[list["Conversion"]] = relationship(
     #     "Conversion", back_populates="unit_end", foreign_keys="[Conversion.unit_end_id]"
     # )
-    # stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
-    #     "ProductStockInitial", back_populates="unit"
-    # )
+    stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
+        "ProductStockInitial", back_populates="unit"
+    )
     # sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
     #     "SaleDetailAttention", back_populates="unit"
     # )

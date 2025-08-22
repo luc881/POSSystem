@@ -23,6 +23,7 @@ from .products.orm import Product
 from .product_warehouses.orm import ProductWarehouse
 from .units.orm import Unit
 from .product_wallets.orm import ProductWallet
+from .product_stock_initials.orm import ProductStockInitial
 
 
 # when you have all coorect you can try

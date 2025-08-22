@@ -46,9 +46,9 @@ class Product(Base):
     # conversions: Mapped[list["Conversion"]] = relationship(
     #     "Conversion", back_populates="product"
     # )
-    # stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
-    #     "ProductStockInitial", back_populates="product"
-    # )
+    stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
+        "ProductStockInitial", back_populates="product"
+    )
     # sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
     #     "SaleDetailAttention", back_populates="product"
     # )
