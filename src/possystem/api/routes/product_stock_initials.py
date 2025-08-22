@@ -130,3 +130,23 @@ async def update(
     db.commit()
     db.refresh(existing_stock_initial)
     return existing_stock_initial
+
+@router.delete(
+    "/{product_stock_initial_id}",
+    summary="Delete a product stock initial",
+    description="Delete a product stock initial by its ID.",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=CAN_DELETE_PRODUCT_STOCK_INITIALS
+)
+async def delete(
+    product_stock_initial_id: int,
+    db: db_dependency
+):
+    existing_stock_initial = db.query(ProductStockInitial).filter_by(id=product_stock_initial_id).first()
+
+    if not existing_stock_initial:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product stock initial not found.")
+
+    db.delete(existing_stock_initial)
+    db.commit()
+    return {"detail": "Product stock initial deleted successfully."}
