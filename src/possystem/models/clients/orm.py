@@ -2,6 +2,7 @@ from sqlalchemy import String, BigInteger, SmallInteger, TIMESTAMP, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ...db.session import Base
+from datetime import datetime
 
 class Client(Base):
     __tablename__ = "clients"
@@ -28,13 +29,13 @@ class Client(Base):
     distrito: Mapped[str] = mapped_column(String(100), nullable=True)
     address: Mapped[str] = mapped_column(String(250), nullable=True)
 
-    created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
-    updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
-    deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
+    deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     gender: Mapped[str] = mapped_column(String(4), nullable=True)
 
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="clients")
     branch: Mapped["Branch"] = relationship("Branch", back_populates="clients")
-    sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="client")
-    refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="client")
+    # sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="client")
+    # refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="client")
