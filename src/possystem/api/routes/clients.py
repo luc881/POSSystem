@@ -28,3 +28,33 @@ router = APIRouter(
 async def read_all(db: db_dependency):
     clients = db.query(Client).all()
     return clients
+
+@router.post(
+    "/",
+    response_model=ClientResponse,
+    summary="Create a new client",
+    description="Create a new client with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_CLIENTS
+)
+async def create(
+    client: ClientCreate,
+    db: db_dependency
+):
+    # Validate user exists
+    if not db.query(User).filter_by(id=client.user_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User ID does not exist.")
+    # Validate branch exists
+    if not db.query(Branch).filter_by(id=client.branch_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Branch ID does not exist.")
+
+    # Check for existing document number
+    existing_client = db.query(Client).filter_by(n_document=client.n_document).first()
+    if existing_client:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Document number already exists.")
+
+    new_client = Client(**client.model_dump())
+    db.add(new_client)
+    db.commit()
+    db.refresh(new_client)
+    return new_client

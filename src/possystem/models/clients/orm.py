@@ -15,7 +15,7 @@ class Client(Base):
     email: Mapped[str] = mapped_column(String(250), nullable=True)
     type_client: Mapped[int] = mapped_column(SmallInteger, nullable=False)  # 1 = cliente final, 2 = empresa
     type_document: Mapped[str] = mapped_column(String(200), nullable=True)
-    n_document: Mapped[str] = mapped_column(String(100), nullable=True)
+    n_document: Mapped[str] = mapped_column(String(100), nullable=True, unique=True)
     birth_date: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=True)
     branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"), nullable=True)
