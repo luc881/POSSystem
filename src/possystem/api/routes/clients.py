@@ -97,3 +97,22 @@ async def update(
     db.commit()
     db.refresh(client)
     return client
+
+@router.delete(
+    "/{client_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a client",
+    description="Soft delete a client by setting its deleted_at timestamp.",
+    dependencies=CAN_DELETE_CLIENTS
+)
+async def delete(
+    client_id: int,
+    db: db_dependency
+):
+    client = db.query(Client).filter_by(id=client_id).first()
+    if not client:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Client not found.")
+
+    client.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    return
