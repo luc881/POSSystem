@@ -58,3 +58,42 @@ async def create(
     db.commit()
     db.refresh(new_client)
     return new_client
+
+@router.put(
+    "/{client_id}",
+    response_model=ClientResponse,
+    summary="Update an existing client",
+    description="Update the details of an existing client by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_CLIENTS)
+async def update(
+    client_id: int,
+    client_update: ClientUpdate,
+    db: db_dependency
+):
+    client = db.query(Client).filter_by(id=client_id).first()
+    if not client:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Client not found.")
+
+    # If n_document is being updated, check for uniqueness
+    if client_update.n_document and client_update.n_document != client.n_document:
+        existing_client = db.query(Client).filter_by(n_document=client_update.n_document).first()
+        if existing_client:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Document number already exists.")
+
+    # If user_id is being updated, validate the new user exists
+    if client_update.user_id and client_update.user_id != client.user_id:
+        if not db.query(User).filter_by(id=client_update.user_id).first():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User ID does not exist.")
+
+    # If branch_id is being updated, validate the new branch exists
+    if client_update.branch_id and client_update.branch_id != client.branch_id:
+        if not db.query(Branch).filter_by(id=client_update.branch_id).first():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Branch ID does not exist.")
+
+    for key, value in client_update.model_dump(exclude_unset=True).items():
+        setattr(client, key, value)
+
+    db.commit()
+    db.refresh(client)
+    return client
