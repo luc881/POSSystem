@@ -68,6 +68,12 @@ CAN_CREATE_PRODUCT_STOCK_INITIALS = [Depends(require_permission("productstockini
 CAN_UPDATE_PRODUCT_STOCK_INITIALS = [Depends(require_permission("productstockinitials.update"))]
 CAN_DELETE_PRODUCT_STOCK_INITIALS = [Depends(require_permission("productstockinitials.delete"))]
 
+# Permissions for client operations
+CAN_READ_CLIENTS = [Depends(require_permission("clients.read"))]
+CAN_CREATE_CLIENTS = [Depends(require_permission("clients.create"))]
+CAN_UPDATE_CLIENTS = [Depends(require_permission("clients.update"))]
+CAN_DELETE_CLIENTS = [Depends(require_permission("clients.delete"))]
+
 
 
 
