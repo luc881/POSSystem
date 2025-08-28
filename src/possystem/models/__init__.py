@@ -25,6 +25,7 @@ from .units.orm import Unit
 from .product_wallets.orm import ProductWallet
 from .product_stock_initials.orm import ProductStockInitial
 from .clients.orm import Client
+from .sales.orm import Sale
 
 
 # when you have all coorect you can try

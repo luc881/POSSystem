@@ -2,6 +2,7 @@ from sqlalchemy import String, BigInteger, SmallInteger, Double, TIMESTAMP, Fore
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ...db.session import Base
+from datetime import datetime
 
 class Sale(Base):
     __tablename__ = "sales"
@@ -18,12 +19,12 @@ class Sale(Base):
     state_payment: Mapped[int] = mapped_column(SmallInteger, nullable=False)  # 1 = pending, 2 = partial, 3 = complete
     debt: Mapped[float] = mapped_column(Double, nullable=True)
     paid_out: Mapped[float] = mapped_column(Double, nullable=True)  # paid or canceled
-    date_validation: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)  # sale date
-    date_pay_complete: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    date_validation: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)  # sale date
+    date_pay_complete: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
-    updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
-    deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
+    deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     state_delivery: Mapped[int] = mapped_column(SmallInteger, nullable=True)  # 1 = pending, 2 = partial, 3 = complete
     discount: Mapped[float] = mapped_column(Double, nullable=True)
 

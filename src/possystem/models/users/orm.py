@@ -30,7 +30,7 @@ class User(Base):
     role: Mapped["Role"] = relationship("Role", back_populates="users", lazy="selectin")
     branch: Mapped["Branch"] = relationship("Branch", back_populates="users", lazy="selectin")
     clients: Mapped[list["Client"]] = relationship("Client", back_populates="user")
-    # sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")
+    sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")
     # refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="user")
     # purchases = relationship("Purchase", back_populates="user")
     # delivered_purchase_details = relationship(
