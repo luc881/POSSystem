@@ -29,3 +29,27 @@ async def read_all(db: db_dependency):
     sales = db.query(Sale).all()
     return sales
 
+@router.post(
+    "/",
+    response_model=SaleResponse,
+    summary="Create a new sale",
+    description="Create a new sale with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_SALES
+)
+async def create(
+    sale: SaleCreate,
+    db: db_dependency
+):
+    # Validate user exists
+    if not db.query(User).filter_by(id=sale.user_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User ID does not exist.")
+    # Validate client exists
+    if sale.client_id and not db.query(Client).filter_by(id=sale.client_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Client ID does not exist.")
+
+    new_sale = Sale(**sale.model_dump())
+    db.add(new_sale)
+    db.commit()
+    db.refresh(new_sale)
+    return new_sale
