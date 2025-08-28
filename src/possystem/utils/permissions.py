@@ -74,6 +74,12 @@ CAN_CREATE_CLIENTS = [Depends(require_permission("clients.create"))]
 CAN_UPDATE_CLIENTS = [Depends(require_permission("clients.update"))]
 CAN_DELETE_CLIENTS = [Depends(require_permission("clients.delete"))]
 
+# Permissions for sales operations
+CAN_READ_SALES = [Depends(require_permission("sales.read"))]
+CAN_CREATE_SALES = [Depends(require_permission("sales.create"))]
+CAN_UPDATE_SALES = [Depends(require_permission("sales.update"))]
+CAN_DELETE_SALES = [Depends(require_permission("sales.delete"))]
+
 
 
 

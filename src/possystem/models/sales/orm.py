@@ -31,6 +31,6 @@ class Sale(Base):
     user: Mapped["User"] = relationship("User", back_populates="sales")
     client: Mapped["Client"] = relationship("Client", back_populates="sales")
     branch: Mapped["Branch"] = relationship("Branch", back_populates="sales")
-    sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="sale")
-    sale_payments: Mapped[list["SalePayment"]] = relationship("SalePayment", back_populates="sale")
+    # sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="sale")
+    # sale_payments: Mapped[list["SalePayment"]] = relationship("SalePayment", back_populates="sale")
 
