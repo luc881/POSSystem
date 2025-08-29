@@ -85,3 +85,22 @@ async def update(
     db.commit()
     db.refresh(existing_sale)
     return existing_sale
+
+@router.delete(
+    "/{sale_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a sale",
+    description="Delete a sale by its ID.",
+    dependencies=CAN_DELETE_SALES
+)
+async def delete(
+    sale_id: int,
+    db: db_dependency
+):
+    existing_sale = db.query(Sale).filter_by(id=sale_id).first()
+    if not existing_sale:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found.")
+
+    existing_sale.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    return
