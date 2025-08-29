@@ -53,3 +53,35 @@ async def create(
     db.commit()
     db.refresh(new_sale)
     return new_sale
+
+@router.put(
+    "/{sale_id}",
+    response_model=SaleResponse,
+    summary="Update a sale",
+    description="Update an existing sale with the provided details.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_SALES
+)
+async def update(
+    sale_id: int,
+    sale: SaleUpdate,
+    db: db_dependency
+):
+    existing_sale = db.query(Sale).filter_by(id=sale_id).first()
+    if not existing_sale:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found.")
+
+    # Validate user exists
+    if sale.user_id and not db.query(User).filter_by(id=sale.user_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User ID does not exist.")
+    # Validate client exists
+    if sale.client_id and not db.query(Client).filter_by(id=sale.client_id).first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Client ID does not exist.")
+
+    for key, value in sale.model_dump(exclude_unset=True).items():
+        setattr(existing_sale, key, value)
+    existing_sale.updated_at = datetime.now(timezone.utc)
+
+    db.commit()
+    db.refresh(existing_sale)
+    return existing_sale
