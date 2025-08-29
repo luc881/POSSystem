@@ -48,3 +48,23 @@ async def create(sale_payment: SalePaymentCreate, db: db_dependency):
     db.commit()
     db.refresh(new_sale_payment)
     return new_sale_payment
+
+@router.put(
+    "/{sale_payment_id}",
+    response_model=SalePaymentResponse,
+    summary="Update a sale payment",
+    description="Update the details of an existing sale payment by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_SALE_PAYMENTS
+)
+async def update(sale_payment_id: int, sale_payment: SalePaymentUpdate, db: db_dependency):
+    existing_sale_payment = db.query(SalePayment).filter(SalePayment.id == sale_payment_id, SalePayment.deleted_at.is_(None)).first()
+    if not existing_sale_payment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale payment not found")
+
+    for key, value in sale_payment.model_dump(exclude_unset=True).items():
+        setattr(existing_sale_payment, key, value)
+
+    db.commit()
+    db.refresh(existing_sale_payment)
+    return existing_sale_payment
