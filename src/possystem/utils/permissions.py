@@ -80,6 +80,13 @@ CAN_CREATE_SALES = [Depends(require_permission("sales.create"))]
 CAN_UPDATE_SALES = [Depends(require_permission("sales.update"))]
 CAN_DELETE_SALES = [Depends(require_permission("sales.delete"))]
 
+# Permissions for sale payment operations
+CAN_READ_SALE_PAYMENTS = [Depends(require_permission("salepayments.read"))]
+CAN_CREATE_SALE_PAYMENTS = [Depends(require_permission("salepayments.create"))]
+CAN_UPDATE_SALE_PAYMENTS = [Depends(require_permission("salepayments.update"))]
+CAN_DELETE_SALE_PAYMENTS = [Depends(require_permission("salepayments.delete"))]
+
+
 
 
 
