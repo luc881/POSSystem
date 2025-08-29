@@ -68,3 +68,19 @@ async def update(sale_payment_id: int, sale_payment: SalePaymentUpdate, db: db_d
     db.commit()
     db.refresh(existing_sale_payment)
     return existing_sale_payment
+
+@router.delete(
+    "/{sale_payment_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a sale payment",
+    description="Soft delete a sale payment by its ID.",
+    dependencies=CAN_DELETE_SALE_PAYMENTS
+)
+async def delete(sale_payment_id: int, db: db_dependency):
+    existing_sale_payment = db.query(SalePayment).filter(SalePayment.id == sale_payment_id, SalePayment.deleted_at.is_(None)).first()
+    if not existing_sale_payment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale payment not found")
+
+    existing_sale_payment.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    return
