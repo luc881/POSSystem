@@ -28,3 +28,23 @@ router = APIRouter(
 async def read_all(db: db_dependency):
     sale_payments = db.query(SalePayment).all()
     return sale_payments
+
+@router.post(
+    "/",
+    response_model=SalePaymentResponse,
+    summary="Create a new sale payment",
+    description="Create a new sale payment with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_SALE_PAYMENTS
+)
+async def create(sale_payment: SalePaymentCreate, db: db_dependency):
+    # Check if the associated sale exists
+    sale = db.query(Sale).filter(Sale.id == sale_payment.sale_id).first()
+    if not sale:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated sale not found")
+
+    new_sale_payment = SalePayment(**sale_payment.model_dump())
+    db.add(new_sale_payment)
+    db.commit()
+    db.refresh(new_sale_payment)
+    return new_sale_payment
