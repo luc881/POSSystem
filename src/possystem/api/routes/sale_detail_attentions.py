@@ -114,3 +114,22 @@ async def update(id: int, sale_detail_attention: SaleDetailAttentionUpdate, db: 
     db.commit()
     db.refresh(existing_attention)
     return existing_attention
+
+
+@router.delete(
+    "/{id}",
+    response_model=SaleDetailAttentionResponse,
+    summary="Delete a sale detail attention",
+    description="Soft delete a sale detail attention by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_DELETE_SALE_DETAIL_ATTENTIONS
+)
+async def delete(id: int, db: db_dependency):
+    existing_attention = db.query(SaleDetailAttention).filter(SaleDetailAttention.id == id).first()
+    if not existing_attention:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale detail attention not found")
+
+    existing_attention.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(existing_attention)
+    return existing_attention
