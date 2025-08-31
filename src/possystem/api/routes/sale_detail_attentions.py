@@ -67,3 +67,50 @@ async def create(sale_detail_attention: SaleDetailAttentionCreate, db: db_depend
     db.commit()
     db.refresh(new_sale_detail_attention)
     return new_sale_detail_attention
+
+
+@router.put(
+    "/{id}",
+    response_model=SaleDetailAttentionResponse,
+    summary="Update an existing sale detail attention",
+    description="Update the details of an existing sale detail attention by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_SALE_DETAIL_ATTENTIONS
+)
+async def update(id: int, sale_detail_attention: SaleDetailAttentionUpdate, db: db_dependency):
+    existing_attention = db.query(SaleDetailAttention).filter(SaleDetailAttention.id == id).first()
+    if not existing_attention:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale detail attention not found")
+
+    # # If updating sale_detail_id, check if the associated sale detail exists
+    # if sale_detail_attention.sale_detail_id is not None:
+    #     sale_detail = db.query(SaleDetail).filter(SaleDetail.id == sale_detail_attention.sale_detail_id).first()
+    #     if not sale_detail:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated sale detail not found")
+
+    # If updating product_id, check if the associated product exists
+    if sale_detail_attention.product_id is not None:
+        product = db.query(Product).filter(Product.id == sale_detail_attention.product_id).first()
+        if not product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
+
+    # If updating warehouse_id, check if the associated warehouse exists
+    if sale_detail_attention.warehouse_id is not None:
+        warehouse = db.query(Warehouse).filter(Warehouse.id == sale_detail_attention.warehouse_id).first()
+        if not warehouse:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+
+    # If updating unit_id, check if the associated unit exists
+    if sale_detail_attention.unit_id is not None:
+        unit = db.query(Unit).filter(Unit.id == sale_detail_attention.unit_id).first()
+        if not unit:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+
+    for var, value in vars(sale_detail_attention).items():
+        if value is not None:
+            setattr(existing_attention, var, value)
+
+    existing_attention.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(existing_attention)
+    return existing_attention
