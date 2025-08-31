@@ -12,6 +12,7 @@ from ...models.sales.orm import Sale
 from ...models.warehouses.orm import Warehouse
 from ...models.products.orm import Product
 from ...models.units.orm import Unit
+from ...models.product_categories.orm import ProductCategory
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -54,7 +55,7 @@ async def create(sale_detail: SaleDetailCreate, db: db_dependency):
 
     # Check if the associated product category exists (if provided)
     if sale_detail.product_category_id is not None:
-        product_category = db.query(Product).filter(Product.id == sale_detail.product_category_id).first()
+        product_category = db.query(ProductCategory).filter(ProductCategory.id == sale_detail.product_category_id).first()
         if not product_category:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product category not found")
 
@@ -75,3 +76,47 @@ async def create(sale_detail: SaleDetailCreate, db: db_dependency):
     db.commit()
     db.refresh(new_sale_detail)
     return new_sale_detail
+
+@router.put(
+    "/{sale_detail_id}",
+    response_model=SaleDetailResponse,
+    summary="Update a sale detail",
+    description="Update the details of an existing sale detail by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_SALE_DETAILS
+)
+async def update(sale_detail_id: int, sale_detail: SaleDetailUpdate, db: db_dependency):
+    existing_sale_detail = db.query(SaleDetail).filter(SaleDetail.id == sale_detail_id, SaleDetail.deleted_at.is_(None)).first()
+    if not existing_sale_detail:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale detail not found")
+
+    # If product_id is being updated, check if the new product exists
+    if sale_detail.product_id is not None:
+        product = db.query(Product).filter(Product.id == sale_detail.product_id).first()
+        if not product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
+
+    # If product_category_id is being updated, check if the new product category exists
+    if sale_detail.product_category_id is not None:
+        product_category = db.query(ProductCategory).filter(ProductCategory.id == sale_detail.product_category_id).first()
+        if not product_category:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product category not found")
+
+    # If warehouse_id is being updated, check if the new warehouse exists
+    if sale_detail.warehouse_id is not None:
+        warehouse = db.query(Warehouse).filter(Warehouse.id == sale_detail.warehouse_id).first()
+        if not warehouse:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+
+    # If unit_id is being updated, check if the new unit exists
+    if sale_detail.unit_id is not None:
+        unit = db.query(Unit).filter(Unit.id == sale_detail.unit_id).first()
+        if not unit:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+
+    for key, value in sale_detail.model_dump(exclude_unset=True).items():
+        setattr(existing_sale_detail, key, value)
+
+    db.commit()
+    db.refresh(existing_sale_detail)
+    return existing_sale_detail
