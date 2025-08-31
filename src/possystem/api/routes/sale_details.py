@@ -20,3 +20,15 @@ router = APIRouter(
     prefix="/saledetails",
     tags=["Sale Details"]
 )
+
+@router.get(
+    "/",
+    response_model=list[SaleDetailResponse],
+    summary="List all sale details",
+    description="Retrieve all sale details currently stored in the database.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_READ_SALE_DETAILS
+)
+async def read_all(db: db_dependency):
+    sale_details = db.query(SaleDetail).all()
+    return sale_details
