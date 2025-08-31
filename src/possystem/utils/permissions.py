@@ -92,6 +92,12 @@ CAN_CREATE_SALE_DETAILS = [Depends(require_permission("saledetails.create"))]
 CAN_UPDATE_SALE_DETAILS = [Depends(require_permission("saledetails.update"))]
 CAN_DELETE_SALE_DETAILS = [Depends(require_permission("saledetails.delete"))]
 
+# Permissions for sale detail attention operations
+CAN_READ_SALE_DETAIL_ATTENTIONS = [Depends(require_permission("saledetailattentions.read"))]
+CAN_CREATE_SALE_DETAIL_ATTENTIONS = [Depends(require_permission("saledetailattentions.create"))]
+CAN_UPDATE_SALE_DETAIL_ATTENTIONS = [Depends(require_permission("saledetailattentions.update"))]
+CAN_DELETE_SALE_DETAIL_ATTENTIONS = [Depends(require_permission("saledetailattentions.delete"))]
+
 
 
 

@@ -28,6 +28,7 @@ from .clients.orm import Client
 from .sales.orm import Sale
 from .sale_payments.orm import SalePayment
 from .sale_details.orm import SaleDetail
+from .sale_details_attentions.orm import SaleDetailAttention
 
 
 # when you have all coorect you can try
