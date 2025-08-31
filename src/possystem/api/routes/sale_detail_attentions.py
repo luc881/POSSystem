@@ -32,3 +32,38 @@ async def read_all(db: db_dependency):
     sale_detail_attentions = db.query(SaleDetailAttention).all()
     return sale_detail_attentions
 
+
+@router.post(
+    "/",
+    response_model=SaleDetailAttentionResponse,
+    summary="Create a new sale detail attention",
+    description="Create a new sale detail attention with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_SALE_DETAIL_ATTENTIONS
+)
+async def create(sale_detail_attention: SaleDetailAttentionCreate, db: db_dependency):
+    # Check if the associated sale detail exists
+    sale_detail = db.query(SaleDetail).filter(SaleDetail.id == sale_detail_attention.sale_detail_id).first()
+    if not sale_detail:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated sale detail not found")
+
+    # Check if the associated product exists
+    product = db.query(Product).filter(Product.id == sale_detail_attention.product_id).first()
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
+
+    # Check if the associated warehouse exists
+    warehouse = db.query(Warehouse).filter(Warehouse.id == sale_detail_attention.warehouse_id).first()
+    if not warehouse:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+
+    # Check if the associated unit exists
+    unit = db.query(Unit).filter(Unit.id == sale_detail_attention.unit_id).first()
+    if not unit:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+
+    new_sale_detail_attention = SaleDetailAttention(**sale_detail_attention.model_dump())
+    db.add(new_sale_detail_attention)
+    db.commit()
+    db.refresh(new_sale_detail_attention)
+    return new_sale_detail_attention
