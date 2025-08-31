@@ -20,7 +20,7 @@ class Unit(Base):
     product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="unit")
 
 
-    # refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="unit")
+    refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="unit")
     # purchase_details = relationship("PurchaseDetail", back_populates="unit")
     # transport_details: Mapped[list["TransportDetail"]] = relationship(
     #     "TransportDetail", back_populates="unit"

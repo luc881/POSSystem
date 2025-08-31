@@ -98,6 +98,11 @@ CAN_CREATE_SALE_DETAIL_ATTENTIONS = [Depends(require_permission("saledetailatten
 CAN_UPDATE_SALE_DETAIL_ATTENTIONS = [Depends(require_permission("saledetailattentions.update"))]
 CAN_DELETE_SALE_DETAIL_ATTENTIONS = [Depends(require_permission("saledetailattentions.delete"))]
 
+# Permissions for refund product operations
+CAN_READ_REFUND_PRODUCTS = [Depends(require_permission("refundproducts.read"))]
+CAN_CREATE_REFUND_PRODUCTS = [Depends(require_permission("refundproducts.create"))]
+CAN_UPDATE_REFUND_PRODUCTS = [Depends(require_permission("refundproducts.update"))]
+CAN_DELETE_REFUND_PRODUCTS = [Depends(require_permission("refundproducts.delete"))]
 
 
 

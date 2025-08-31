@@ -31,7 +31,7 @@ class SaleDetail(Base):
     product: Mapped["Product"] = relationship("Product", back_populates="sale_details")
     product_category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="sale_details")
     warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="sale_details")
-    # refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="sale_detail")
+    refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="sale_detail")
     attentions: Mapped[list["SaleDetailAttention"]] = relationship(
         "SaleDetailAttention", back_populates="sale_detail"
     )

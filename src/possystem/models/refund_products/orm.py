@@ -2,6 +2,7 @@ from sqlalchemy import BigInteger, Double, SmallInteger, TIMESTAMP, ForeignKey, 
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ...db.session import Base
+from datetime import datetime
 
 class RefundProduct(Base):
     __tablename__ = "refund_products"
@@ -17,11 +18,11 @@ class RefundProduct(Base):
     state: Mapped[int] = mapped_column(SmallInteger, nullable=False, comment="1=Pending, 2=Review, 3=Repaired, 4=Discarded")
     description: Mapped[str] = mapped_column(Text, nullable=True)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=True)
-    resolution_date: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    resolution_date: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     description_resolution: Mapped[str] = mapped_column(Text, nullable=True)
-    created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
-    updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
-    deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
+    deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     state_clone: Mapped[int] = mapped_column(SmallInteger, nullable=True)
 
     # Relationships
