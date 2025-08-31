@@ -18,5 +18,5 @@ class ProductCategory(Base):
 
     # Relationship with products
     products: Mapped[list["Product"]] = relationship("Product", back_populates="category")
-    # sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="product_category")
+    sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="product_category")
 
