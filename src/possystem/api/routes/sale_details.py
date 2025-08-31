@@ -120,3 +120,20 @@ async def update(sale_detail_id: int, sale_detail: SaleDetailUpdate, db: db_depe
     db.commit()
     db.refresh(existing_sale_detail)
     return existing_sale_detail
+
+
+@router.delete(
+    "/{sale_detail_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a sale detail",
+    description="Soft delete a sale detail by its ID.",
+    dependencies=CAN_DELETE_SALE_DETAILS
+)
+async def delete(sale_detail_id: int, db: db_dependency):
+    existing_sale_detail = db.query(SaleDetail).filter(SaleDetail.id == sale_detail_id, SaleDetail.deleted_at.is_(None)).first()
+    if not existing_sale_detail:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale detail not found")
+
+    existing_sale_detail.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    return
