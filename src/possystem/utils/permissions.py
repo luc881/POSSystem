@@ -104,6 +104,12 @@ CAN_CREATE_REFUND_PRODUCTS = [Depends(require_permission("refundproducts.create"
 CAN_UPDATE_REFUND_PRODUCTS = [Depends(require_permission("refundproducts.update"))]
 CAN_DELETE_REFUND_PRODUCTS = [Depends(require_permission("refundproducts.delete"))]
 
+# Permissions for supplier operations
+CAN_READ_SUPPLIERS = [Depends(require_permission("suppliers.read"))]
+CAN_CREATE_SUPPLIERS = [Depends(require_permission("suppliers.create"))]
+CAN_UPDATE_SUPPLIERS = [Depends(require_permission("suppliers.update"))]
+CAN_DELETE_SUPPLIERS = [Depends(require_permission("suppliers.delete"))]
+
 
 
 
