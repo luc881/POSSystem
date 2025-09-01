@@ -51,3 +51,33 @@ async def create(supplier: SupplierCreate, db: db_dependency):
     db.commit()
     db.refresh(new_supplier)
     return new_supplier
+
+@router.put(
+    "/{supplier_id}",
+    response_model=SupplierResponse,
+    summary="Update an existing supplier",
+    description="Update the details of an existing supplier by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_SUPPLIERS
+)
+async def update(supplier_id: int, supplier: SupplierUpdate, db: db_dependency):
+    existing_supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    if not existing_supplier:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Supplier not found")
+
+    # Check for unique constraints (e.g., email, ruc) if they are being updated
+    if supplier.email and supplier.email != existing_supplier.email:
+        existing_email = db.query(Supplier).filter(Supplier.email == supplier.email).first()
+        if existing_email:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already in use")
+    if supplier.ruc and supplier.ruc != existing_supplier.ruc:
+        existing_ruc = db.query(Supplier).filter(Supplier.ruc == supplier.ruc).first()
+        if existing_ruc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="RUC already in use")
+
+    for key, value in supplier.model_dump(exclude_unset=True).items():
+        setattr(existing_supplier, key, value)
+    existing_supplier.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(existing_supplier)
+    return existing_supplier
