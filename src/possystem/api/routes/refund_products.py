@@ -23,3 +23,15 @@ router = APIRouter(
     prefix="/refundproducts",
     tags=["Refund Products"]
 )
+
+@router.get(
+    "/",
+    response_model=list[RefundProductResponse],
+    summary="List all refund products",
+    description="Retrieve all refund products currently stored in the database.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_READ_REFUND_PRODUCTS
+)
+async def read_all(db: db_dependency):
+    refund_products = db.query(RefundProduct).all()
+    return refund_products
