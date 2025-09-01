@@ -28,3 +28,26 @@ async def read_all(db: db_dependency):
     suppliers = db.query(Supplier).all()
     return suppliers
 
+@router.post(
+    "/",
+    response_model=SupplierResponse,
+    summary="Create a new supplier",
+    description="Create a new supplier with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_SUPPLIERS
+)
+async def create(supplier: SupplierCreate, db: db_dependency):
+    # Check for unique constraints (e.g., email, ruc)
+    if supplier.email:
+        existing_email = db.query(Supplier).filter(Supplier.email == supplier.email).first()
+        if existing_email:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already in use")
+    if supplier.ruc:
+        existing_ruc = db.query(Supplier).filter(Supplier.ruc == supplier.ruc).first()
+        if existing_ruc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="RUC already in use")
+    new_supplier = Supplier(**supplier.model_dump())
+    db.add(new_supplier)
+    db.commit()
+    db.refresh(new_supplier)
+    return new_supplier
