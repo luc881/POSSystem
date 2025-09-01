@@ -147,3 +147,20 @@ async def update(id: int, refund_product: RefundProductUpdate, db: db_dependency
     db.commit()
     db.refresh(existing_refund_product)
     return existing_refund_product
+
+
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a refund product",
+    description="Delete an existing refund product by its ID.",
+    dependencies=CAN_DELETE_REFUND_PRODUCTS
+)
+async def delete(id: int, db: db_dependency):
+    existing_refund_product = db.query(RefundProduct).filter(RefundProduct.id == id).first()
+    if not existing_refund_product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Refund product not found")
+
+    db.delete(existing_refund_product)
+    db.commit()
+    return
