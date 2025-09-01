@@ -20,7 +20,7 @@ class Warehouse(Base):
     product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="warehouse")
     sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="warehouse")
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="warehouse")
-    # purchases = relationship("Purchase", back_populates="warehouse")
+    purchases = relationship("Purchase", back_populates="warehouse")
     # origin_transports: Mapped[list["Transport"]] = relationship(
     #     "Transport",
     #     back_populates="warehouse_origin",

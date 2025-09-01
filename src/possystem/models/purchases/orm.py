@@ -2,6 +2,7 @@ from sqlalchemy import BigInteger, SmallInteger, String, Double, TIMESTAMP, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from ...db.session import Base
+from datetime import datetime
 
 class Purchase(Base):
     __tablename__ = "purchases"
@@ -19,9 +20,9 @@ class Purchase(Base):
     importe: Mapped[float] = mapped_column(Double)
     igv: Mapped[float] = mapped_column(Double)
     date_entrega: Mapped = mapped_column(TIMESTAMP(timezone=False))
-    created_at: Mapped = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
-    updated_at: Mapped = mapped_column(TIMESTAMP(timezone=False), onupdate=func.now())
-    deleted_at: Mapped = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
+    deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
 
     # Relationships
@@ -29,4 +30,4 @@ class Purchase(Base):
     branch = relationship("Branch", back_populates="purchases")
     user = relationship("User", back_populates="purchases")
     warehouse = relationship("Warehouse", back_populates="purchases")
-    details = relationship("PurchaseDetail", back_populates="purchase")
+    # details = relationship("PurchaseDetail", back_populates="purchase")
