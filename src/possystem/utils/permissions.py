@@ -110,6 +110,12 @@ CAN_CREATE_SUPPLIERS = [Depends(require_permission("suppliers.create"))]
 CAN_UPDATE_SUPPLIERS = [Depends(require_permission("suppliers.update"))]
 CAN_DELETE_SUPPLIERS = [Depends(require_permission("suppliers.delete"))]
 
+# Permissions for purchase operations
+CAN_READ_PURCHASES = [Depends(require_permission("purchases.read"))]
+CAN_CREATE_PURCHASES = [Depends(require_permission("purchases.create"))]
+CAN_UPDATE_PURCHASES = [Depends(require_permission("purchases.update"))]
+CAN_DELETE_PURCHASES = [Depends(require_permission("purchases.delete"))]
+
 
 
 
