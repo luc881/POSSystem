@@ -86,3 +86,64 @@ async def create(refund_product: RefundProductCreate, db: db_dependency):
     db.commit()
     db.refresh(new_refund_product)
     return new_refund_product
+
+
+@router.put(
+    "/{id}",
+    response_model=RefundProductResponse,
+    summary="Update an existing refund product",
+    description="Update the details of an existing refund product by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_REFUND_PRODUCTS
+)
+async def update(id: int, refund_product: RefundProductUpdate, db: db_dependency):
+    existing_refund_product = db.query(RefundProduct).filter(RefundProduct.id == id).first()
+    if not existing_refund_product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Refund product not found")
+
+    # If updating product_id, check if the associated product exists
+    if refund_product.product_id is not None:
+        product = db.query(Product).filter(Product.id == refund_product.product_id).first()
+        if not product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
+
+    # If updating unit_id, check if the associated unit exists
+    if refund_product.unit_id is not None:
+        unit = db.query(Unit).filter(Unit.id == refund_product.unit_id).first()
+        if not unit:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+
+    # If updating warehouse_id, check if the associated warehouse exists
+    if refund_product.warehouse_id is not None:
+        warehouse = db.query(Warehouse).filter(Warehouse.id == refund_product.warehouse_id).first()
+        if not warehouse:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+
+    # If updating sale_detail_id, check if the associated sale detail exists
+    if refund_product.sale_detail_id is not None:
+        sale_detail = db.query(SaleDetail).filter(SaleDetail.id == refund_product.sale_detail_id).first()
+        if not sale_detail:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated sale detail not found")
+
+    # If updating client_id, check if the associated client exists
+    if refund_product.client_id is not None:
+        client = db.query(Client).filter(Client.id == refund_product.client_id).first()
+        if not client:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated client not found")
+
+    # If updating user_id, check if the associated user exists
+    if refund_product.user_id is not None:
+        user = db.query(User).filter(User.id == refund_product.user_id).first()
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated user not found")
+
+    for key, value in refund_product.model_dump(exclude_unset=True).items():
+        setattr(existing_refund_product, key, value)
+    if refund_product.state is not None and refund_product.state in [3, 4]:
+        existing_refund_product.resolution_date = datetime.now(timezone.utc)
+    existing_refund_product.updated_at = datetime.now(timezone.utc)
+
+
+    db.commit()
+    db.refresh(existing_refund_product)
+    return existing_refund_product
