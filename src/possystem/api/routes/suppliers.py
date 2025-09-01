@@ -81,3 +81,19 @@ async def update(supplier_id: int, supplier: SupplierUpdate, db: db_dependency):
     db.commit()
     db.refresh(existing_supplier)
     return existing_supplier
+
+
+@router.delete(
+    "/{supplier_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a supplier",
+    description="Delete an existing supplier by its ID.",
+    dependencies=CAN_DELETE_SUPPLIERS
+)
+async def delete(supplier_id: int, db: db_dependency):
+    existing_supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    if not existing_supplier:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Supplier not found")
+    db.delete(existing_supplier)
+    db.commit()
+    return
