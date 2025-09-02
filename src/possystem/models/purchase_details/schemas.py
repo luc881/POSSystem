@@ -49,6 +49,7 @@ class PurchaseDetailCreate(PurchaseDetailBase):
 # Update schema
 # -----------------------
 class PurchaseDetailUpdate(BaseModel):
+    purchase_id: Optional[int] = None
     product_id: Optional[int] = None
     unit_id: Optional[int] = None
     quantity: Optional[float] = Field(None, gt=0)
