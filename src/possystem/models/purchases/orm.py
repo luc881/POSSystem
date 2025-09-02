@@ -30,4 +30,4 @@ class Purchase(Base):
     branch = relationship("Branch", back_populates="purchases")
     user = relationship("User", back_populates="purchases")
     warehouse = relationship("Warehouse", back_populates="purchases")
-    # details = relationship("PurchaseDetail", back_populates="purchase")
+    details = relationship("PurchaseDetail", back_populates="purchase")

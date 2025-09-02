@@ -21,7 +21,7 @@ class Unit(Base):
 
 
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="unit")
-    # purchase_details = relationship("PurchaseDetail", back_populates="unit")
+    purchase_details = relationship("PurchaseDetail", back_populates="unit")
     # transport_details: Mapped[list["TransportDetail"]] = relationship(
     #     "TransportDetail", back_populates="unit"
     # )
