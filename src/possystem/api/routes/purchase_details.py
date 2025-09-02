@@ -104,3 +104,20 @@ async def update(purchase_detail_id: int, purchase_detail: PurchaseDetailUpdate,
     db.commit()
     db.refresh(existing_purchase_detail)
     return existing_purchase_detail
+
+
+@router.delete(
+    "/{purchase_detail_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a purchase detail",
+    description="Delete an existing purchase detail by its ID.",
+    dependencies=CAN_DELETE_PURCHASE_DETAILS
+)
+async def delete(purchase_detail_id: int, db: db_dependency):
+    existing_purchase_detail = db.query(PurchaseDetail).filter(PurchaseDetail.id == purchase_detail_id).first()
+    if not existing_purchase_detail:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Purchase detail not found")
+
+    db.delete(existing_purchase_detail)
+    db.commit()
+    return None
