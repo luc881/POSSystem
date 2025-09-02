@@ -70,3 +70,48 @@ async def create(purchase: PurchaseCreate, db: db_dependency):
     db.commit()
     db.refresh(new_purchase)
     return new_purchase
+
+@router.put(
+    "/{purchase_id}",
+    response_model=PurchaseResponse,
+    summary="Update an existing purchase",
+    description="Update the details of an existing purchase by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_PURCHASES
+)
+async def update(purchase_id: int, purchase: PurchaseUpdate, db: db_dependency):
+    existing_purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
+    if not existing_purchase:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Purchase not found")
+
+    # Check if the associated user exists
+    if purchase.user_id is not None:
+        user = db.query(User).filter(User.id == purchase.user_id).first()
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated user not found")
+
+    # Check if the associated warehouse exists
+    if purchase.warehouse_id is not None:
+        warehouse = db.query(Warehouse).filter(Warehouse.id == purchase.warehouse_id).first()
+        if not warehouse:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+
+    # Check if the associated branch exists
+    if purchase.branch_id is not None:
+        branch = db.query(Branch).filter(Branch.id == purchase.branch_id).first()
+        if not branch:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated branch not found")
+
+    # Check if the associated supplier exists
+    if purchase.supplier_id is not None:
+        supplier = db.query(Supplier).filter(Supplier.id == purchase.supplier_id).first()
+        if not supplier:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated supplier not found")
+
+    for key, value in purchase.model_dump(exclude_unset=True).items():
+        setattr(existing_purchase, key, value)
+    existing_purchase.updated_at = datetime.now(timezone.utc)
+
+    db.commit()
+    db.refresh(existing_purchase)
+    return existing_purchase
