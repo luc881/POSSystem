@@ -115,3 +115,19 @@ async def update(purchase_id: int, purchase: PurchaseUpdate, db: db_dependency):
     db.commit()
     db.refresh(existing_purchase)
     return existing_purchase
+
+@router.delete(
+    "/{purchase_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a purchase",
+    description="Delete an existing purchase by its ID.",
+    dependencies=CAN_DELETE_PURCHASES
+)
+async def delete(purchase_id: int, db: db_dependency):
+    existing_purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
+    if not existing_purchase:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Purchase not found")
+
+    db.delete(existing_purchase)
+    db.commit()
+    return None
