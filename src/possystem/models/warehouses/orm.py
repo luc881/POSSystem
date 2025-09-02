@@ -21,16 +21,16 @@ class Warehouse(Base):
     sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="warehouse")
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="warehouse")
     purchases = relationship("Purchase", back_populates="warehouse")
-    # origin_transports: Mapped[list["Transport"]] = relationship(
-    #     "Transport",
-    #     back_populates="warehouse_origin",
-    #     foreign_keys="[Transport.warehouse_origin_id]"
-    # )
-    # destination_transports: Mapped[list["Transport"]] = relationship(
-    #     "Transport",
-    #     back_populates="warehouse_destination",
-    #     foreign_keys="[Transport.warehouse_destination_id]"
-    # )
+    origin_transports: Mapped[list["Transport"]] = relationship(
+        "Transport",
+        back_populates="warehouse_origin",
+        foreign_keys="[Transport.warehouse_origin_id]"
+    )
+    destination_transports: Mapped[list["Transport"]] = relationship(
+        "Transport",
+        back_populates="warehouse_destination",
+        foreign_keys="[Transport.warehouse_destination_id]"
+    )
     # conversions: Mapped[list["Conversion"]] = relationship(
     #     "Conversion", back_populates="warehouse"
     # )
