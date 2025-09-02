@@ -32,6 +32,7 @@ from .sale_details_attentions.orm import SaleDetailAttention
 from .refund_products.orm import RefundProduct
 from .suppliers.orm import Supplier
 from .purchases.orm import Purchase
+from .purchase_details.orm import PurchaseDetail
 
 
 # when you have all coorect you can try

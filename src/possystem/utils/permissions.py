@@ -116,6 +116,11 @@ CAN_CREATE_PURCHASES = [Depends(require_permission("purchases.create"))]
 CAN_UPDATE_PURCHASES = [Depends(require_permission("purchases.update"))]
 CAN_DELETE_PURCHASES = [Depends(require_permission("purchases.delete"))]
 
+# Permissions for purchase detail operations
+CAN_READ_PURCHASE_DETAILS = [Depends(require_permission("purchasedetails.read"))]
+CAN_CREATE_PURCHASE_DETAILS = [Depends(require_permission("purchasedetails.create"))]
+CAN_UPDATE_PURCHASE_DETAILS = [Depends(require_permission("purchasedetails.update"))]
+CAN_DELETE_PURCHASE_DETAILS = [Depends(require_permission("purchasedetails.delete"))]
 
 
 

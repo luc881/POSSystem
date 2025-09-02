@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .api.routes import permissions, roles, users, branches, auth, units, warehouses, product_categories, products, product_warehouses, product_wallets, product_stock_initials, clients, sales, sale_payments, sale_details, sale_detail_attentions, refund_products, suppliers, purchases
+from .api.routes import permissions, roles, users, branches, auth, units, warehouses, product_categories, products, product_warehouses, product_wallets, product_stock_initials, clients, sales, sale_payments, sale_details, sale_detail_attentions, refund_products, suppliers, purchases, purchase_details
 
 app = FastAPI()
 
@@ -33,3 +33,4 @@ app.include_router(sale_detail_attentions.router)
 app.include_router(refund_products.router)
 app.include_router(suppliers.router)
 app.include_router(purchases.router)
+app.include_router(purchase_details.router)
