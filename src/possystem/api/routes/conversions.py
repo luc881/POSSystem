@@ -71,3 +71,50 @@ async def create(conversion: ConversionCreate, db: db_dependency):
     db.commit()
     db.refresh(new_conversion)
     return new_conversion
+
+
+@router.put(
+    "/{conversion_id}",
+    response_model=ConversionResponse,
+    summary="Update a conversion",
+    description="Update the details of an existing conversion by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_UPDATE_CONVERSIONS
+)
+async def update(conversion_id: int, conversion_update: ConversionUpdate, db: db_dependency):
+    conversion = db.query(Conversion).filter(Conversion.id == conversion_id).first()
+    if not conversion:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversion not found")
+
+    if conversion_update.product_id is not None:
+        product = db.query(Product).filter(Product.id == conversion_update.product_id).first()
+        if not product:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
+
+    if conversion_update.warehouse_id is not None:
+        warehouse = db.query(Warehouse).filter(Warehouse.id == conversion_update.warehouse_id).first()
+        if not warehouse:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source warehouse not found")
+
+    if conversion_update.unit_start_id is not None:
+        unit_start = db.query(Unit).filter(Unit.id == conversion_update.unit_start_id).first()
+        if not unit_start:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Starting unit not found")
+
+    if conversion_update.unit_end_id is not None:
+        unit_end = db.query(Unit).filter(Unit.id == conversion_update.unit_end_id).first()
+        if not unit_end:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ending unit not found")
+
+    if conversion_update.user_id is not None:
+        user = db.query(User).filter(User.id == conversion_update.user_id).first()
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated user not found")
+
+    for key, value in conversion_update.model_dump(exclude_unset=True).items():
+        if value is not None:
+            setattr(conversion, key, value)
+
+    db.commit()
+    db.refresh(conversion)
+    return conversion
