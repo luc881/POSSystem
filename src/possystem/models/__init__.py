@@ -34,6 +34,7 @@ from POSSystem.src.possystem.models.refund_products.orm import RefundProduct
 from POSSystem.src.possystem.models.suppliers.orm import Supplier
 from POSSystem.src.possystem.models.purchases.orm import Purchase
 from POSSystem.src.possystem.models.purchase_details.orm import PurchaseDetail
+from POSSystem.src.possystem.models.conversions.orm import Conversion
 
 
 # when you have all coorect you can try

@@ -128,5 +128,11 @@ CAN_CREATE_TRANSPORTS = [Depends(require_permission("transports.create"))]
 CAN_UPDATE_TRANSPORTS = [Depends(require_permission("transports.update"))]
 CAN_DELETE_TRANSPORTS = [Depends(require_permission("transports.delete"))]
 
+# Permissions for conversion operations
+CAN_READ_CONVERSIONS = [Depends(require_permission("conversions.read"))]
+CAN_CREATE_CONVERSIONS = [Depends(require_permission("conversions.create"))]
+CAN_UPDATE_CONVERSIONS = [Depends(require_permission("conversions.update"))]
+CAN_DELETE_CONVERSIONS = [Depends(require_permission("conversions.delete"))]
+
 
 

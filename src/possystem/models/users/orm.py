@@ -33,7 +33,7 @@ class User(Base):
     sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="user")
     purchases = relationship("Purchase", back_populates="user")
-    transports: Mapped[list["Transport"]] = relationship("Transport", back_populates="user")
+    # transports: Mapped[list["Transport"]] = relationship("Transport", back_populates="user")
     # delivered_purchase_details = relationship(
     #     "PurchaseDetail",
     #     back_populates="user",
@@ -49,6 +49,6 @@ class User(Base):
     #     back_populates="user_departure",
     #     foreign_keys="[TransportDetail.user_departure_id]"
     # )
-    # conversions: Mapped[list["Conversion"]] = relationship(
-    #     "Conversion", back_populates="user"
-    # )
+    conversions: Mapped[list["Conversion"]] = relationship(
+        "Conversion", back_populates="user"
+    )

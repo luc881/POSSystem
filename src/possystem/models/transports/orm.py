@@ -26,17 +26,17 @@ class Transport(Base):
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
 
     # Relationships
-    user: Mapped["User"] = relationship("User", back_populates="transports")
-    warehouse_origin: Mapped["Warehouse"] = relationship(
-        "Warehouse",
-        back_populates="origin_transports",
-        foreign_keys=[warehouse_origin_id]
-    )
-    warehouse_destination: Mapped["Warehouse"] = relationship(
-        "Warehouse",
-        back_populates="destination_transports",
-        foreign_keys=[warehouse_destination_id]
-    )
+    # user: Mapped["User"] = relationship("User", back_populates="transports")
+    # warehouse_origin: Mapped["Warehouse"] = relationship(
+    #     "Warehouse",
+    #     back_populates="origin_transports",
+    #     foreign_keys=[warehouse_origin_id]
+    # )
+    # warehouse_destination: Mapped["Warehouse"] = relationship(
+    #     "Warehouse",
+    #     back_populates="destination_transports",
+    #     foreign_keys=[warehouse_destination_id]
+    # )
     # details: Mapped[list["TransportDetail"]] = relationship(
     #     "TransportDetail", back_populates="transport"
     # )
