@@ -31,3 +31,33 @@ router = APIRouter(
 async def read_all(db: db_dependency):
     transports = db.query(Transport).all()
     return transports
+
+@router.post(
+    "/",
+    response_model=TransportResponse,
+    summary="Create a new transport",
+    description="Create a new transport with the provided details.",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=CAN_CREATE_TRANSPORTS
+)
+async def create(transport: TransportCreate, db: db_dependency):
+    # Verify that the user exists
+    user = db.query(User).filter(User.id == transport.user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # Verify that the origin warehouse exists
+    origin_warehouse = db.query(Warehouse).filter(Warehouse.id == transport.warehouse_origin_id).first()
+    if not origin_warehouse:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Origin warehouse not found")
+
+    # Verify that the destination warehouse exists
+    destination_warehouse = db.query(Warehouse).filter(Warehouse.id == transport.warehouse_destination_id).first()
+    if not destination_warehouse:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Destination warehouse not found")
+
+    new_transport = Transport(**transport.model_dump())
+    db.add(new_transport)
+    db.commit()
+    db.refresh(new_transport)
+    return new_transport
