@@ -118,3 +118,19 @@ async def update(conversion_id: int, conversion_update: ConversionUpdate, db: db
     db.commit()
     db.refresh(conversion)
     return conversion
+
+@router.delete(
+    "/{conversion_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a conversion",
+    description="Soft delete a conversion by its ID.",
+    dependencies=CAN_DELETE_CONVERSIONS
+)
+async def delete(conversion_id: int, db: db_dependency):
+    conversion = db.query(Conversion).filter(Conversion.id == conversion_id).first()
+    if not conversion:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversion not found")
+
+    conversion.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    return
