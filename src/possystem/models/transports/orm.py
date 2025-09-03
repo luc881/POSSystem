@@ -1,11 +1,13 @@
 from sqlalchemy import String, BigInteger, Integer, Double, Text, TIMESTAMP, ForeignKey
 from sqlalchemy.sql import func
-from POSSystem.src.possystem.db.session import Base
+from ...db.session import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
+
 class Transport(Base):
     __tablename__ = "transports"
+
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     warehouse_origin_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"), nullable=False)

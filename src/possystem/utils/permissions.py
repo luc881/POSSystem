@@ -122,5 +122,11 @@ CAN_CREATE_PURCHASE_DETAILS = [Depends(require_permission("purchasedetails.creat
 CAN_UPDATE_PURCHASE_DETAILS = [Depends(require_permission("purchasedetails.update"))]
 CAN_DELETE_PURCHASE_DETAILS = [Depends(require_permission("purchasedetails.delete"))]
 
+# Permissions for transport operations
+CAN_READ_TRANSPORTS = [Depends(require_permission("transports.read"))]
+CAN_CREATE_TRANSPORTS = [Depends(require_permission("transports.create"))]
+CAN_UPDATE_TRANSPORTS = [Depends(require_permission("transports.update"))]
+CAN_DELETE_TRANSPORTS = [Depends(require_permission("transports.delete"))]
+
 
 

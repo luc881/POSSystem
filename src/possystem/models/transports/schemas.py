@@ -134,3 +134,5 @@ class TransportSearchParams(BaseModel):
     departure_date_to: Optional[datetime] = None
     delivery_date_from: Optional[datetime] = None
     delivery_date_to: Optional[datetime] = None
+
+
