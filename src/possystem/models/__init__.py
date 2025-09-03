@@ -12,29 +12,29 @@ BranchResponse.model_rebuild()
 UserResponse.model_rebuild()
 UserDetailsResponse.model_rebuild()
 
-# --- Import ORM models ---
-from POSSystem.src.possystem.models.transports.orm import Transport
-from POSSystem.src.possystem.models.users.orm import User
-from POSSystem.src.possystem.models.roles.orm import Role
-from POSSystem.src.possystem.models.permissions.orm import Permission
-from POSSystem.src.possystem.models.branches.orm import Branch
-from POSSystem.src.possystem.models.product_categories.orm import ProductCategory
-from POSSystem.src.possystem.models.warehouses.orm import Warehouse
-from POSSystem.src.possystem.models.products.orm import Product
-from POSSystem.src.possystem.models.product_warehouses.orm import ProductWarehouse
-from POSSystem.src.possystem.models.units.orm import Unit
-from POSSystem.src.possystem.models.product_wallets.orm import ProductWallet
-from POSSystem.src.possystem.models.product_stock_initials.orm import ProductStockInitial
-from POSSystem.src.possystem.models.clients.orm import Client
-from POSSystem.src.possystem.models.sales.orm import Sale
-from POSSystem.src.possystem.models.sale_payments.orm import SalePayment
-from POSSystem.src.possystem.models.sale_details.orm import SaleDetail
-from POSSystem.src.possystem.models.sale_details_attentions.orm import SaleDetailAttention
-from POSSystem.src.possystem.models.refund_products.orm import RefundProduct
-from POSSystem.src.possystem.models.suppliers.orm import Supplier
-from POSSystem.src.possystem.models.purchases.orm import Purchase
-from POSSystem.src.possystem.models.purchase_details.orm import PurchaseDetail
-from POSSystem.src.possystem.models.conversions.orm import Conversion
+# Import ORM models correctly with relative paths
+from .transports.orm import Transport
+from .users.orm import User
+from .roles.orm import Role
+from .permissions.orm import Permission
+from .branches.orm import Branch
+from .product_categories.orm import ProductCategory
+from .warehouses.orm import Warehouse
+from .products.orm import Product
+from .product_warehouses.orm import ProductWarehouse
+from .units.orm import Unit
+from .product_wallets.orm import ProductWallet
+from .product_stock_initials.orm import ProductStockInitial
+from .clients.orm import Client
+from .sales.orm import Sale
+from .sale_payments.orm import SalePayment
+from .sale_details.orm import SaleDetail
+from .sale_details_attentions.orm import SaleDetailAttention
+from .refund_products.orm import RefundProduct
+from .suppliers.orm import Supplier
+from .purchases.orm import Purchase
+from .purchase_details.orm import PurchaseDetail
+from .conversions.orm import Conversion
 
 
 # when you have all coorect you can try
