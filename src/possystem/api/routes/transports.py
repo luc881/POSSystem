@@ -97,3 +97,21 @@ async def update(transport_id: int, transport: TransportUpdate, db: db_dependenc
     db.commit()
     db.refresh(existing_transport)
     return existing_transport
+
+
+@router.delete(
+    "/{transport_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a transport",
+    description="Delete an existing transport by its ID.",
+    dependencies=CAN_DELETE_TRANSPORTS
+)
+async def delete(transport_id: int, db: db_dependency):
+    existing_transport = db.query(Transport).filter(Transport.id == transport_id).first()
+    if not existing_transport:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transport not found")
+
+    # Soft delete by setting deleted_at timestamp
+    existing_transport.deleted_at = datetime.now(timezone.utc)
+    db.commit()
+    return
