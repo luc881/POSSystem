@@ -35,7 +35,7 @@ from .suppliers.orm import Supplier
 from .purchases.orm import Purchase
 from .purchase_details.orm import PurchaseDetail
 from .conversions.orm import Conversion
-
+from .product_batch.orm import ProductBatch
 
 # when you have all coorect you can try
 # # src/possystem/models/__init__.py

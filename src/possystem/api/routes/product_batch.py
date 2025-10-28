@@ -15,3 +15,13 @@ router = APIRouter(
     prefix="/productsbatches",
     tags=["Products Batches"]
 )
+
+@router.get("/", response_model=list[ProductBatchResponse],
+            summary="List all product batches",
+            description="Retrieve all product batches currently stored in the database.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_PRODUCT_BATCHES)
+def read_all_product_batches(db: db_dependency):
+    product_batches = db.query(ProductBatch).all()
+    return product_batches
+
