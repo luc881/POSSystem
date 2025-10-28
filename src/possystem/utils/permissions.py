@@ -134,5 +134,10 @@ CAN_CREATE_CONVERSIONS = [Depends(require_permission("conversions.create"))]
 CAN_UPDATE_CONVERSIONS = [Depends(require_permission("conversions.update"))]
 CAN_DELETE_CONVERSIONS = [Depends(require_permission("conversions.delete"))]
 
+# Permissions for product batch operations
+CAN_READ_PRODUCT_BATCHES = [Depends(require_permission("productbatches.read"))]
+CAN_CREATE_PRODUCT_BATCHES = [Depends(require_permission("productbatches.create"))]
+CAN_UPDATE_PRODUCT_BATCHES = [Depends(require_permission("productbatches.update"))]
+CAN_DELETE_PRODUCT_BATCHES = [Depends(require_permission("productbatches.delete"))]
 
 
