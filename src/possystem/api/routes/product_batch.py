@@ -25,3 +25,15 @@ def read_all_product_batches(db: db_dependency):
     product_batches = db.query(ProductBatch).all()
     return product_batches
 
+@router.post("/", response_model=ProductBatchResponse,
+             summary="Create a new product batch",
+             description="Create a new product batch with the provided details.",
+             status_code=status.HTTP_201_CREATED,
+             dependencies=CAN_CREATE_PRODUCT_BATCHES)
+def create_product_batch(product_batch: ProductBatchCreate, db: db_dependency):
+    new_product_batch = ProductBatch(**product_batch.model_dump())
+    db.add(new_product_batch)
+    db.commit()
+    db.refresh(new_product_batch)
+    return new_product_batch
+
