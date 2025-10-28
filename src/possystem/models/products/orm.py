@@ -52,3 +52,6 @@ class Product(Base):
     sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
         "SaleDetailAttention", back_populates="product"
     )
+    batches: Mapped[list["ProductBatch"]] = relationship(
+        "ProductBatch", back_populates="product", cascade="all, delete-orphan"
+    )
