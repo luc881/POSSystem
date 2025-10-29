@@ -15,31 +15,31 @@ def seed_roles(db: Session):
             "*"
         ],
 
-        "inventory_manager": [  # Encargado de inventario / almacén
-            "products.*",
-            "productscategories.*",
-            "warehouses.*",
-            "productwarehouses.*",
-            "productstockinitials.*",
-            "suppliers.*",
-            "purchases.*",
-            "purchasedetails.*",
-            "conversions.*",
-        ],
-
-        "seller": [  # Vendedor / cajero
-            "sales.*",
-            "salepayments.*",
-            "saledetails.*",
-            "saledetailattentions.*",
-            "clients.*",
-            "refundproducts.*",
-            "products.read",
-        ],
-
-        "viewer": [  # Rol de solo lectura
-            "*.read",
-        ],
+        # "inventory_manager": [  # Encargado de inventario / almacén
+        #     "products.*",
+        #     "productscategories.*",
+        #     "warehouses.*",
+        #     "productwarehouses.*",
+        #     "productstockinitials.*",
+        #     "suppliers.*",
+        #     "purchases.*",
+        #     "purchasedetails.*",
+        #     "conversions.*",
+        # ],
+        #
+        # "seller": [  # Vendedor / cajero
+        #     "sales.*",
+        #     "salepayments.*",
+        #     "saledetails.*",
+        #     "saledetailattentions.*",
+        #     "clients.*",
+        #     "refundproducts.*",
+        #     "products.read",
+        # ],
+        #
+        # "viewer": [  # Rol de solo lectura
+        #     "*.read",
+        # ],
     }
 
     created_count = 0

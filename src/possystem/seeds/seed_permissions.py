@@ -70,6 +70,9 @@ PERMISSIONS = [
 
     # Conversions
     "conversions.read", "conversions.create", "conversions.update", "conversions.delete",
+
+    # Product batches
+    "productbatches.read", "productbatches.create", "productbatches.update", "productbatches.delete",
 ]
 
 
