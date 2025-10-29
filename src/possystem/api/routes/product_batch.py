@@ -70,4 +70,18 @@ def update_product_batch(product_batch_id: int, product_batch: ProductBatchUpdat
     db.refresh(existing_product_batch)
     return existing_product_batch
 
-
+@router.delete("/{product_batch_id}",
+               summary="Delete a product batch",
+               description="Delete an existing product batch by its ID.",
+               status_code=status.HTTP_204_NO_CONTENT,
+               dependencies=CAN_DELETE_PRODUCT_BATCHES)
+def delete_product_batch(product_batch_id: int, db: db_dependency):
+    existing_product_batch = db.query(ProductBatch).filter(ProductBatch.id == product_batch_id).first()
+    if not existing_product_batch:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product batch not found."
+        )
+    db.delete(existing_product_batch)
+    db.commit()
+    return {"detail": "Product batch deleted successfully"}
