@@ -45,3 +45,29 @@ def create_product_batch(product_batch: ProductBatchCreate, db: db_dependency):
     db.refresh(new_product_batch)
     return new_product_batch
 
+@router.put("/{product_batch_id}", response_model=ProductBatchResponse,
+            summary="Update an existing product batch",
+            description="Update the details of an existing product batch.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_UPDATE_PRODUCT_BATCHES)
+def update_product_batch(product_batch_id: int, product_batch: ProductBatchUpdate, db: db_dependency):
+    # Buscar el batch existente
+    existing_product_batch = db.query(ProductBatch).filter(ProductBatch.id == product_batch_id).first()
+    if not existing_product_batch:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product batch not found."
+        )
+
+    # ✅ Ya no verificamos product_id porque el lote ya tiene su producto asociado
+    # (solo si quisieras cambiar el producto del lote, deberías incluir product_id en el schema y aquí validar)
+
+    # Actualizar campos
+    for key, value in product_batch.model_dump(exclude_unset=True).items():
+        setattr(existing_product_batch, key, value)
+
+    db.commit()
+    db.refresh(existing_product_batch)
+    return existing_product_batch
+
+
