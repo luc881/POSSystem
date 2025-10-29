@@ -6,7 +6,7 @@ from starlette import status
 from ...models.permissions.orm import Permission
 from ...utils.permissions import CAN_READ_PRODUCT_BATCHES, CAN_CREATE_PRODUCT_BATCHES, CAN_UPDATE_PRODUCT_BATCHES, CAN_DELETE_PRODUCT_BATCHES
 from ...models.product_batch.orm import ProductBatch
-from ...models.product_batch.schmas import ProductBatchCreate, ProductBatchResponse, ProductBatchUpdate, ProductBatchDetailsResponse
+from ...models.product_batch.schemas import ProductBatchCreate, ProductBatchResponse, ProductBatchUpdate, ProductBatchDetailsResponse
 from ...models.products.orm import Product
 
 
@@ -51,7 +51,6 @@ def create_product_batch(product_batch: ProductBatchCreate, db: db_dependency):
             status_code=status.HTTP_200_OK,
             dependencies=CAN_UPDATE_PRODUCT_BATCHES)
 def update_product_batch(product_batch_id: int, product_batch: ProductBatchUpdate, db: db_dependency):
-    # Buscar el batch existente
     existing_product_batch = db.query(ProductBatch).filter(ProductBatch.id == product_batch_id).first()
     if not existing_product_batch:
         raise HTTPException(
@@ -59,10 +58,6 @@ def update_product_batch(product_batch_id: int, product_batch: ProductBatchUpdat
             detail="Product batch not found."
         )
 
-    # ✅ Ya no verificamos product_id porque el lote ya tiene su producto asociado
-    # (solo si quisieras cambiar el producto del lote, deberías incluir product_id en el schema y aquí validar)
-
-    # Actualizar campos
     for key, value in product_batch.model_dump(exclude_unset=True).items():
         setattr(existing_product_batch, key, value)
 
