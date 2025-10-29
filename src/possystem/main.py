@@ -1,7 +1,28 @@
 from fastapi import FastAPI
+from .db.session import Base, engine
+from contextlib import asynccontextmanager
 from .api.routes import permissions, roles, users, branches, auth, units, warehouses, product_categories, products, product_warehouses, product_wallets, product_stock_initials, clients, sales, sale_payments, sale_details, sale_detail_attentions, refund_products, suppliers, purchases, purchase_details, conversions, transports, product_batch
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup code
+    # Optionally drop all tables (useful during development)
+    print("🔧 Dropping all tables...")
+    Base.metadata.drop_all(bind=engine)
+    # Create all tables
+    print("🔧 Creating database tables (if not exist)...")
+    Base.metadata.create_all(bind=engine)
+
+    # Optionally, you could call your init_db seeding function here
+    from .seeds.init_db import init_db
+    init_db()
+
+    yield  # Everything after this is shutdown code
+
+    # Shutdown code (if needed)
+    print("🛑 Application shutdown")
+
+app = FastAPI(lifespan=lifespan)
 
 @app.get('/', tags=["Root"])
 def root():
