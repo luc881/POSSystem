@@ -3,7 +3,7 @@ from starlette import status
 from ...models.roles.orm import Role
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RolePermissionAssociation, RoleWithPermissions
+from ...models.roles.schemas import RoleCreate, RoleResponse, RoleUpdate, RoleWithPermissions
 from ...models.permissions.orm import Permission
 from ...db.session import get_db
 from ...utils.permissions import CAN_READ_ROLES, CAN_CREATE_ROLES, CAN_UPDATE_ROLES, CAN_DELETE_ROLES
@@ -57,119 +57,126 @@ async def read_by_id_with_permissions(role_id: int, db: db_dependency):
     return role
 
 
-@router.post('/',
-            status_code=status.HTTP_201_CREATED,
-            response_model=RoleResponse,
-            summary="Create a new role",
-            description="Adds a new role to the database. The role name must be unique.",
-            dependencies=CAN_CREATE_ROLES)
-async def create_role(db: db_dependency, role_request: RoleCreate,):
-    role_model = Role(**role_request.model_dump())
-
-    role_found = db.query(Role).filter(Role.name.ilike(role_model.name)).first()
-
+@router.post(
+    '/',
+    status_code=status.HTTP_201_CREATED,
+    response_model=RoleWithPermissions,
+    summary="Create a new role with optional permissions",
+    description="Adds a new role to the database. The role name must be unique. You can include permission IDs to associate them automatically.",
+    dependencies=CAN_CREATE_ROLES
+)
+async def create_role(db: db_dependency, role_request: RoleCreate):
+    # 1. Check if role name already exists (case-insensitive)
+    role_found = db.query(Role).filter(Role.name.ilike(role_request.name)).first()
     if role_found:
-        raise HTTPException(status_code=409, detail='Permission already exists')
+        raise HTTPException(status_code=409, detail="Role name already exists")
+
+    # 2. Create the Role instance (without permissions yet)
+    role_model = Role(name=role_request.name)
 
     db.add(role_model)
     db.commit()
     db.refresh(role_model)
+
+    # 3. If permission_ids were provided, link them
+    if role_request.permission_ids:
+        permissions = (
+            db.query(Permission)
+            .filter(Permission.id.in_(role_request.permission_ids))
+            .all()
+        )
+
+        if not permissions:
+            raise HTTPException(status_code=404, detail="No valid permissions found")
+
+        # Optional: Check for missing IDs (so user gets clearer feedback)
+        found_ids = {p.id for p in permissions}
+        missing_ids = set(role_request.permission_ids) - found_ids
+        if missing_ids:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Permissions not found: {list(missing_ids)}"
+            )
+
+        # 4. Link permissions in batch
+        role_model.permissions.extend(permissions)
+        db.commit()
+        db.refresh(role_model)
+
     return role_model
 
 
-@router.post("/{role_id}/permissions",
-            status_code=status.HTTP_200_OK,
-            response_model=RoleWithPermissions,
-            summary="Associate a permission to a role",
-            description="Links an existing permission to an existing role.",
-            dependencies=CAN_UPDATE_ROLES)
-async def add_permission_to_role(role_id: int, request: RolePermissionAssociation, db: db_dependency):
+@router.put(
+    '/{role_id}',
+    status_code=status.HTTP_200_OK,
+    response_model=RoleWithPermissions,
+    summary="Update an existing role (and optionally its permissions)",
+    description="Updates the details of an existing role by ID. You can update the name and optionally reassign permissions.",
+    dependencies=CAN_UPDATE_ROLES
+)
+async def update_role(role_id: int, db: db_dependency, role_request: RoleUpdate):
     # 1. Find the role
     role = db.query(Role).filter(Role.id == role_id).first()
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
 
-    # 2. Find the permission
-    permission = db.query(Permission).filter(Permission.id == request.permission_id).first()
-    if not permission:
-        raise HTTPException(status_code=404, detail="Permission not found")
-
-    # 3. Check if already associated
-    if permission in role.permissions:
-        raise HTTPException(status_code=409, detail="Permission already associated with role")
-
-    # 4. Append and commit
-    role.permissions.append(permission)
-    db.commit()
-    db.refresh(role)
-
-    return role
-
-
-@router.put('/{role_id}',
-            status_code=status.HTTP_200_OK,
-            response_model=RoleResponse,
-            summary="Update an existing role",
-            description="Updates the details of an existing role by ID. Only the name can be updated.",
-            dependencies=CAN_UPDATE_ROLES)
-async def update_role(role_id: int, db: db_dependency, role_request: RoleUpdate):
-    role = db.query(Role).filter(Role.id == role_id).first()
-
-    if not role:
-        raise HTTPException(status_code=404, detail='Role not found')
-
+    # 2. Handle name update
     if role_request.name:
-        existing_role = db.query(Role).filter(Role.name.ilike(role_request.name)).first()
+        existing_role = (
+            db.query(Role)
+            .filter(Role.name.ilike(role_request.name))
+            .first()
+        )
         if existing_role and existing_role.id != role_id:
-            raise HTTPException(status_code=409, detail='Role name already exists')
+            raise HTTPException(status_code=409, detail="Role name already exists")
+        role.name = role_request.name
 
-    for key, value in role_request.model_dump(exclude_unset=True).items():
-        setattr(role, key, value)
+    # 3. Handle permission updates (if provided)
+    if role_request.permission_ids is not None:
+        # Fetch all permissions matching provided IDs
+        permissions = (
+            db.query(Permission)
+            .filter(Permission.id.in_(role_request.permission_ids))
+            .all()
+        )
 
+        # If none found
+        if not permissions and role_request.permission_ids:
+            raise HTTPException(status_code=404, detail="No valid permissions found")
+
+        # Check for missing IDs
+        found_ids = {p.id for p in permissions}
+        missing_ids = set(role_request.permission_ids) - found_ids
+        if missing_ids:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Permissions not found: {list(missing_ids)}"
+            )
+
+        # Replace the entire permission set (you could change this to extend if desired)
+        role.permissions = permissions
+
+    # 4. Commit and return updated role
     db.commit()
     db.refresh(role)
     return role
 
 
-@router.delete('/{role_id}',
-            status_code=status.HTTP_200_OK,
-            summary="Delete a permission",
-            description="Deletes a permission by ID. This will remove the permission from the database.",
-            dependencies=CAN_DELETE_ROLES)
+@router.delete(
+    '/{role_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a role",
+    description="Deletes a role by ID. This will remove the role and its associations from the database.",
+    dependencies=CAN_DELETE_ROLES
+)
 async def delete_role(role_id: int, db: db_dependency):
-    role = db.query(Role).filter(Role.id == role_id).first()
-
+    # 1. Find the role
+    role = db.query(Role).filter(Role.id == role_id).one_or_none()
     if not role:
-        raise HTTPException(status_code=404, detail='Role not found')
+        raise HTTPException(status_code=404, detail="Role not found")
 
+    # 2. Delete it
     db.delete(role)
     db.commit()
-    return {"detail": "Role deleted successfully"}
 
-
-@router.delete("/{role_id}/permissions/{permission_id}",
-            status_code=status.HTTP_200_OK,
-            summary="Remove a permission from a role",
-            description="Unlinks a permission from a role by their IDs.",
-            dependencies=CAN_UPDATE_ROLES)
-async def remove_permission_from_role(role_id: int, permission_id: int, db: db_dependency):
-    # 1. Find the role
-    role = db.query(Role).filter(Role.id == role_id).first()
-    if not role:
-        raise HTTPException(status_code=404, detail="Role not found")
-
-    # 2. Find the permission
-    permission = db.query(Permission).filter(Permission.id == permission_id).first()
-    if not permission:
-        raise HTTPException(status_code=404, detail="Permission not found")
-
-    # 3. Check if associated
-    if permission not in role.permissions:
-        raise HTTPException(status_code=404, detail="Permission not associated with this role")
-
-    # 4. Remove and commit
-    role.permissions.remove(permission)
-    db.commit()
-
-    return {"detail": "Permission removed from role successfully"}
 
