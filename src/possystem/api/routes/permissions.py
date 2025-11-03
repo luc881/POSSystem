@@ -24,7 +24,7 @@ router = APIRouter(
             dependencies=CAN_READ_PERMISSIONS
             )
 async def read_all(db: db_dependency):
-    permissions = db.query(Permission).all()
+    permissions = db.query(Permission).order_by(Permission.id.asc()).all()
     return permissions
 
 
@@ -35,17 +35,14 @@ async def read_all(db: db_dependency):
             description="Adds a new permission to the database. The permission name must be unique.",
             dependencies=CAN_CREATE_PERMISSIONS)
 async def create_permission(db: db_dependency, permission_request: PermissionCreate):
-    permission_model = Permission(**permission_request.model_dump())
-
-    permission_found = db.query(Permission).filter(Permission.name.ilike(permission_model.name)).first()
-
-    if permission_found:
+    existing = db.query(Permission).filter(Permission.name.ilike(permission_request.name)).first()
+    if existing:
         raise HTTPException(status_code=409, detail='Permission already exists')
-
-    db.add(permission_model)
+    permission = Permission(**permission_request.model_dump())
+    db.add(permission)
     db.commit()
-    db.refresh(permission_model)
-    return permission_model
+    db.refresh(permission)
+    return permission
 
 @router.put('/{permission_id}',
             status_code=status.HTTP_200_OK,
@@ -72,7 +69,7 @@ async def update_permission(permission_id: int, db: db_dependency, permission_re
     return permission
 
 @router.delete('/{permission_id}',
-            status_code=status.HTTP_200_OK,
+            status_code=status.HTTP_204_NO_CONTENT,
             summary="Delete a permission",
             description="Deletes a permission by ID. This will remove the permission from the database.",
             dependencies=CAN_DELETE_PERMISSIONS)
@@ -84,4 +81,3 @@ async def delete_permission(permission_id: int, db: db_dependency):
 
     db.delete(permission)
     db.commit()
-    return {"detail": "Permission deleted successfully"}

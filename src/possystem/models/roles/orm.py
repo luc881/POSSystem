@@ -21,5 +21,6 @@ class Role(Base):
         "Permission",
         secondary=role_has_permissions,  # pivot table name
         back_populates="roles",
-        lazy="selectin"
+        lazy="selectin",
+        passive_deletes=True
     )
