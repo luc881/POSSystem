@@ -40,6 +40,19 @@ async def read_permission(permission_id: int, db: db_dependency):
         raise HTTPException(status_code=404, detail='Permission not found')
     return permission
 
+@router.get('/{permission_id}/with-roles',
+            response_model=PermissionWithRoles,
+            summary="Get permission with roles by ID",
+            description="Retrieve a specific permission by its ID, including associated roles.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_PERMISSIONS
+            )
+async def read_permission_with_roles(permission_id: int, db: db_dependency):
+    permission = db.get(Permission, permission_id)
+    if not permission:
+        raise HTTPException(status_code=404, detail='Permission not found')
+    return permission
+
 @router.post('/',
             status_code=status.HTTP_201_CREATED,
             response_model=PermissionResponse,
