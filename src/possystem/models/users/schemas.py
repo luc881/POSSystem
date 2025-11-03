@@ -1,41 +1,7 @@
 from typing import Optional, Union, Annotated
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, model_validator, HttpUrl, StringConstraints, SecretStr
-from pydantic_extra_types.phone_numbers import PhoneNumberValidator
-import phonenumbers
-from enum import Enum
-
-# Tipos especiales
-NameStr = Annotated[
-    str,
-    StringConstraints(to_lower=True, pattern=r"^[a-záéíóúñ ]+$", min_length=1, max_length=255 )
-]
-SurnameStr = Annotated[
-    str,
-    StringConstraints(to_lower=True, pattern=r"^[a-záéíóúñ ]+$ ", min_length=1, max_length=255)
-]
-MXPhoneNumber = Annotated[
-    Union[str, phonenumbers.PhoneNumber],
-    PhoneNumberValidator(
-        default_region='MX',       # Si no tiene prefijo internacional, asume México
-        number_format='E164',      # Formato estándar +521...
-        supported_regions=['MX']   # Solo números mexicanos
-    )
-]
-
-NumDocStr = Annotated[
-    str,
-    StringConstraints(to_upper=True, pattern=r"^[a-zA-Z0-9]+$", min_length=2, max_length=50)
-]
-
-class DocumentTypeEnum(str, Enum):
-    INE = "INE"
-    PASSPORT = "PASSPORT"
-    LICENSE = "LICENSE"
-
-class GenderEnum(str, Enum):
-    M = "M"
-    F = "F"
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, model_validator, HttpUrl, SecretStr
+from possystem.types.users import NameStr, SurnameStr, MXPhoneNumber, NumDocStr, DocumentTypeEnum, GenderEnum
 
 # Base schema (campos compartidos)
 class UserBase(BaseModel):
