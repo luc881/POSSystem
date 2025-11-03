@@ -11,7 +11,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     surname: Mapped[str] = mapped_column(String(255), nullable=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
-    email_verified_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
+    email_verified_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     remember_token: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
@@ -22,8 +22,8 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String(50), nullable=True)
     type_document: Mapped[str] = mapped_column(String(50), nullable=True)
     n_document: Mapped[str] = mapped_column(String(50), nullable=True)
-    deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
-    state: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)  # True = activo, False = inactivo
+    # deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
+    # state: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)  # True = activo, False = inactivo
     gender: Mapped[str] = mapped_column(String(5), nullable=True)  # M = masculino, F = femenino
 
     # Relationship to Role

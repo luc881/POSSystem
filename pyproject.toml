@@ -18,7 +18,9 @@ dependencies = [
     "passlib (>=1.7.4,<2.0.0)",
     "bcrypt (==4.0.1)",
     "python-multipart (>=0.0.20,<0.0.21)",
-    "python-jose[cryptography] (>=3.5.0,<4.0.0)"
+    "python-jose[cryptography] (>=3.5.0,<4.0.0)",
+    "pydantic-extra-types (>=2.10.6,<3.0.0)",
+    "phonenumbers (>=9.0.17,<10.0.0)"
 ]
 
 [tool.poetry]

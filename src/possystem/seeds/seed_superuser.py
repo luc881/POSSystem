@@ -41,7 +41,6 @@ def seed_superuser(db: Session):
         password=get_password_hash(SUPERUSER_PASSWORD),
         role_id=admin_role.id,
         email_verified_at=None,
-        state=True,
         gender=None,
         avatar=None,
         phone=None,

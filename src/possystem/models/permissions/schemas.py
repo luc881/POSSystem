@@ -37,13 +37,13 @@ class PermissionCreate(PermissionBase):
     )
 
 
-class PermissionUpdate(BaseModel):
+class PermissionUpdate(PermissionBase):
     """Schema for updating an existing permission"""
     name: Optional[str] = Field(None, max_length=255, min_length=1, description="Permission name")
 
     model_config = ConfigDict(
         extra="forbid",
-        json_schema_extra= {
+        json_schema_extra={
             "example": {
                 "name": "edit_users_updated"
             }
