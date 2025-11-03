@@ -27,6 +27,18 @@ async def read_all(db: db_dependency):
     permissions = db.query(Permission).order_by(Permission.id.asc()).all()
     return permissions
 
+@router.get('/{permission_id}',
+            response_model=PermissionResponse,
+            summary="Get permission by ID",
+            description="Retrieve a specific permission by its ID, including associated roles.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_PERMISSIONS
+            )
+async def read_permission(permission_id: int, db: db_dependency):
+    permission = db.get(Permission, permission_id)
+    if not permission:
+        raise HTTPException(status_code=404, detail='Permission not found')
+    return permission
 
 @router.post('/',
             status_code=status.HTTP_201_CREATED,
@@ -51,7 +63,7 @@ async def create_permission(db: db_dependency, permission_request: PermissionCre
             description="Updates the details of an existing permission by ID. Only the name can be updated.",
             dependencies=CAN_UPDATE_PERMISSIONS)
 async def update_permission(permission_id: int, db: db_dependency, permission_request: PermissionUpdate):
-    permission = db.query(Permission).filter(Permission.id == permission_id).first()
+    permission = db.get(Permission, permission_id)
 
     if not permission:
         raise HTTPException(status_code=404, detail='Permission not found')
