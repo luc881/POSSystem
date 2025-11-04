@@ -1,6 +1,7 @@
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
+import re
 
 
 
@@ -10,17 +11,31 @@ from pydantic import BaseModel, Field
 class BranchBase(BaseModel):
     name: str = Field(..., max_length=255, description="Nombre de la sucursal")
     address: str = Field(..., max_length=255, description="Dirección física de la sucursal")
-    is_active: Optional[bool] = Field(True, description="Estado de la sucursal (True = activa, False = inactiva)")
 
-    model_config = {
-        "json_schema_extra": {
+    @model_validator(mode='before')
+    @classmethod
+    def strip_all_strings(cls, values):
+        # Asegurarse de que siempre sea un diccionario
+        if not isinstance(values, dict):
+            values = vars(values)
+
+        clean = {}
+        for key, value in values.items():
+            if isinstance(value, str):
+                clean[key] = value.strip().lower()
+            else:
+                clean[key] = value
+        return clean
+
+    model_config = ConfigDict(
+        from_attributes= True,
+        json_schema_extra = {
             "example": {
                 "name": "Sucursal Centro",
                 "address": "Av. Principal 123, CDMX",
-                "is_active": True
             }
         }
-    }
+)
 
 
 # ---------------------------
@@ -28,16 +43,15 @@ class BranchBase(BaseModel):
 # ---------------------------
 class BranchCreate(BranchBase):
     # Si en el futuro agregas más campos que sean solo para creación, hazlo aquí.
-    model_config = {
-        "extra": "forbid",
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        extra= "forbid",
+        json_schema_extra= {
             "example": {
                 "name": "Sucursal Norte",
                 "address": "Calle 5 #234, Monterrey",
-                "is_active": True
             }
         }
-    }
+    )
 
 
 # ---------------------------
@@ -46,18 +60,16 @@ class BranchCreate(BranchBase):
 class BranchUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=255, description="Nuevo nombre de la sucursal")
     address: Optional[str] = Field(None, max_length=255, description="Nueva dirección")
-    is_active: Optional[bool] = Field(None, description="Cambiar estado (True/False)")
-    deleted_at: Optional[datetime] = Field(None, description="Soft delete timestamp (solo internamente)")
 
-    model_config = {
-        "extra": "forbid",
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        extra= "forbid",
+        json_schema_extra= {
             "example": {
                 "name": "Sucursal Norte Renovada",
-                "is_active": False
+                "address": "Calle 5 #234, Monterrey2",
             }
         }
-    }
+    )
 
 
 # ---------------------------
@@ -67,38 +79,33 @@ class BranchResponse(BranchBase):
     id: int
     created_at: Optional[datetime] = Field(None, description="Fecha de creación")
     updated_at: Optional[datetime] = Field(None, description="Fecha de última actualización")
-    deleted_at: Optional[datetime] = Field(None, description="Fecha de borrado lógico (si aplica)")
 
-    model_config = {
-        "from_attributes": True,  # Permite usar .from_orm / en Pydantic v2: from_attributes
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        from_attributes= True,  # Permite usar .from_orm / en Pydantic v2: from_attributes
+        json_schema_extra= {
             "example": {
                 "id": 10,
                 "name": "Sucursal Centro",
                 "address": "Av. Principal 123, CDMX",
-                "is_active": True,
                 "created_at": "2024-07-01T10:15:00",
                 "updated_at": "2024-07-05T09:00:00",
-                "deleted_at": None
             }
         }
-    }
+    )
 
 
 class BranchWithUsersResponse(BranchResponse):
     users: list["UserResponse"] = Field(default_factory=list, description="Lista de usuarios asociados a la sucursal")
 
-    model_config = {
-        "from_attributes": True,  # Permite usar .from_orm / en Pydantic v2: from_attributes
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        from_attributes= True,  # Permite usar .from_orm / en Pydantic v2: from_attributes
+        json_schema_extra= {
             "example": {
                 "id": 10,
                 "name": "Sucursal Centro",
                 "address": "Av. Principal 123, CDMX",
-                "is_active": True,
                 "created_at": "2024-07-01T10:15:00",
                 "updated_at": "2024-07-05T09:00:00",
-                "deleted_at": None,
                 "users": [
                     {
                         "id": 1,
@@ -110,16 +117,14 @@ class BranchWithUsersResponse(BranchResponse):
                         "phone": "5551234567",
                         "type_document": "INE",
                         "n_document": "ABC123456",
-                        "state": True,
                         "gender": "M",
                         "created_at": "2024-06-01T12:00:00",
                         "updated_at": "2024-06-02T10:00:00",
-                        "deleted_at": None,
                     }
                 ]
             }
         }
-    }
+    )
 
 # ---------------------------
 # (Opcional) Respuesta extendida con métricas ligeras
@@ -133,17 +138,15 @@ class BranchStatsResponse(BranchResponse):
     sales_count: Optional[int] = Field(None, description="Número de ventas")
     purchases_count: Optional[int] = Field(None, description="Número de compras")
 
-    model_config = {
-        "from_attributes": True,
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        from_attributes= True,
+        json_schema_extra= {
             "example": {
                 "id": 10,
                 "name": "Sucursal Centro",
                 "address": "Av. Principal 123, CDMX",
-                "is_active": True,
                 "created_at": "2024-07-01T10:15:00",
                 "updated_at": "2024-07-05T09:00:00",
-                "deleted_at": None,
                 "users_count": 12,
                 "warehouses_count": 3,
                 "product_wallets_count": 45,
@@ -152,7 +155,7 @@ class BranchStatsResponse(BranchResponse):
                 "purchases_count": 87
             }
         }
-    }
+    )
 
 
 # ---------------------------
@@ -164,8 +167,8 @@ class BranchListResponse(BaseModel):
     size: int
     items: list[BranchResponse]
 
-    model_config = {
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        json_schema_extra= {
             "example": {
                 "total": 25,
                 "page": 1,
@@ -175,15 +178,13 @@ class BranchListResponse(BaseModel):
                         "id": 1,
                         "name": "Sucursal Centro",
                         "address": "Av. Principal 123, CDMX",
-                        "is_active": True,
                         "created_at": "2024-07-01T10:15:00",
                         "updated_at": "2024-07-05T09:00:00",
-                        "deleted_at": None
                     }
                 ]
             }
         }
-    }
+    )
 
 # Forward reference resolution
 from typing import TYPE_CHECKING
