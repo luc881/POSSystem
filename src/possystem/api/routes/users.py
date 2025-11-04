@@ -35,14 +35,23 @@ async def read_all(db: db_dependency):
     "/search",
     response_model=list[UserResponse],
     summary="Search users",
-    description="Search users by name, surname, email, branch, role, or state.",
+    description="Search users by various filters.",
     status_code=status.HTTP_200_OK,
-    dependencies=CAN_READ_USERS)
+    dependencies=CAN_READ_USERS
+)
 async def search_users(
     db: db_dependency,
     filters: UserSearchParams = Depends()
 ):
+    # Revisión manual si no hay filtros válidos
+    if not any(getattr(filters, f) for f in type(filters).model_fields):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Debe especificar al menos un filtro para la búsqueda"
+        )
+
     query = db.query(User)
+
     if filters.name:
         query = query.filter(User.name.ilike(f"%{filters.name}%"))
     if filters.surname:
@@ -53,8 +62,15 @@ async def search_users(
         query = query.filter(User.branch_id == filters.branch_id)
     if filters.role_id:
         query = query.filter(User.role_id == filters.role_id)
-    if filters.state is not None:
-        query = query.filter(User.state == filters.state)
+    if filters.phone:
+        query = query.filter(User.phone.ilike(f"%{filters.phone}%"))
+    if filters.gender:
+        query = query.filter(User.gender == filters.gender)
+    if filters.type_document:
+        query = query.filter(User.type_document.ilike(f"%{filters.type_document}%"))
+    if filters.n_document:
+        query = query.filter(User.n_document.ilike(f"%{filters.n_document}%"))
+
     return query.all()
 
 
@@ -99,7 +115,9 @@ async def read_user_details(user_id: int, db: db_dependency):
             dependencies = CAN_CREATE_USERS)
 async def create_user(user: UserCreate, db: db_dependency):
 
-    user.password = bcrypt_context.hash(user.password)  # Hash the password before storing
+    plain_password = user.password.get_secret_value()
+    user.password = bcrypt_context.hash(plain_password)
+
     existing_user = db.query(User).filter(User.email == user.email).first()
 
     if existing_user:
@@ -123,7 +141,9 @@ async def create_user(user: UserCreate, db: db_dependency):
                 detail="Role not found"
             )
 
-    new_user = User(**user.model_dump())
+    user_data = user.model_dump()
+    user_data["avatar"] = str(user_data["avatar"]) if user_data.get("avatar") else None
+    new_user = User(**user_data)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -160,8 +180,10 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
                 detail="Role not found"
             )
 
+    user_data = user.model_dump()
+    user_data["avatar"] = str(user_data["avatar"]) if user_data.get("avatar") else None
 
-    for key, value in user.model_dump(exclude_unset=True).items():
+    for key, value in user_data.items():
         setattr(existing_user, key, value)
 
     db.commit()

@@ -7,11 +7,20 @@ import phonenumbers
 # Tipos especiales
 NameStr = Annotated[
     str,
-    StringConstraints(to_lower=True, pattern=r"^[a-záéíóúñ ]+$", min_length=1, max_length=255 )
+    StringConstraints(
+        pattern=r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$",
+        min_length=1,
+        max_length=255
+    )
 ]
+
 SurnameStr = Annotated[
     str,
-    StringConstraints(to_lower=True, pattern=r"^[a-záéíóúñ ]+$ ", min_length=1, max_length=255)
+    StringConstraints(
+        pattern=r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$",
+        min_length=1,
+        max_length=255
+    )
 ]
 MXPhoneNumber = Annotated[
     Union[str, phonenumbers.PhoneNumber],
@@ -24,7 +33,11 @@ MXPhoneNumber = Annotated[
 
 NumDocStr = Annotated[
     str,
-    StringConstraints(to_upper=True, pattern=r"^[a-zA-Z0-9]+$", min_length=2, max_length=50)
+    StringConstraints(
+        to_upper=True,
+        pattern=r"^[a-zA-Z0-9]+$",
+        min_length=2,
+        max_length=50)
 ]
 
 class DocumentTypeEnum(str, Enum):
