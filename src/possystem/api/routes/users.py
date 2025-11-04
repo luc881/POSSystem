@@ -165,6 +165,7 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
+
     if user.branch_id is not None:
         branch = db.query(Branch).filter(Branch.id == user.branch_id).first()
         if not branch:
@@ -172,6 +173,7 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Branch not found"
             )
+
     if user.role_id is not None:
         role = db.query(Role).filter(Role.id == user.role_id).first()
         if not role:
@@ -180,8 +182,11 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
                 detail="Role not found"
             )
 
-    user_data = user.model_dump()
-    user_data["avatar"] = str(user_data["avatar"]) if user_data.get("avatar") else None
+    # 👇 Solo campos enviados
+    user_data = user.model_dump(exclude_unset=True)
+
+    if "avatar" in user_data:
+        user_data["avatar"] = str(user_data["avatar"]) if user_data["avatar"] else None
 
     for key, value in user_data.items():
         setattr(existing_user, key, value)
@@ -190,6 +195,7 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
     db.refresh(existing_user)
 
     return existing_user
+
 
 
 @router.delete('/{user_id}',
