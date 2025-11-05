@@ -1,8 +1,10 @@
-# Import schemas first if you like
+# Import schemas first
 from .roles.schemas import RoleWithPermissions, RoleResponse
 from .permissions.schemas import PermissionWithRoles, PermissionResponse
 from .branches.schemas import BranchWithUsersResponse, BranchResponse
 from .users.schemas import UserResponse, UserDetailsResponse
+from .products.schemas import ProductResponse
+from .product_batch.schemas import ProductBatchDetailsResponse, ProductBatchResponse
 
 # Resolve forward references
 RoleWithPermissions.model_rebuild()
@@ -11,6 +13,8 @@ BranchWithUsersResponse.model_rebuild()
 BranchResponse.model_rebuild()
 UserResponse.model_rebuild()
 UserDetailsResponse.model_rebuild()
+ProductBatchResponse.model_rebuild()
+ProductBatchDetailsResponse.model_rebuild()
 
 # Import ORM models correctly with relative paths
 from .transports.orm import Transport
@@ -36,6 +40,8 @@ from .purchases.orm import Purchase
 from .purchase_details.orm import PurchaseDetail
 from .conversions.orm import Conversion
 from .product_batch.orm import ProductBatch
+ProductBatchDetailsResponse.model_rebuild()
+ProductBatchResponse.model_rebuild()
 
 # when you have all coorect you can try
 # # src/possystem/models/__init__.py

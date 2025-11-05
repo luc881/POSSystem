@@ -27,11 +27,25 @@ def read_all_product_batches(db: db_dependency):
     product_batches = db.query(ProductBatch).all()
     return product_batches
 
+@router.get("/{product_batch_id}", response_model=ProductBatchDetailsResponse,
+            summary="Get product batch details",
+            description="Retrieve detailed information about a specific product batch by its ID.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_PRODUCT_BATCHES)
+def get_product_batch_details(product_batch_id: int, db: db_dependency):
+    product_batch = db.get(ProductBatch, product_batch_id)
+    if not product_batch:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product batch not found."
+        )
+    return product_batch
+
 @router.post("/", response_model=ProductBatchResponse,
-             summary="Create a new product batch",
-             description="Create a new product batch with the provided details.",
-             status_code=status.HTTP_201_CREATED,
-             dependencies=CAN_CREATE_PRODUCT_BATCHES)
+            summary="Create a new product batch",
+            description="Create a new product batch with the provided details.",
+            status_code=status.HTTP_201_CREATED,
+            dependencies=CAN_CREATE_PRODUCT_BATCHES)
 def create_product_batch(product_batch: ProductBatchCreate, db: db_dependency):
     existing_product = db.query(Product).filter(Product.id == product_batch.product_id).first()
     if not existing_product:
@@ -66,10 +80,10 @@ def update_product_batch(product_batch_id: int, product_batch: ProductBatchUpdat
     return existing_product_batch
 
 @router.delete("/{product_batch_id}",
-               summary="Delete a product batch",
-               description="Delete an existing product batch by its ID.",
-               status_code=status.HTTP_204_NO_CONTENT,
-               dependencies=CAN_DELETE_PRODUCT_BATCHES)
+            summary="Delete a product batch",
+            description="Delete an existing product batch by its ID.",
+            status_code=status.HTTP_204_NO_CONTENT,
+            dependencies=CAN_DELETE_PRODUCT_BATCHES)
 def delete_product_batch(product_batch_id: int, db: db_dependency):
     existing_product_batch = db.query(ProductBatch).filter(ProductBatch.id == product_batch_id).first()
     if not existing_product_batch:
