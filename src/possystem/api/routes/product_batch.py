@@ -27,6 +27,16 @@ def read_all_product_batches(db: db_dependency):
     product_batches = db.query(ProductBatch).all()
     return product_batches
 
+
+@router.get("/details", response_model=list[ProductBatchDetailsResponse],
+            summary="List all product batches with details",
+            description="Retrieve all product batches with detailed information including associated products.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_PRODUCT_BATCHES)
+def read_all_product_batches_with_details(db: db_dependency):
+    product_batches = db.query(ProductBatch).all()
+    return product_batches
+
 @router.get("/{product_batch_id}", response_model=ProductBatchDetailsResponse,
             summary="Get product batch details",
             description="Retrieve detailed information about a specific product batch by its ID.",

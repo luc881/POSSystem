@@ -1,8 +1,9 @@
 from sqlalchemy import String, BigInteger, Double, Date, ForeignKey, Integer, TIMESTAMP
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime
+from datetime import datetime, date
 from ...db.session import Base
+from typing import Optional
 
 
 class ProductBatch(Base):
@@ -14,10 +15,10 @@ class ProductBatch(Base):
         ForeignKey("products.id", ondelete="CASCADE"),
         nullable=False
     )
-    lot_code: Mapped[str] = mapped_column(String(100), nullable=True)  # opcional, si la farmacia usa código de lote
-    expiration_date: Mapped[datetime] = mapped_column(Date, nullable=False)
+    lot_code: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    expiration_date: Mapped[date] = mapped_column(Date, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    purchase_price: Mapped[float] = mapped_column(Double, nullable=True)
+    purchase_price: Mapped[Optional[float]] = mapped_column(Double, nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 
     product: Mapped["Product"] = relationship("Product", back_populates="batches")
