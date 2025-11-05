@@ -1,6 +1,6 @@
 from typing import Optional
 from datetime import date, datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 
 # Base schema (campos compartidos)
@@ -10,14 +10,22 @@ class ProductBatchBase(BaseModel):
     quantity: int = Field(..., ge=0, description="Cantidad disponible en el lote")
     purchase_price: Optional[float] = Field(None, ge=0, description="Precio de compra por unidad del lote")
 
+    model_config = dict(from_attributes=True)
+
+    @field_validator("lot_code",  mode="before")
+    def normalize_text(cls, v):
+        if isinstance(v, str):
+            return v.strip().upper()
+        return v
+
 
 # Schema para creación
 class ProductBatchCreate(ProductBatchBase):
     product_id: int = Field(..., gt=0, description="ID del producto asociado")
 
-    model_config = {
-        "extra": "forbid",
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        extra= "forbid",
+        json_schema_extra= {
             "example": {
                 "product_id": 1,
                 "lot_code": "A2025-01",
@@ -26,7 +34,7 @@ class ProductBatchCreate(ProductBatchBase):
                 "purchase_price": 12.50
             }
         }
-    }
+    )
 
 
 # Schema para actualización
@@ -36,15 +44,15 @@ class ProductBatchUpdate(BaseModel):
     quantity: Optional[int] = Field(None, ge=0)
     purchase_price: Optional[float] = Field(None, ge=0)
 
-    model_config = {
-        "extra": "forbid",
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        extra= "forbid",
+        json_schema_extra = {
             "example": {
                 "quantity": 80,
                 "expiration_date": "2025-11-30"
             }
         }
-    }
+    )
 
 
 # Schema de respuesta (para API)
@@ -53,9 +61,9 @@ class ProductBatchResponse(ProductBatchBase):
     product_id: int
     created_at: Optional[datetime] = None
 
-    model_config = {
-        "from_attributes": True,
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        from_attributes= True,
+        json_schema_extra= {
             "example": {
                 "id": 10,
                 "product_id": 1,
@@ -66,16 +74,16 @@ class ProductBatchResponse(ProductBatchBase):
                 "created_at": "2025-06-01T14:25:00"
             }
         }
-    }
+    )
 
 
 # Schema de respuesta detallada (con relación al producto)
 class ProductBatchDetailsResponse(ProductBatchResponse):
     product: Optional["ProductResponse"] = None
 
-    model_config = {
-        "from_attributes": True,
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        from_attributes= True,
+        json_schema_extra= {
             "example": {
                 "id": 10,
                 "lot_code": "A2025-01",
@@ -92,7 +100,7 @@ class ProductBatchDetailsResponse(ProductBatchResponse):
                 }
             }
         }
-    }
+    )
 
 
 # Forward reference resolution (import diferido para evitar dependencias circulares)
