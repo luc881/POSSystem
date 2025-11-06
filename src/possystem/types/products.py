@@ -79,10 +79,32 @@ class StockStateEnum(int, Enum):
 # ⚡ Boolean flags (semánticos)
 # -------------------------------
 
-class ProductFlags:
-    IS_DISCOUNT = Field(default=False, description="Indica si el producto tiene descuento")
-    IS_GIFT = Field(default=False, description="Indica si puede ser usado como obsequio")
-    ALLOW_WITHOUT_STOCK = Field(default=True, description="Permite venta sin stock")
-    IS_ACTIVE = Field(default=True, description="Producto activo o desactivado")
-    IS_TAXABLE = Field(default=True, description="Aplica impuesto o no")
-    ALLOW_WARRANTY = Field(default=False, description="Aplica garantía o no")
+IsDiscountFlag = Annotated[
+    bool,
+    Field( description="Indica si el producto tiene descuento")
+]
+
+IsGiftFlag = Annotated[
+    bool,
+    Field( description="Indica si puede ser usado como obsequio")
+]
+
+AllowWithoutStockFlag = Annotated[
+    bool,
+    Field(description="Permite venta sin stock")
+]
+
+IsActiveFlag = Annotated[
+    bool,
+    Field( description="Producto activo o desactivado")
+]
+
+IsTaxableFlag = Annotated[
+    bool,
+    Field( description="Aplica impuesto o no")
+]
+
+AllowWarrantyFlag = Annotated[
+    bool,
+    Field( description="Aplica garantía o no")
+]
