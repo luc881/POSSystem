@@ -1,39 +1,53 @@
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+from possystem.types.products import (
+    ProductTitleStr,
+    ProductImageURL,
+    ProductDescriptionStr,
+    ProductSKUStr,
+    PriceRetail,
+    PriceCost,
+    DiscountPercentage,
+    TaxPercentage,
+    WarrantyDays,
+    StockStateEnum,
+    ProductFlags
+)
 
 
 # Base schema (shared fields)
 class ProductBase(BaseModel):
-    title: str = Field(..., max_length=250, description="Título o nombre del producto")
-    image: Optional[str] = Field(None, max_length=250, description="Imagen del producto")
-    product_category_id: Optional[int] = Field(None, gt=0, description="ID de la categoría del producto")
-    price_general: float = Field(..., ge=0, description="Precio general del producto")
-    price_company: float = Field(..., ge=0, description="Precio para clientes empresa")
-    description: Optional[str] = Field(None, description="Descripción del producto")
-    is_discount: bool = Field(default=False, description="Indica si el producto tiene descuento")
-    max_discount: Optional[float] = Field(None, ge=0, le=100, description="Porcentaje máximo de descuento permitido")
-    is_gift: bool = Field(default=False, description="Indica si el producto puede usarse como obsequio")
-    allow_without_stock: bool = Field(default=True, description="Permitir venta sin stock")
-    is_active: bool = Field(default=True, description="Estado de disponibilidad del producto")
-    stock_state: int = Field(default=1, ge=1, le=3, description="Estado del stock (1 disponible, 2 bajo stock, 3 agotado)")
-    warranty_days: Optional[float] = Field(None, ge=0, description="Días de garantía del producto")
-    is_taxable: bool = Field(default=True, description="Indica si aplica impuesto")
-    tax_percentage: Optional[float] = Field(None, ge=0, le=100, description="Porcentaje de impuesto")
-    sku: Optional[str] = Field(None, max_length=100, description="Código SKU del producto")
+    title: ProductTitleStr = Field(...)
+    image: Optional[ProductImageURL] = None
+    product_category_id: Optional[int] = None
+    price_retail: PriceRetail = Field(...)
+    price_cost: PriceCost = Field(...)
+    description: Optional[ProductDescriptionStr] = None
+    is_discount: bool = ProductFlags.IS_DISCOUNT
+    max_discount: Optional[DiscountPercentage] = None
+    is_gift: bool = ProductFlags.IS_GIFT
+    allow_without_stock: bool = ProductFlags.ALLOW_WITHOUT_STOCK
+    is_active: bool = ProductFlags.IS_ACTIVE
+    stock_state: StockStateEnum = Field(default=StockStateEnum.AVAILABLE)
+    warranty_applicable: bool = ProductFlags.ALLOW_WARRANTY
+    warranty_days: Optional[WarrantyDays] = None
+    is_taxable: bool = ProductFlags.IS_TAXABLE
+    tax_percentage: Optional[TaxPercentage] = None
+    sku: Optional[ProductSKUStr] = None
 
 
 # Schema for creation
 class ProductCreate(ProductBase):
-    model_config = {
-        "extra": "forbid",
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        extra= "forbid",
+        json_schema_extra= {
             "example": {
                 "title": "Refresco Cola 600ml",
                 "image": "https://example.com/images/cola600.png",
                 "product_category_id": 1,
-                "price_general": 20.0,
-                "price_company": 18.0,
+                "price_retail": 20.0,
+                "price_cost": 18.0,
                 "description": "Refresco de cola en presentación de 600ml",
                 "is_discount": True,
                 "max_discount": 15.0,
@@ -47,7 +61,7 @@ class ProductCreate(ProductBase):
                 "sku": "COLA600ML"
             }
         }
-    }
+    )
 
 
 # Schema for update (all optional)
@@ -55,8 +69,8 @@ class ProductUpdate(BaseModel):
     title: Optional[str] = Field(None, max_length=250)
     image: Optional[str] = Field(None, max_length=250)
     product_category_id: Optional[int] = Field(None, gt=0)
-    price_general: Optional[float] = Field(None, ge=0)
-    price_company: Optional[float] = Field(None, ge=0)
+    price_retail: Optional[float] = Field(None, ge=0)
+    price_cost: Optional[float] = Field(None, ge=0)
     description: Optional[str] = None
     is_discount: Optional[bool] = None
     max_discount: Optional[float] = Field(None, ge=0, le=100)
@@ -70,17 +84,17 @@ class ProductUpdate(BaseModel):
     sku: Optional[str] = Field(None, max_length=100)
     deleted_at: Optional[datetime] = None
 
-    model_config = {
-        "extra": "forbid",
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        extra= "forbid",
+        json_schema_extra= {
             "example": {
-                "price_general": 19.0,
+                "price_retail": 19.0,
                 "is_discount": False,
                 "stock_state": 2,
                 "is_active": True
             }
         }
-    }
+    )
 
 
 # Schema for response
@@ -90,9 +104,9 @@ class ProductResponse(ProductBase):
     updated_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None
 
-    model_config = {
-        "from_attributes": True,  # ORM mode
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        from_attributes= True,  # ORM mode
+        json_schema_extra= {
             "example": {
                 "id": 1,
                 "title": "Refresco Cola 600ml",
@@ -116,7 +130,7 @@ class ProductResponse(ProductBase):
                 "deleted_at": None
             }
         }
-    }
+    )
 
 
 # Schema for detailed response (with relationships)
@@ -125,9 +139,9 @@ class ProductDetailsResponse(ProductResponse):
     product_warehouses: Optional[list["ProductWarehouseResponse"]] = []
     product_wallets: Optional[list["ProductWalletResponse"]] = []
 
-    model_config = {
-        "from_attributes": True,
-        "json_schema_extra": {
+    model_config = ConfigDict(
+        from_attributes= True,
+        json_schema_extra= {
             "example": {
                 "id": 1,
                 "title": "Refresco Cola 600ml",
@@ -156,7 +170,7 @@ class ProductDetailsResponse(ProductResponse):
                 ]
             }
         }
-    }
+    )
 
 
 # Schema for search filters
@@ -166,9 +180,9 @@ class ProductSearchParams(BaseModel):
     is_active: Optional[bool] = Field(None, description="Filtrar por estado de disponibilidad")
     stock_state: Optional[int] = Field(None, ge=1, le=3, description="Filtrar por estado de stock")
 
-    model_config = {
-        "extra": "forbid"
-    }
+    model_config = ConfigDict(
+        extra= "forbid"
+    )
 
 
 # Forward reference resolution

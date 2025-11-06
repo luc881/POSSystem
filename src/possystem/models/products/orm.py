@@ -16,8 +16,8 @@ class Product(Base):
         ForeignKey("product_categories.id", ondelete="CASCADE"),
         nullable=True
     )
-    price_general: Mapped[float] = mapped_column(Double, nullable=False)
-    price_company: Mapped[float] = mapped_column(Double, nullable=False)
+    price_retail: Mapped[float] = mapped_column(Double, nullable=False)
+    price_cost: Mapped[float] = mapped_column(Double, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=True)
     is_discount: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     max_discount: Mapped[float] = mapped_column(Double, nullable=True)  # in %
@@ -25,6 +25,7 @@ class Product(Base):
     allow_without_stock: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     stock_state: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)  # 1 available, 2 low stock, 3 out of stock
+    warranty_applicable: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     warranty_days: Mapped[float] = mapped_column(Double, nullable=True)
     is_taxable: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     tax_percentage: Mapped[float] = mapped_column(Double, nullable=True)
