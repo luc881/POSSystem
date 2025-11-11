@@ -25,6 +25,20 @@ async def read_all(db: db_dependency):
     product_categories = db.query(ProductCategory).all()
     return product_categories
 
+@router.get(
+    "/{category_id}",
+    response_model=ProductCategoryResponse,
+    summary="Get category by ID",
+    description="Retrieve a single product category by its ID.",
+    status_code=status.HTTP_200_OK,
+    dependencies=CAN_READ_PRODUCT_CATEGORIES,
+)
+async def read_one(category_id: int, db: db_dependency):
+    category = db.get(ProductCategory, category_id)
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found.")
+    return category
+
 @router.post("/",
                 response_model=ProductCategoryResponse,
                 summary="Create a new product category",
@@ -54,7 +68,7 @@ async def create(product_category: ProductCategoryCreate, db: db_dependency):
     dependencies=CAN_UPDATE_PRODUCT_CATEGORIES,
 )
 async def update(category_id: int, product_category: ProductCategoryUpdate, db: db_dependency):
-    existing_category = db.query(ProductCategory).filter(ProductCategory.id == category_id).first()
+    existing_category = db.get(ProductCategory, category_id)
     if not existing_category:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

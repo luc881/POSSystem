@@ -30,7 +30,7 @@ class ProductCategoryCreate(ProductCategoryBase):
 
 
 # Schema for update (all optional)
-class ProductCategoryUpdate(BaseModel):
+class ProductCategoryUpdate(ProductCategoryBase):
     name: Optional[CategoryNameStr] = None
 
     model_config = ConfigDict(
