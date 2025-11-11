@@ -107,48 +107,36 @@ async def read_user_details(user_id: int, db: db_dependency):
     return user
 
 
-@router.post('/',
-            response_model=UserResponse,
-            summary="Create a new user",
-            description="Create a new user with the provided details.",
-            status_code=status.HTTP_201_CREATED,
-            dependencies = CAN_CREATE_USERS)
+@router.post('/', response_model=UserResponse, status_code=status.HTTP_201_CREATED, dependencies=CAN_CREATE_USERS)
 async def create_user(user: UserCreate, db: db_dependency):
-
     plain_password = user.password.get_secret_value()
-    user.password = bcrypt_context.hash(plain_password)
+    hashed = bcrypt_context.hash(plain_password)
 
     existing_user = db.query(User).filter(User.email == user.email).first()
-
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="User with this email already exists"
         )
 
-    if user.branch_id is not None:
-        branch = db.query(Branch).filter(Branch.id == user.branch_id).first()
-        if not branch:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Branch not found"
-            )
-    if user.role_id is not None:
-        role = db.query(Role).filter(Role.id == user.role_id).first()
-        if not role:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Role not found"
-            )
+    if user.branch_id:
+        if not db.query(Branch).filter(Branch.id == user.branch_id).first():
+            raise HTTPException(status_code=404, detail="Branch not found")
 
-    user_data = user.model_dump()
-    user_data["avatar"] = str(user_data["avatar"]) if user_data.get("avatar") else None
+    if user.role_id:
+        if not db.query(Role).filter(Role.id == user.role_id).first():
+            raise HTTPException(status_code=404, detail="Role not found")
+
+    # 👇 Dump with mode='json' to automatically convert HttpUrl, enums, etc.
+    user_data = user.model_dump(mode="json")
+    user_data["password"] = hashed
+
     new_user = User(**user_data)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-
     return new_user
+
 
 
 @router.put('/{user_id}',
