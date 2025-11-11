@@ -16,8 +16,8 @@ class Unit(Base):
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
     deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
 
-    product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="unit")
-    product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="unit")
+    # product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="unit")
+    # product_wallets: Mapped[list["ProductWallet"]] = relationship("ProductWallet", back_populates="unit")
 
 
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="unit")
@@ -41,9 +41,9 @@ class Unit(Base):
     conversions_to: Mapped[list["Conversion"]] = relationship(
         "Conversion", back_populates="unit_end", foreign_keys="[Conversion.unit_end_id]"
     )
-    stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
-        "ProductStockInitial", back_populates="unit"
-    )
+    # stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
+    #     "ProductStockInitial", back_populates="unit"
+    # )
     sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
         "SaleDetailAttention", back_populates="unit"
     )
