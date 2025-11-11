@@ -74,7 +74,7 @@ class ProductCreate(ProductBase):
 
 
 # Schema for update (all optional)
-class ProductUpdate(BaseModel):
+class ProductUpdate(ProductBase):
     title: Optional[ProductTitleStr] = None
     price_retail: Optional[PriceRetail] = None
     price_cost: Optional[PriceCost] = None
@@ -168,12 +168,6 @@ class ProductDetailsResponse(ProductResponse):
             }
         }
     )
-
-# Schema for search filters
-class StockStateEnum(IntEnum):
-    AVAILABLE = 1
-    LOW_STOCK = 2
-    OUT_OF_STOCK = 3
 
 class ProductSearchParams(BaseModel):
     title: Optional[str] = Field(None, min_length=2, max_length=100, description="Buscar por título (coincidencia parcial)")

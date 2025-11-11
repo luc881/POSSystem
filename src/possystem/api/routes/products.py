@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from starlette import status
 from ...models.products.orm import Product
+from ...models.product_categories.orm import ProductCategory
 from ...models.products.schemas import ProductCreate, ProductResponse, ProductUpdate, ProductSearchParams, ProductDetailsResponse
 from ...models.permissions.orm import Permission
 from ...utils.permissions import CAN_READ_PRODUCTS, CAN_CREATE_PRODUCTS, CAN_UPDATE_PRODUCTS, CAN_DELETE_PRODUCTS
@@ -26,6 +27,22 @@ async def read_all(db: db_dependency):
     products = db.query(Product).all()
     return products
 
+@router.get("/{product_id}",
+            response_model=ProductDetailsResponse,
+            summary="Get product details",
+            description="Retrieve detailed information about a specific product by its ID.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_READ_PRODUCTS)
+async def read_product(product_id: int, db: db_dependency):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Product not found."
+        )
+    return product
+
+
 @router.post("/",
             response_model=ProductResponse,
             summary="Create a new product",
@@ -39,7 +56,12 @@ async def create_product(product: ProductCreate, db: db_dependency):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Product with this SKU already exists."
         )
-    new_product = Product(**product.model_dump())
+    if product.product_category_id:
+        category = db.query(ProductCategory).filter(ProductCategory.id == product.product_category_id).first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found.")
+
+    new_product = Product(**product.model_dump(mode="json"))
     db.add(new_product)
     db.commit()
     db.refresh(new_product)
@@ -58,6 +80,11 @@ async def update_product(product_id: int, product: ProductUpdate, db: db_depende
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Product not found."
         )
+    if product.product_category_id:
+        category = db.query(ProductCategory).filter(ProductCategory.id == product.product_category_id).first()
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found.")
+
     if product.sku and product.sku != existing_product.sku:
         sku_exists = db.query(Product).filter(Product.sku == product.sku).first()
         if sku_exists:
@@ -65,7 +92,7 @@ async def update_product(product_id: int, product: ProductUpdate, db: db_depende
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Product with this SKU already exists."
             )
-    for key, value in product.model_dump().items():
+    for key, value in product.model_dump(exclude_unset=True, mode="json").items():
         setattr(existing_product, key, value)
     db.commit()
     db.refresh(existing_product)
@@ -85,4 +112,3 @@ async def delete_product(product_id: int, db: db_dependency):
         )
     db.delete(existing_product)
     db.commit()
-    return {"detail": "Product deleted successfully."}
