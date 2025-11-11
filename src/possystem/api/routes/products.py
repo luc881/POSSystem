@@ -119,6 +119,22 @@ async def update_product(product_id: int, product: ProductUpdate, db: db_depende
     db.refresh(existing_product)
     return existing_product
 
+@router.patch("/{product_id}/toggle-active",
+            response_model=ProductResponse,
+            summary="Toggle product availability",
+            description="Activate or deactivate a product quickly.",
+            dependencies=CAN_UPDATE_PRODUCTS)
+async def toggle_product_active(product_id: int, db: db_dependency):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found.")
+
+    product.is_active = not product.is_active
+    db.commit()
+    db.refresh(product)
+    return product
+
+
 @router.delete("/{product_id}",
             summary="Delete a product",
             description="Delete a product by its ID.",
