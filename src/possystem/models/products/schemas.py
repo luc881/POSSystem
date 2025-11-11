@@ -1,7 +1,9 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 from enum import IntEnum
+from ..product_categories.schemas import ProductCategoryResponse
+from ..product_batch.schemas import ProductBatchResponse
 from possystem.types.products import (
     ProductTitleStr,
     ProductImageURL,
@@ -188,3 +190,4 @@ if TYPE_CHECKING:
     from ..product_categories.schemas import ProductCategoryResponse
     from ..product_warehouses.schemas import ProductWarehouseResponse
     from ..product_wallets.schemas import ProductWalletResponse
+
