@@ -39,7 +39,7 @@ async def create(product_category: ProductCategoryCreate, db: db_dependency):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Product category with this name already exists."
         )
-    new_category = ProductCategory(**product_category.model_dump())
+    new_category = ProductCategory(**product_category.model_dump(mode="json"))
     db.add(new_category)
     db.commit()
     db.refresh(new_category)
@@ -51,15 +51,17 @@ async def create(product_category: ProductCategoryCreate, db: db_dependency):
     summary="Update an existing product category",
     description="Update the details of an existing product category.",
     status_code=status.HTTP_200_OK,
-    dependencies=CAN_UPDATE_PRODUCT_CATEGORIES
+    dependencies=CAN_UPDATE_PRODUCT_CATEGORIES,
 )
 async def update(category_id: int, product_category: ProductCategoryUpdate, db: db_dependency):
     existing_category = db.query(ProductCategory).filter(ProductCategory.id == category_id).first()
     if not existing_category:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Product category not found."
+            detail="Product category not found.",
         )
+
+    # ✅ Check for duplicate names if name is provided
     if product_category.name:
         name_conflict = db.query(ProductCategory).filter(
             ProductCategory.name == product_category.name,
@@ -68,17 +70,18 @@ async def update(category_id: int, product_category: ProductCategoryUpdate, db: 
         if name_conflict:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Another product category with this name already exists."
+                detail="Another product category with this name already exists.",
             )
-        existing_category.name = product_category.name
-    if product_category.image is not None:
-        existing_category.image = product_category.image
-    if product_category.is_active is not None:
-        existing_category.is_active = product_category.is_active
+
+    # ✅ More compact update logic (like in products)
+    update_data = product_category.model_dump(exclude_unset=True, mode="json")
+    for key, value in update_data.items():
+        setattr(existing_category, key, value)
 
     db.commit()
     db.refresh(existing_category)
     return existing_category
+
 
 @router.delete(
     "/{category_id}",
