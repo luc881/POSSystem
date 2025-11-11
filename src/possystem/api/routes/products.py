@@ -30,7 +30,7 @@ async def read_all(db: db_dependency):
 @router.get("/search",
             response_model=list[ProductResponse],
             summary="Search and filter products",
-            description="Search products by title, category, stock state, or availability.",
+            description="Search products by title, category, or availability.",
             dependencies=CAN_READ_PRODUCTS)
 async def search_products(db: db_dependency, params: ProductSearchParams = Depends()):
     query = db.query(Product)
@@ -41,8 +41,6 @@ async def search_products(db: db_dependency, params: ProductSearchParams = Depen
         query = query.filter(Product.product_category_id == params.product_category_id)
     if params.is_active is not None:
         query = query.filter(Product.is_active == params.is_active)
-    if params.stock_state:
-        query = query.filter(Product.stock_state == params.stock_state)
 
     products = query.all()
     return products

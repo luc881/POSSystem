@@ -14,10 +14,8 @@ from possystem.types.products import (
     DiscountPercentage,
     TaxPercentage,
     WarrantyDays,
-    StockStateEnum,
     IsDiscountFlag,
     IsGiftFlag,
-    AllowWithoutStockFlag,
     IsActiveFlag,
     IsTaxableFlag,
     AllowWarrantyFlag
@@ -33,12 +31,10 @@ class ProductBase(BaseModel):
     price_cost: PriceCost = Field(...)
     description: Optional[ProductDescriptionStr] = None
     max_discount: Optional[DiscountPercentage] = None
-    stock_state: StockStateEnum = Field(default=StockStateEnum.AVAILABLE)
     warranty_days: Optional[WarrantyDays] = None
     tax_percentage: Optional[TaxPercentage] = None
     sku: Optional[ProductSKUStr] = None
 
-    allow_without_stock: AllowWithoutStockFlag = False
     allow_warranty: AllowWarrantyFlag = False
     is_discount: IsDiscountFlag = False
     is_gift: IsGiftFlag = False
@@ -60,9 +56,7 @@ class ProductCreate(ProductBase):
                 "is_discount": True,
                 "max_discount": 15.0,
                 "is_gift": False,
-                "allow_without_stock": True,
                 "is_active": True,
-                "stock_state": 1,
                 "warranty_days": 30,
                 "allow_warranty": True,
                 "is_taxable": True,
@@ -79,9 +73,7 @@ class ProductUpdate(ProductBase):
     price_retail: Optional[PriceRetail] = None
     price_cost: Optional[PriceCost] = None
     max_discount: Optional[DiscountPercentage] = None
-    stock_state: Optional[StockStateEnum] = None
 
-    allow_without_stock: Optional[AllowWithoutStockFlag] = None
     allow_warranty: Optional[AllowWarrantyFlag] = None
     is_discount: Optional[IsDiscountFlag] = None
     is_active: Optional[IsActiveFlag] = None
@@ -96,7 +88,6 @@ class ProductUpdate(ProductBase):
             "example": {
                 "price_retail": 19.0,
                 "is_discount": False,
-                "stock_state": 2,
                 "is_active": True
             }
         }
@@ -123,9 +114,7 @@ class ProductResponse(ProductBase):
                 "is_discount": True,
                 "max_discount": 15.0,
                 "is_gift": False,
-                "allow_without_stock": True,
                 "is_active": True,
-                "stock_state": 1,
                 "warranty_days": 30,
                 "is_taxable": True,
                 "tax_percentage": 16.0,
@@ -150,7 +139,6 @@ class ProductDetailsResponse(ProductResponse):
                 "title": "Refresco Cola 600ml",
                 "price_retail": 20.0,
                 "price_cost": 18.0,
-                "stock_state": 1,
                 "category": {
                     "id": 1,
                     "name": "Bebidas",
@@ -173,7 +161,6 @@ class ProductSearchParams(BaseModel):
     title: Optional[str] = Field(None, min_length=2, max_length=100, description="Buscar por título (coincidencia parcial)")
     product_category_id: Optional[int] = Field(None, gt=0, description="Filtrar por categoría")
     is_active: Optional[bool] = Field(None, description="Filtrar por estado de disponibilidad")
-    stock_state: Optional[StockStateEnum] = Field(None, description="Filtrar por estado de stock")
 
     model_config = ConfigDict(extra="forbid")
 

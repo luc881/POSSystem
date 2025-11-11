@@ -24,7 +24,7 @@ class Product(Base):
     is_gift: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     allow_without_stock: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    stock_state: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)  # 1 available, 2 low stock, 3 out of stock
+    # stock_state: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)  # 1 available, 2 low stock, 3 out of stock
     allow_warranty: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     warranty_days: Mapped[float] = mapped_column(Double, nullable=True)
     is_taxable: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
