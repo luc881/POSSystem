@@ -13,7 +13,7 @@ from ...models.products.orm import Product
 from ...models.units.orm import Unit
 from ...models.warehouses.orm import Warehouse
 from ...models.sale_details.orm import SaleDetail
-from ...models.clients.orm import Client
+# from ...models.clients.orm import Client
 from ...models.users.orm import User
 
 
@@ -70,10 +70,10 @@ async def create(refund_product: RefundProductCreate, db: db_dependency):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated sale detail not found")
 
     # Check if the associated client exists (if provided)
-    if refund_product.client_id is not None:
-        client = db.query(Client).filter(Client.id == refund_product.client_id).first()
-        if not client:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated client not found")
+    # if refund_product.client_id is not None:
+    #     client = db.query(Client).filter(Client.id == refund_product.client_id).first()
+    #     if not client:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated client not found")
 
     # Check if the associated user exists (if provided)
     if refund_product.user_id is not None:
@@ -126,10 +126,10 @@ async def update(id: int, refund_product: RefundProductUpdate, db: db_dependency
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated sale detail not found")
 
     # If updating client_id, check if the associated client exists
-    if refund_product.client_id is not None:
-        client = db.query(Client).filter(Client.id == refund_product.client_id).first()
-        if not client:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated client not found")
+    # if refund_product.client_id is not None:
+    #     client = db.query(Client).filter(Client.id == refund_product.client_id).first()
+    #     if not client:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated client not found")
 
     # If updating user_id, check if the associated user exists
     if refund_product.user_id is not None:

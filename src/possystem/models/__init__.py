@@ -25,7 +25,6 @@ from .product_categories.orm import ProductCategory
 from .warehouses.orm import Warehouse
 from .products.orm import Product
 from .units.orm import Unit
-from .clients.orm import Client
 from .sales.orm import Sale
 from .sale_payments.orm import SalePayment
 from .sale_details.orm import SaleDetail

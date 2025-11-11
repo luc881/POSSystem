@@ -8,7 +8,7 @@ from ...models.sales.schemas import SaleCreate, SaleResponse, SaleUpdate
 from ...utils.permissions import CAN_READ_SALES, CAN_CREATE_SALES, CAN_UPDATE_SALES, CAN_DELETE_SALES
 from ...models.sales.orm import Sale
 from ...models.users.orm import User
-from ...models.clients.orm import Client
+# from ...models.clients.orm import Client
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -45,8 +45,8 @@ async def create(
     if not db.query(User).filter_by(id=sale.user_id).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User ID does not exist.")
     # Validate client exists
-    if sale.client_id and not db.query(Client).filter_by(id=sale.client_id).first():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Client ID does not exist.")
+    # if sale.client_id and not db.query(Client).filter_by(id=sale.client_id).first():
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Client ID does not exist.")
 
     new_sale = Sale(**sale.model_dump())
     db.add(new_sale)
@@ -75,8 +75,8 @@ async def update(
     if sale.user_id and not db.query(User).filter_by(id=sale.user_id).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User ID does not exist.")
     # Validate client exists
-    if sale.client_id and not db.query(Client).filter_by(id=sale.client_id).first():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Client ID does not exist.")
+    # if sale.client_id and not db.query(Client).filter_by(id=sale.client_id).first():
+    #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Client ID does not exist.")
 
     for key, value in sale.model_dump(exclude_unset=True).items():
         setattr(existing_sale, key, value)

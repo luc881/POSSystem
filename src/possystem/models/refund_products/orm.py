@@ -13,7 +13,7 @@ class RefundProduct(Base):
     warehouse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"), nullable=True)
     quantity: Mapped[float] = mapped_column(Double, nullable=False)
     sale_detail_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("sale_details.id"), nullable=True)
-    client_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("clients.id"), nullable=True)
+    # client_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("clients.id"), nullable=True)
     type: Mapped[int] = mapped_column(SmallInteger, nullable=False, comment="1=Repair, 2=Replacement, 3=Return")
     state: Mapped[int] = mapped_column(SmallInteger, nullable=False, comment="1=Pending, 2=Review, 3=Repaired, 4=Discarded")
     description: Mapped[str] = mapped_column(Text, nullable=True)
@@ -30,5 +30,5 @@ class RefundProduct(Base):
     unit: Mapped["Unit"] = relationship("Unit", back_populates="refund_products")  # NEW
     warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="refund_products")
     sale_detail: Mapped["SaleDetail"] = relationship("SaleDetail", back_populates="refund_products")
-    client: Mapped["Client"] = relationship("Client", back_populates="refund_products")
+    # client: Mapped["Client"] = relationship("Client", back_populates="refund_products")
     user: Mapped["User"] = relationship("User", back_populates="refund_products")

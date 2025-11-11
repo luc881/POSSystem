@@ -9,7 +9,7 @@ class Sale(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=True)
-    client_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("clients.id"), nullable=True)
+    # client_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("clients.id"), nullable=True)
     type_client: Mapped[int] = mapped_column(SmallInteger, nullable=False)  # 1 = end customer, 2 = company
     branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"), nullable=True)
     subtotal: Mapped[float] = mapped_column(Double, nullable=True)
@@ -30,7 +30,7 @@ class Sale(Base):
 
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="sales")
-    client: Mapped["Client"] = relationship("Client", back_populates="sales")
+    # client: Mapped["Client"] = relationship("Client", back_populates="sales")
     branch: Mapped["Branch"] = relationship("Branch", back_populates="sales")
     sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="sale")
     sale_payments: Mapped[list["SalePayment"]] = relationship("SalePayment", back_populates="sale")
