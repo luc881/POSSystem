@@ -17,7 +17,6 @@ ProductBatchResponse.model_rebuild()
 ProductBatchDetailsResponse.model_rebuild()
 
 # Import ORM models correctly with relative paths
-from .transports.orm import Transport
 from .users.orm import User
 from .roles.orm import Role
 from .permissions.orm import Permission
