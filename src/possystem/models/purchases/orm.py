@@ -8,7 +8,7 @@ class Purchase(Base):
     __tablename__ = "purchases"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    warehouse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"))
+    # warehouse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"))
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"))
     branch_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("branches.id"))
     date_emision: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
@@ -29,5 +29,5 @@ class Purchase(Base):
     supplier = relationship("Supplier", back_populates="purchases")
     branch = relationship("Branch", back_populates="purchases")
     user = relationship("User", back_populates="purchases")
-    warehouse = relationship("Warehouse", back_populates="purchases")
     details = relationship("PurchaseDetail", back_populates="purchase")
+    # warehouse = relationship("Warehouse", back_populates="purchases")

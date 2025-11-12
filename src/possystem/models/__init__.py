@@ -22,7 +22,6 @@ from .roles.orm import Role
 from .permissions.orm import Permission
 from .branches.orm import Branch
 from .product_categories.orm import ProductCategory
-from .warehouses.orm import Warehouse
 from .products.orm import Product
 from .units.orm import Unit
 from .sales.orm import Sale

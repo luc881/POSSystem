@@ -11,7 +11,6 @@ from ...utils.permissions import CAN_READ_REFUND_PRODUCTS, CAN_CREATE_REFUND_PRO
 
 from ...models.products.orm import Product
 from ...models.units.orm import Unit
-from ...models.warehouses.orm import Warehouse
 from ...models.sale_details.orm import SaleDetail
 # from ...models.clients.orm import Client
 from ...models.users.orm import User
@@ -58,10 +57,10 @@ async def create(refund_product: RefundProductCreate, db: db_dependency):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     # Check if the associated warehouse exists (if provided)
-    if refund_product.warehouse_id is not None:
-        warehouse = db.query(Warehouse).filter(Warehouse.id == refund_product.warehouse_id).first()
-        if not warehouse:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+    # if refund_product.warehouse_id is not None:
+    #     warehouse = db.query(Warehouse).filter(Warehouse.id == refund_product.warehouse_id).first()
+    #     if not warehouse:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # Check if the associated sale detail exists (if provided)
     if refund_product.sale_detail_id is not None:
@@ -114,10 +113,10 @@ async def update(id: int, refund_product: RefundProductUpdate, db: db_dependency
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     # If updating warehouse_id, check if the associated warehouse exists
-    if refund_product.warehouse_id is not None:
-        warehouse = db.query(Warehouse).filter(Warehouse.id == refund_product.warehouse_id).first()
-        if not warehouse:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+    # if refund_product.warehouse_id is not None:
+    #     warehouse = db.query(Warehouse).filter(Warehouse.id == refund_product.warehouse_id).first()
+    #     if not warehouse:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # If updating sale_detail_id, check if the associated sale detail exists
     if refund_product.sale_detail_id is not None:

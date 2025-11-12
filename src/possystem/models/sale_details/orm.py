@@ -29,9 +29,9 @@ class SaleDetail(Base):
     # Relationships
     sale: Mapped["Sale"] = relationship("Sale", back_populates="sale_details")
     product: Mapped["Product"] = relationship("Product", back_populates="sale_details")
-    product_category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="sale_details")
-    warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="sale_details")
+    # product_category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="sale_details")
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="sale_detail")
+    # warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="sale_details")
     # attentions: Mapped[list["SaleDetailAttention"]] = relationship(
     #     "SaleDetailAttention", back_populates="sale_detail"
     # )

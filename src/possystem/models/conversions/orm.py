@@ -9,7 +9,7 @@ class Conversion(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     product_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("products.id"), nullable=False)
-    warehouse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"), nullable=False)
+    # warehouse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"), nullable=False)
     unit_start_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("units.id"), nullable=False)
     unit_end_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("units.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=False)
@@ -23,7 +23,6 @@ class Conversion(Base):
 
     # Relationships
     product: Mapped["Product"] = relationship("Product", back_populates="conversions")
-    warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="conversions")
     unit_start: Mapped["Unit"] = relationship(
         "Unit", back_populates="conversions_from", foreign_keys=[unit_start_id]
     )
@@ -31,3 +30,4 @@ class Conversion(Base):
         "Unit", back_populates="conversions_to", foreign_keys=[unit_end_id]
     )
     user: Mapped["User"] = relationship("User", back_populates="conversions")
+    # warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="conversions")

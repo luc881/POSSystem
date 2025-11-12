@@ -9,7 +9,6 @@ from ...models.conversions.orm import Conversion
 from ...models.conversions.schemas import ConversionResponse, ConversionCreate, ConversionUpdate, ConversionWithRelations
 from ...utils.permissions import CAN_READ_CONVERSIONS, CAN_CREATE_CONVERSIONS, CAN_UPDATE_CONVERSIONS, CAN_DELETE_CONVERSIONS
 
-from ...models.warehouses.orm import Warehouse
 from ...models.products.orm import Product
 from ...models.units.orm import Unit
 from ...models.users.orm import User
@@ -43,9 +42,9 @@ async def read_all(db: db_dependency):
 )
 async def create(conversion: ConversionCreate, db: db_dependency):
     # Check if the associated warehouses exist
-    warehouse = db.query(Warehouse).filter(Warehouse.id == conversion.warehouse_id).first()
-    if not warehouse:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source warehouse not found")
+    # warehouse = db.query(Warehouse).filter(Warehouse.id == conversion.warehouse_id).first()
+    # if not warehouse:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source warehouse not found")
 
     # Check if the associated product exists
     product = db.query(Product).filter(Product.id == conversion.product_id).first()
@@ -91,10 +90,10 @@ async def update(conversion_id: int, conversion_update: ConversionUpdate, db: db
         if not product:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
 
-    if conversion_update.warehouse_id is not None:
-        warehouse = db.query(Warehouse).filter(Warehouse.id == conversion_update.warehouse_id).first()
-        if not warehouse:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source warehouse not found")
+    # if conversion_update.warehouse_id is not None:
+    #     warehouse = db.query(Warehouse).filter(Warehouse.id == conversion_update.warehouse_id).first()
+    #     if not warehouse:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source warehouse not found")
 
     if conversion_update.unit_start_id is not None:
         unit_start = db.query(Unit).filter(Unit.id == conversion_update.unit_start_id).first()

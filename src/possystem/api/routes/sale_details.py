@@ -9,7 +9,6 @@ from ...models.sale_details.orm import SaleDetail
 from ...utils.permissions import CAN_READ_SALE_DETAILS, CAN_CREATE_SALE_DETAILS, CAN_UPDATE_SALE_DETAILS, CAN_DELETE_SALE_DETAILS
 
 from ...models.sales.orm import Sale
-from ...models.warehouses.orm import Warehouse
 from ...models.products.orm import Product
 from ...models.units.orm import Unit
 from ...models.product_categories.orm import ProductCategory
@@ -60,10 +59,10 @@ async def create(sale_detail: SaleDetailCreate, db: db_dependency):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product category not found")
 
     # Check if the associated warehouse exists (if provided)
-    if sale_detail.warehouse_id is not None:
-        warehouse = db.query(Warehouse).filter(Warehouse.id == sale_detail.warehouse_id).first()
-        if not warehouse:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+    # if sale_detail.warehouse_id is not None:
+    #     warehouse = db.query(Warehouse).filter(Warehouse.id == sale_detail.warehouse_id).first()
+    #     if not warehouse:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # Check if the associated unit exists (if provided)
     if sale_detail.unit_id is not None:
@@ -103,10 +102,10 @@ async def update(sale_detail_id: int, sale_detail: SaleDetailUpdate, db: db_depe
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product category not found")
 
     # If warehouse_id is being updated, check if the new warehouse exists
-    if sale_detail.warehouse_id is not None:
-        warehouse = db.query(Warehouse).filter(Warehouse.id == sale_detail.warehouse_id).first()
-        if not warehouse:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+    # if sale_detail.warehouse_id is not None:
+    #     warehouse = db.query(Warehouse).filter(Warehouse.id == sale_detail.warehouse_id).first()
+    #     if not warehouse:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # If unit_id is being updated, check if the new unit exists
     if sale_detail.unit_id is not None:

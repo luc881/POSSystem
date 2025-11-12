@@ -10,7 +10,6 @@ from ...models.purchases.schemas import PurchaseResponse, PurchaseCreate, Purcha
 from ...utils.permissions import CAN_READ_PURCHASES, CAN_CREATE_PURCHASES, CAN_UPDATE_PURCHASES, CAN_DELETE_PURCHASES
 
 from ...models.users.orm import User
-from ...models.warehouses.orm import Warehouse
 from ...models.branches.orm import Branch
 from ...models.suppliers.orm import Supplier
 
@@ -50,9 +49,9 @@ async def create(purchase: PurchaseCreate, db: db_dependency):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated user not found")
 
     # Check if the associated warehouse exists
-    warehouse = db.query(Warehouse).filter(Warehouse.id == purchase.warehouse_id).first()
-    if not warehouse:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+    # warehouse = db.query(Warehouse).filter(Warehouse.id == purchase.warehouse_id).first()
+    # if not warehouse:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # Check if the associated branch exists
     branch = db.query(Branch).filter(Branch.id == purchase.branch_id).first()
@@ -91,10 +90,10 @@ async def update(purchase_id: int, purchase: PurchaseUpdate, db: db_dependency):
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated user not found")
 
     # Check if the associated warehouse exists
-    if purchase.warehouse_id is not None:
-        warehouse = db.query(Warehouse).filter(Warehouse.id == purchase.warehouse_id).first()
-        if not warehouse:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
+    # if purchase.warehouse_id is not None:
+    #     warehouse = db.query(Warehouse).filter(Warehouse.id == purchase.warehouse_id).first()
+    #     if not warehouse:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # Check if the associated branch exists
     if purchase.branch_id is not None:
