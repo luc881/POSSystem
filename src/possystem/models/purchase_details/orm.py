@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, SmallInteger, Double, TIMESTAMP, Text, ForeignKey
+from sqlalchemy import BigInteger, SmallInteger, Double, TIMESTAMP, Text, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 from ...db.session import Base
