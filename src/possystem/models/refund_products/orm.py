@@ -9,7 +9,7 @@ class RefundProduct(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     product_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("products.id"), nullable=False)
-    unit_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("units.id"), nullable=True)  # FK to units
+    # unit_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("units.id"), nullable=True)  # FK to units
     # warehouse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("warehouses.id"), nullable=True)
     quantity: Mapped[float] = mapped_column(Double, nullable=False)
     sale_detail_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("sale_details.id"), nullable=True)
@@ -27,7 +27,7 @@ class RefundProduct(Base):
 
     # Relationships
     product: Mapped["Product"] = relationship("Product", back_populates="refund_products")
-    unit: Mapped["Unit"] = relationship("Unit", back_populates="refund_products")  # NEW
+    # unit: Mapped["Unit"] = relationship("Unit", back_populates="refund_products")  # NEW
     sale_detail: Mapped["SaleDetail"] = relationship("SaleDetail", back_populates="refund_products")
     user: Mapped["User"] = relationship("User", back_populates="refund_products")
     # warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="refund_products")

@@ -11,7 +11,6 @@ from ...utils.permissions import CAN_READ_PURCHASE_DETAILS, CAN_CREATE_PURCHASE_
 
 from ...models.purchases.orm import Purchase
 from ...models.products.orm import Product
-from ...models.units.orm import Unit
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -54,9 +53,9 @@ async def create(purchase_detail: PurchaseDetailCreate, db: db_dependency):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
 
     # Check if the associated unit exists
-    unit = db.query(Unit).filter(Unit.id == purchase_detail.unit_id).first()
-    if not unit:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+    # unit = db.query(Unit).filter(Unit.id == purchase_detail.unit_id).first()
+    # if not unit:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     new_purchase_detail = PurchaseDetail(**purchase_detail.model_dump())
     db.add(new_purchase_detail)
@@ -91,10 +90,10 @@ async def update(purchase_detail_id: int, purchase_detail: PurchaseDetailUpdate,
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
 
     # If unit_id is being updated, check if the new unit exists
-    if purchase_detail.unit_id is not None:
-        unit = db.query(Unit).filter(Unit.id == purchase_detail.unit_id).first()
-        if not unit:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+    # if purchase_detail.unit_id is not None:
+    #     unit = db.query(Unit).filter(Unit.id == purchase_detail.unit_id).first()
+    #     if not unit:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     for key, value in purchase_detail.model_dump(exclude_unset=True).items():
         setattr(existing_purchase_detail, key, value)

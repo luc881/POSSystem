@@ -10,7 +10,7 @@ class PurchaseDetail(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     purchase_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("purchases.id"))
     product_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("products.id"))
-    unit_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("units.id"))
+    # unit_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("units.id"))
     quantity: Mapped[float] = mapped_column(Double)
     unit_price: Mapped[float] = mapped_column(Double)
     total_price: Mapped[float] = mapped_column(Double)
@@ -25,7 +25,7 @@ class PurchaseDetail(Base):
     # Relationships
     purchase = relationship("Purchase", back_populates="details")
     product = relationship("Product", back_populates="purchase_details")
-    unit = relationship("Unit", back_populates="purchase_details")
+    # unit = relationship("Unit", back_populates="purchase_details")
     # delivered_by = relationship(
     #     "User",
     #     back_populates="delivered_purchase_details",

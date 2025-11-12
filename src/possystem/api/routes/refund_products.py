@@ -10,7 +10,6 @@ from ...models.refund_products.schemas import RefundProductCreate, RefundProduct
 from ...utils.permissions import CAN_READ_REFUND_PRODUCTS, CAN_CREATE_REFUND_PRODUCTS, CAN_UPDATE_REFUND_PRODUCTS, CAN_DELETE_REFUND_PRODUCTS
 
 from ...models.products.orm import Product
-from ...models.units.orm import Unit
 from ...models.sale_details.orm import SaleDetail
 # from ...models.clients.orm import Client
 from ...models.users.orm import User
@@ -51,10 +50,10 @@ async def create(refund_product: RefundProductCreate, db: db_dependency):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
 
     # Check if the associated unit exists (if provided)
-    if refund_product.unit_id is not None:
-        unit = db.query(Unit).filter(Unit.id == refund_product.unit_id).first()
-        if not unit:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+    # if refund_product.unit_id is not None:
+    #     unit = db.query(Unit).filter(Unit.id == refund_product.unit_id).first()
+    #     if not unit:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     # Check if the associated warehouse exists (if provided)
     # if refund_product.warehouse_id is not None:
@@ -107,10 +106,10 @@ async def update(id: int, refund_product: RefundProductUpdate, db: db_dependency
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated product not found")
 
     # If updating unit_id, check if the associated unit exists
-    if refund_product.unit_id is not None:
-        unit = db.query(Unit).filter(Unit.id == refund_product.unit_id).first()
-        if not unit:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+    # if refund_product.unit_id is not None:
+    #     unit = db.query(Unit).filter(Unit.id == refund_product.unit_id).first()
+    #     if not unit:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     # If updating warehouse_id, check if the associated warehouse exists
     # if refund_product.warehouse_id is not None:

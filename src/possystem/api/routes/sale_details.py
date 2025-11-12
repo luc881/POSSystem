@@ -10,7 +10,6 @@ from ...utils.permissions import CAN_READ_SALE_DETAILS, CAN_CREATE_SALE_DETAILS,
 
 from ...models.sales.orm import Sale
 from ...models.products.orm import Product
-from ...models.units.orm import Unit
 from ...models.product_categories.orm import ProductCategory
 
 
@@ -65,10 +64,10 @@ async def create(sale_detail: SaleDetailCreate, db: db_dependency):
     #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # Check if the associated unit exists (if provided)
-    if sale_detail.unit_id is not None:
-        unit = db.query(Unit).filter(Unit.id == sale_detail.unit_id).first()
-        if not unit:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+    # if sale_detail.unit_id is not None:
+    #     unit = db.query(Unit).filter(Unit.id == sale_detail.unit_id).first()
+    #     if not unit:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     new_sale_detail = SaleDetail(**sale_detail.model_dump())
     db.add(new_sale_detail)
@@ -108,10 +107,10 @@ async def update(sale_detail_id: int, sale_detail: SaleDetailUpdate, db: db_depe
     #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated warehouse not found")
 
     # If unit_id is being updated, check if the new unit exists
-    if sale_detail.unit_id is not None:
-        unit = db.query(Unit).filter(Unit.id == sale_detail.unit_id).first()
-        if not unit:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
+    # if sale_detail.unit_id is not None:
+    #     unit = db.query(Unit).filter(Unit.id == sale_detail.unit_id).first()
+    #     if not unit:
+    #         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Associated unit not found")
 
     for key, value in sale_detail.model_dump(exclude_unset=True).items():
         setattr(existing_sale_detail, key, value)
