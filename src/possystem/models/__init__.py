@@ -28,7 +28,6 @@ from .units.orm import Unit
 from .sales.orm import Sale
 from .sale_payments.orm import SalePayment
 from .sale_details.orm import SaleDetail
-from .sale_details_attentions.orm import SaleDetailAttention
 from .refund_products.orm import RefundProduct
 from .suppliers.orm import Supplier
 from .purchases.orm import Purchase

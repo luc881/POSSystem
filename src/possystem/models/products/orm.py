@@ -50,9 +50,9 @@ class Product(Base):
     # stock_initials: Mapped[list["ProductStockInitial"]] = relationship(
     #     "ProductStockInitial", back_populates="product"
     # )
-    sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
-        "SaleDetailAttention", back_populates="product"
-    )
+    # sale_detail_attentions: Mapped[list["SaleDetailAttention"]] = relationship(
+    #     "SaleDetailAttention", back_populates="product"
+    # )
     batches: Mapped[list["ProductBatch"]] = relationship(
         "ProductBatch", back_populates="product", cascade="all, delete-orphan"
     )
