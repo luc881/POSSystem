@@ -24,15 +24,15 @@ class Product(Base):
     is_gift: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     allow_without_stock: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    # stock_state: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)  # 1 available, 2 low stock, 3 out of stock
     allow_warranty: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     warranty_days: Mapped[float] = mapped_column(Double, nullable=True)
     is_taxable: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     tax_percentage: Mapped[float] = mapped_column(Double, nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), server_default=func.now(), onupdate=func.now())
-    # deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
     sku: Mapped[str] = mapped_column(String(100), nullable=True)
+    # stock_state: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)  # 1 available, 2 low stock, 3 out of stock
+    # deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
 
     category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="products")
     # product_warehouses: Mapped[list["ProductWarehouse"]] = relationship("ProductWarehouse", back_populates="product")
