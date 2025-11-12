@@ -46,19 +46,59 @@ ProductSKUStr = Annotated[
 
 
 # -------------------------------
+# ⚖️ Unidades y fraccionamiento
+# -------------------------------
+
+ProductUnitName = Annotated[
+    str,
+    StringConstraints(
+        min_length=1,
+        max_length=50,
+        pattern=r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"
+    ),
+    Field(description="Nombre de la unidad principal (ej. pieza, caja)")
+]
+
+ProductBaseUnitName = Annotated[
+    str,
+    StringConstraints(
+        min_length=1,
+        max_length=50,
+        pattern=r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"
+    ),
+    Field(description="Nombre de la unidad base o fraccionada (ej. tableta, sobre)")
+]
+
+UnitsPerBase = Annotated[
+    NonNegativeFloat,
+    Field(gt=0, description="Cantidad de unidades base por unidad principal (ej. 10 = 1 caja contiene 10 tabletas)")
+]
+
+
+# -------------------------------
 # 💰 Numeric and price types
 # -------------------------------
 
-PriceRetail = Annotated[NonNegativeFloat, Field(description="Precio de venta al público")]
-PriceCost = Annotated[NonNegativeFloat, Field(description="Precio de costo del producto")]
+PriceRetail = Annotated[
+    NonNegativeFloat,
+    Field(description="Precio de venta al público")
+]
+
+PriceCost = Annotated[
+    NonNegativeFloat,
+    Field(description="Precio de costo del producto")
+]
+
 DiscountPercentage = Annotated[
     Optional[NonNegativeFloat],
     Field(le=100, description="Porcentaje de descuento máximo permitido")
 ]
+
 TaxPercentage = Annotated[
     Optional[NonNegativeFloat],
     Field(le=100, description="Porcentaje de impuesto aplicado al producto")
 ]
+
 WarrantyDays = Annotated[
     Optional[NonNegativeFloat],
     Field(description="Número de días de garantía del producto")
@@ -81,12 +121,12 @@ class StockStateEnum(int, Enum):
 
 IsDiscountFlag = Annotated[
     bool,
-    Field( description="Indica si el producto tiene descuento")
+    Field(description="Indica si el producto tiene descuento")
 ]
 
 IsGiftFlag = Annotated[
     bool,
-    Field( description="Indica si puede ser usado como obsequio")
+    Field(description="Indica si puede ser usado como obsequio")
 ]
 
 AllowWithoutStockFlag = Annotated[
@@ -96,15 +136,15 @@ AllowWithoutStockFlag = Annotated[
 
 IsActiveFlag = Annotated[
     bool,
-    Field( description="Producto activo o desactivado")
+    Field(description="Producto activo o desactivado")
 ]
 
 IsTaxableFlag = Annotated[
     bool,
-    Field( description="Aplica impuesto o no")
+    Field(description="Aplica impuesto o no")
 ]
 
 AllowWarrantyFlag = Annotated[
     bool,
-    Field( description="Aplica garantía o no")
+    Field(description="Aplica garantía o no")
 ]

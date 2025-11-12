@@ -77,10 +77,7 @@ class SaleBatchUsageResponse(SaleBatchUsageBase):
 
 class SaleBatchUsageDetailsResponse(SaleBatchUsageResponse):
     # relaciones opcionales (si quieres incluir información del lote o detalle)
-    from typing import TYPE_CHECKING
-    if TYPE_CHECKING:
-        from ..product_batch.schemas import ProductBatchResponse
-        from ..sale_details.schemas import SaleDetailResponse
+
 
     batch: Optional["ProductBatchResponse"] = Field(None, description="Datos del lote asociado")
     sale_detail: Optional["SaleDetailResponse"] = Field(None, description="Detalle de venta asociado")
@@ -110,3 +107,8 @@ class SaleBatchUsageDetailsResponse(SaleBatchUsageResponse):
             }
         }
     )
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..product_batch.schemas import ProductBatchResponse
+    from ..sale_details.schemas import SaleDetailResponse
