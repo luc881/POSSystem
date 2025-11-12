@@ -10,11 +10,7 @@ class ProductBatch(Base):
     __tablename__ = "product_batches"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    product_id: Mapped[int] = mapped_column(
-        BigInteger,
-        ForeignKey("products.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    product_id: Mapped[int] = mapped_column(BigInteger,ForeignKey("products.id", ondelete="CASCADE"),nullable=False)
     lot_code: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     expiration_date: Mapped[date] = mapped_column(Date, nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -22,3 +18,4 @@ class ProductBatch(Base):
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 
     product: Mapped["Product"] = relationship("Product", back_populates="batches")
+    sale_usages: Mapped[list["SaleBatchUsage"]] = relationship("SaleBatchUsage", back_populates="batch")

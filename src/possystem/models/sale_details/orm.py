@@ -29,6 +29,7 @@ class SaleDetail(Base):
     # Relationships
     sale: Mapped["Sale"] = relationship("Sale", back_populates="sale_details")
     product: Mapped["Product"] = relationship("Product", back_populates="sale_details")
+    batch_usages: Mapped[list["SaleBatchUsage"]] = relationship("SaleBatchUsage", back_populates="sale_detail")
     # product_category: Mapped["ProductCategory"] = relationship("ProductCategory", back_populates="sale_details")
     refund_products: Mapped[list["RefundProduct"]] = relationship("RefundProduct", back_populates="sale_detail")
     # warehouse: Mapped["Warehouse"] = relationship("Warehouse", back_populates="sale_details")
