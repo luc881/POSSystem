@@ -86,6 +86,12 @@ CAN_CREATE_PRODUCT_BATCHES = [Depends(require_permission("productbatches.create"
 CAN_UPDATE_PRODUCT_BATCHES = [Depends(require_permission("productbatches.update"))]
 CAN_DELETE_PRODUCT_BATCHES = [Depends(require_permission("productbatches.delete"))]
 
+# Permissions for sale batch usage operations
+CAN_READ_SALE_BATCH_USAGES = [Depends(require_permission("salebatchusages.read"))]
+CAN_CREATE_SALE_BATCH_USAGES = [Depends(require_permission("salebatchusages.create"))]
+CAN_UPDATE_SALE_BATCH_USAGES = [Depends(require_permission("salebatchusages.update"))]
+CAN_DELETE_SALE_BATCH_USAGES = [Depends(require_permission("salebatchusages.delete"))]
+
 # Permissions for unit operations
 # CAN_READ_UNITS = [Depends(require_permission("units.read"))]
 # CAN_CREATE_UNITS = [Depends(require_permission("units.create"))]
