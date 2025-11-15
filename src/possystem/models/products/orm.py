@@ -60,6 +60,8 @@ class Product(Base):
     batches: Mapped[list["ProductBatch"]] = relationship(
         "ProductBatch", back_populates="product", cascade="all, delete-orphan"
     )
+    master: Mapped["ProductMaster"] = relationship("ProductMaster", back_populates="products")
+
 
 # from sqlalchemy import String, BigInteger, Double, SmallInteger, Text, TIMESTAMP, Boolean, ForeignKey
 # from sqlalchemy.sql import func
