@@ -13,11 +13,8 @@ class Product(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(250), nullable=False)
     image: Mapped[str] = mapped_column(String(250), nullable=True)
-    product_category_id: Mapped[int] = mapped_column(
-        BigInteger,
-        ForeignKey("product_categories.id", ondelete="CASCADE"),
-        nullable=True
-    )
+    product_category_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("product_categories.id", ondelete="CASCADE"), nullable=True)
+    brand_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("brands.id", ondelete="RESTRICT"), nullable=True)
 
     # --- Precios ---
     price_retail: Mapped[float] = mapped_column(Double, nullable=False)  # precio normal
@@ -61,6 +58,7 @@ class Product(Base):
         "ProductBatch", back_populates="product", cascade="all, delete-orphan"
     )
     master: Mapped["ProductMaster"] = relationship("ProductMaster", back_populates="products")
+    brand: Mapped["Brand"] = relationship("Brand", back_populates="products")
 
 
 # from sqlalchemy import String, BigInteger, Double, SmallInteger, Text, TIMESTAMP, Boolean, ForeignKey
