@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from .db.session import Base, engine
 from contextlib import asynccontextmanager
 from .api.routes import permissions, roles, users, branches, auth, product_categories, products, sales, sale_payments, sale_details, refund_products, suppliers, purchases, purchase_details, product_batch, sale_batch_usage
-from .api.routes import product_master
+from .api.routes import product_master, product_brand
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,6 +44,7 @@ app.include_router(product_master.router)
 app.include_router(product_batch.router)
 app.include_router(products.router)
 app.include_router(product_categories.router)
+app.include_router(product_brand.router)
 app.include_router(sales.router)
 app.include_router(sale_payments.router)
 app.include_router(sale_details.router)

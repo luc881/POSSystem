@@ -98,6 +98,12 @@ CAN_CREATE_PRODUCT_MASTERS = [Depends(require_permission("productmasters.create"
 CAN_UPDATE_PRODUCT_MASTERS = [Depends(require_permission("productmasters.update"))]
 CAN_DELETE_PRODUCT_MASTERS = [Depends(require_permission("productmasters.delete"))]
 
+# Permissions for product brand operations
+CAN_READ_PRODUCT_BRANDS = [Depends(require_permission("productbrands.read"))]
+CAN_CREATE_PRODUCT_BRANDS = [Depends(require_permission("productbrands.create"))]
+CAN_UPDATE_PRODUCT_BRANDS = [Depends(require_permission("productbrands.update"))]
+CAN_DELETE_PRODUCT_BRANDS = [Depends(require_permission("productbrands.delete"))]
+
 # Permissions for unit operations
 # CAN_READ_UNITS = [Depends(require_permission("units.read"))]
 # CAN_CREATE_UNITS = [Depends(require_permission("units.create"))]
