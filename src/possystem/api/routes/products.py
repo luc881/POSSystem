@@ -4,9 +4,7 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from starlette import status
 from ...models.products.orm import Product
-from ...models.product_categories.orm import ProductCategory
 from ...models.products.schemas import ProductCreate, ProductResponse, ProductUpdate, ProductSearchParams, ProductDetailsResponse
-from ...models.permissions.orm import Permission
 from ...utils.permissions import CAN_READ_PRODUCTS, CAN_CREATE_PRODUCTS, CAN_UPDATE_PRODUCTS, CAN_DELETE_PRODUCTS
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -30,15 +28,13 @@ async def read_all(db: db_dependency):
 @router.get("/search",
             response_model=list[ProductResponse],
             summary="Search and filter products",
-            description="Search products by title, category, or availability.",
+            description="Search products by title, or availability.",
             dependencies=CAN_READ_PRODUCTS)
 async def search_products(db: db_dependency, params: ProductSearchParams = Depends()):
     query = db.query(Product)
 
     if params.title:
         query = query.filter(Product.title.ilike(f"%{params.title}%"))
-    if params.product_category_id:
-        query = query.filter(Product.product_category_id == params.product_category_id)
     if params.is_active is not None:
         query = query.filter(Product.is_active == params.is_active)
 
@@ -75,10 +71,7 @@ async def create_product(product: ProductCreate, db: db_dependency):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Product with this SKU already exists."
         )
-    if product.product_category_id:
-        category = db.query(ProductCategory).filter(ProductCategory.id == product.product_category_id).first()
-        if not category:
-            raise HTTPException(status_code=404, detail="Category not found.")
+
 
     new_product = Product(**product.model_dump(mode="json"))
     db.add(new_product)
@@ -99,10 +92,7 @@ async def update_product(product_id: int, product: ProductUpdate, db: db_depende
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Product not found."
         )
-    if product.product_category_id:
-        category = db.query(ProductCategory).filter(ProductCategory.id == product.product_category_id).first()
-        if not category:
-            raise HTTPException(status_code=404, detail="Category not found.")
+
 
     if product.sku and product.sku != existing_product.sku:
         sku_exists = db.query(Product).filter(Product.sku == product.sku).first()

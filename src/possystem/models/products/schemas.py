@@ -30,7 +30,6 @@ from possystem.types.products import (
 class ProductBase(BaseModel):
     title: ProductTitleStr = Field(...)
     image: Optional[ProductImageURL] = None
-    product_category_id: Optional[int] = None
 
     price_retail: PriceRetail = Field(...)
     price_cost: PriceCost = Field(...)
@@ -68,7 +67,6 @@ class ProductCreate(ProductBase):
             "example": {
                 "title": "Paracetamol 500mg caja 10 tabletas",
                 "image": "https://example.com/images/paracetamol.png",
-                "product_category_id": 2,
                 "price_retail": 35.0,
                 "price_cost": 20.0,
                 "description": "Caja con 10 tabletas de paracetamol 500mg.",
@@ -151,7 +149,6 @@ class ProductResponse(ProductBase):
 # 🧩 Detailed response (con relaciones)
 # =========================================================
 class ProductDetailsResponse(ProductResponse):
-    category: Optional[ProductCategoryResponse] = None
     batches: Optional[List["ProductBatchResponse"]] = None
 
     model_config = ConfigDict(
@@ -162,7 +159,6 @@ class ProductDetailsResponse(ProductResponse):
                 "title": "Paracetamol 500mg caja 10 tabletas",
                 "price_retail": 35.0,
                 "price_cost": 20.0,
-                "category": {"id": 2, "name": "Medicamentos", "is_active": True},
                 "batches": [
                     {
                         "id": 10,
@@ -181,7 +177,6 @@ class ProductDetailsResponse(ProductResponse):
 # =========================================================
 class ProductSearchParams(BaseModel):
     title: Optional[str] = Field(None, min_length=2, max_length=100, description="Buscar por título (coincidencia parcial)")
-    product_category_id: Optional[int] = Field(None, gt=0, description="Filtrar por categoría")
     is_active: Optional[bool] = Field(None, description="Filtrar por estado de disponibilidad")
 
     model_config = ConfigDict(extra="forbid")
@@ -192,5 +187,4 @@ class ProductSearchParams(BaseModel):
 # =========================================================
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from ..product_categories.schemas import ProductCategoryResponse
     from ..product_batch.schemas import ProductBatchResponse

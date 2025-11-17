@@ -17,6 +17,6 @@ class ProductCategory(Base):
     # deleted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=False), nullable=True)
 
     # Relationship with products
-    products: Mapped[list["Product"]] = relationship("Product", back_populates="category")
+    # products: Mapped[list["Product"]] = relationship("Product", back_populates="category")
     masters: Mapped[list["ProductMaster"]] = relationship("ProductMaster", back_populates="category")
     # sale_details: Mapped[list["SaleDetail"]] = relationship("SaleDetail", back_populates="product_category")

@@ -32,6 +32,8 @@ from .purchases.orm import Purchase
 from .purchase_details.orm import PurchaseDetail
 from .product_batch.orm import ProductBatch
 from .sale_batch_usage.orm import SaleBatchUsage
+from .product_master.orm import ProductMaster
+from .product_brand.orm import ProductBrand
 ProductBatchDetailsResponse.model_rebuild()
 ProductBatchResponse.model_rebuild()
 
