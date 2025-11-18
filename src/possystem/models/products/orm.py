@@ -5,6 +5,8 @@ from sqlalchemy.sql import func
 from ...db.session import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
+from ..product_has_ingredients.orm import product_has_ingredients
+from ..ingredients.orm import Ingredient
 
 
 class Product(Base):
@@ -60,6 +62,12 @@ class Product(Base):
     )
     master: Mapped["ProductMaster"] = relationship("ProductMaster", back_populates="products")
     brand: Mapped["ProductBrand"] = relationship("ProductBrand", back_populates="products")
+    ingredients: Mapped[list["Ingredient"]] = relationship(
+        "Ingredient",
+        secondary=product_has_ingredients,
+        back_populates="products",
+        lazy="selectin"
+    )
 
 # from sqlalchemy import String, BigInteger, Double, SmallInteger, Text, TIMESTAMP, Boolean, ForeignKey
 # from sqlalchemy.sql import func
