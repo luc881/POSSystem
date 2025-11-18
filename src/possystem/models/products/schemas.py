@@ -1,8 +1,7 @@
 from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
-from ..product_categories.schemas import ProductCategoryResponse
-from ..product_batch.schemas import ProductBatchResponse
+
 from possystem.types.products import (
     ProductTitleStr,
     ProductImageURL,
@@ -20,19 +19,17 @@ from possystem.types.products import (
     AllowWithoutStockFlag,
     ProductUnitName,
     ProductBaseUnitName,
-    UnitsPerBase,
 )
-
 
 # =========================================================
 # 🔹 Base schema (campos compartidos)
 # =========================================================
 class ProductBase(BaseModel):
-    title: ProductTitleStr = Field(...)
+    title: ProductTitleStr
     image: Optional[ProductImageURL] = None
 
-    price_retail: PriceRetail = Field(...)
-    price_cost: PriceCost = Field(...)
+    price_retail: PriceRetail
+    price_cost: PriceCost
 
     description: Optional[ProductDescriptionStr] = None
     sku: Optional[ProductSKUStr] = None
@@ -61,25 +58,30 @@ class ProductBase(BaseModel):
 # 🟢 Create schema
 # =========================================================
 class ProductCreate(ProductBase):
+    brand_id: Optional[int] = Field(None, description="ID de la marca")
+    product_master_id: Optional[int] = Field(None, description="ID del master product")
+    ingredient_ids: Optional[List[int]] = Field(
+        default=None, description="IDs de ingredientes"
+    )
+
     model_config = ConfigDict(
         extra="forbid",
         json_schema_extra={
             "example": {
                 "title": "Paracetamol 500mg caja 10 tabletas",
-                "image": "https://example.com/images/paracetamol.png",
+                "image": "https://example.com/img.png",
                 "price_retail": 35.0,
                 "price_cost": 20.0,
-                "description": "Caja con 10 tabletas de paracetamol 500mg.",
+                "description": "Caja con 10 tabletas",
                 "sku": "PARA500-10TAB",
-                "is_discount": False,
                 "is_taxable": True,
                 "tax_percentage": 16.0,
-                "allow_without_stock": True,
                 "unit_name": "caja",
                 "base_unit_name": "tableta",
                 "units_per_base": 10,
-                "allow_warranty": False,
-                "is_active": True
+                "brand_id": 2,
+                "product_master_id": 1,
+                "ingredient_ids": [4, 8]
             }
         }
     )
@@ -88,60 +90,52 @@ class ProductCreate(ProductBase):
 # =========================================================
 # 🟡 Update schema (todos los campos opcionales)
 # =========================================================
-class ProductUpdate(ProductBase):
+class ProductUpdate(BaseModel):
     title: Optional[ProductTitleStr] = None
+    image: Optional[ProductImageURL] = None
+
     price_retail: Optional[PriceRetail] = None
     price_cost: Optional[PriceCost] = None
 
+    description: Optional[ProductDescriptionStr] = None
+    sku: Optional[ProductSKUStr] = None
+
     is_discount: Optional[IsDiscountFlag] = None
+    max_discount: Optional[DiscountPercentage] = None
     is_taxable: Optional[IsTaxableFlag] = None
+    tax_percentage: Optional[TaxPercentage] = None
 
     allow_warranty: Optional[AllowWarrantyFlag] = None
+    warranty_days: Optional[WarrantyDays] = None
 
-    unit_name: Optional[str] = Field(None, max_length=50)
+    unit_name: Optional[ProductUnitName] = None
+    base_unit_name: Optional[ProductBaseUnitName] = None
+    units_per_base: Optional[float] = None
 
     allow_without_stock: Optional[AllowWithoutStockFlag] = None
     is_active: Optional[IsActiveFlag] = None
 
-    model_config = ConfigDict(
-        extra="forbid",
-        json_schema_extra={
-            "example": {
-                "price_retail": 33.0,
-                "is_discount": True,
-                "max_discount": 10.0,
-                "is_active": True
-            }
-        }
-    )
+    # --- Relaciones ---
+    brand_id: Optional[int] = None
+    product_master_id: Optional[int] = None
+    ingredient_ids: Optional[List[int]] = None
+
+    model_config = ConfigDict(extra="forbid")
 
 
 # =========================================================
-# 🔵 Response schema (sin relaciones)
+# 🔵 Response schema (sin relaciones completas)
 # =========================================================
 class ProductResponse(ProductBase):
     id: int
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
+    brand_id: Optional[int] = None
+    product_master_id: Optional[int] = None
+
     model_config = ConfigDict(
-        from_attributes=True,
-        json_schema_extra={
-            "example": {
-                "id": 1,
-                "title": "Paracetamol 500mg caja 10 tabletas",
-                "price_retail": 35.0,
-                "price_cost": 20.0,
-                "is_discount": False,
-                "is_active": True,
-                "unit_name": "caja",
-                "base_unit_name": "tableta",
-                "units_per_base": 10,
-                "sku": "PARA500-10TAB",
-                "created_at": "2025-11-11T10:00:00",
-                "updated_at": "2025-11-11T10:00:00"
-            }
-        }
+        from_attributes=True
     )
 
 
@@ -149,26 +143,13 @@ class ProductResponse(ProductBase):
 # 🧩 Detailed response (con relaciones)
 # =========================================================
 class ProductDetailsResponse(ProductResponse):
+    brand: Optional["ProductBrandResponse"] = None
+    master: Optional["ProductMasterResponse"] = None
     batches: Optional[List["ProductBatchResponse"]] = None
+    ingredients: Optional[List["IngredientResponse"]] = None
 
     model_config = ConfigDict(
-        from_attributes=True,
-        json_schema_extra={
-            "example": {
-                "id": 1,
-                "title": "Paracetamol 500mg caja 10 tabletas",
-                "price_retail": 35.0,
-                "price_cost": 20.0,
-                "batches": [
-                    {
-                        "id": 10,
-                        "lot_code": "L2301",
-                        "expiration_date": "2026-02-01",
-                        "stock": 120
-                    }
-                ]
-            }
-        }
+        from_attributes=True
     )
 
 
@@ -176,8 +157,10 @@ class ProductDetailsResponse(ProductResponse):
 # 🔍 Search params
 # =========================================================
 class ProductSearchParams(BaseModel):
-    title: Optional[str] = Field(None, min_length=2, max_length=100, description="Buscar por título (coincidencia parcial)")
-    is_active: Optional[bool] = Field(None, description="Filtrar por estado de disponibilidad")
+    title: Optional[str] = Field(None, min_length=2, max_length=100)
+    is_active: Optional[bool] = None
+    brand_id: Optional[int] = None
+    product_master_id: Optional[int] = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -188,3 +171,6 @@ class ProductSearchParams(BaseModel):
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..product_batch.schemas import ProductBatchResponse
+    from ..product_brands.schemas import ProductBrandResponse
+    from ..product_master.schemas import ProductMasterResponse
+    from ..ingredients.schemas import IngredientResponse
