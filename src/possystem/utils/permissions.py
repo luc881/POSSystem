@@ -104,6 +104,12 @@ CAN_CREATE_PRODUCT_BRANDS = [Depends(require_permission("productbrands.create"))
 CAN_UPDATE_PRODUCT_BRANDS = [Depends(require_permission("productbrands.update"))]
 CAN_DELETE_PRODUCT_BRANDS = [Depends(require_permission("productbrands.delete"))]
 
+# Permissions for ingredient operations
+CAN_READ_INGREDIENTS = [Depends(require_permission("ingredients.read"))]
+CAN_CREATE_INGREDIENTS = [Depends(require_permission("ingredients.create"))]
+CAN_UPDATE_INGREDIENTS = [Depends(require_permission("ingredients.update"))]
+CAN_DELETE_INGREDIENTS = [Depends(require_permission("ingredients.delete"))]
+
 # Permissions for unit operations
 # CAN_READ_UNITS = [Depends(require_permission("units.read"))]
 # CAN_CREATE_UNITS = [Depends(require_permission("units.create"))]

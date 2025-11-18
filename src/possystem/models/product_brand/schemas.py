@@ -2,7 +2,7 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
-from .products_schemas_common import ProductSimpleResponse
+from ..products.schemas import ProductSimpleResponse
 
 
 # =========================================================

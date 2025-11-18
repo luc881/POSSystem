@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
 from ..product_categories.schemas import ProductCategoryResponse
-from .products_schemas_common import ProductSimpleResponse   # 👈 IMPORTA LA MINI RESPUESTA
+from ..products.schemas import ProductSimpleResponse
 
 
 # =========================================================
