@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -22,7 +22,20 @@ from possystem.types.products import (
 )
 
 # =========================================================
-# 🔹 Base schema (campos compartidos)
+# 🔹 Mini response (para Brand/Master)
+# =========================================================
+class ProductSimpleResponse(BaseModel):
+    id: int
+    title: ProductTitleStr
+    sku: Optional[ProductSKUStr] = None
+    price_retail: PriceRetail
+    is_active: IsActiveFlag
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# =========================================================
+# 🔹 Base schema
 # =========================================================
 class ProductBase(BaseModel):
     title: ProductTitleStr
@@ -34,61 +47,35 @@ class ProductBase(BaseModel):
     description: Optional[ProductDescriptionStr] = None
     sku: Optional[ProductSKUStr] = None
 
-    # --- Descuentos / impuestos ---
     is_discount: IsDiscountFlag = False
     max_discount: Optional[DiscountPercentage] = None
     is_taxable: IsTaxableFlag = True
     tax_percentage: Optional[TaxPercentage] = None
 
-    # --- Garantía ---
     allow_warranty: AllowWarrantyFlag = False
     warranty_days: Optional[WarrantyDays] = None
 
-    # --- Unidades / fraccionamiento ---
     unit_name: ProductUnitName = Field(default="pieza")
     base_unit_name: Optional[ProductBaseUnitName] = None
     units_per_base: Optional[float] = None
 
-    # --- Estado ---
     allow_without_stock: AllowWithoutStockFlag = True
     is_active: IsActiveFlag = True
 
 
 # =========================================================
-# 🟢 Create schema
+# 🟢 Create
 # =========================================================
 class ProductCreate(ProductBase):
-    brand_id: Optional[int] = Field(None, description="ID de la marca")
-    product_master_id: Optional[int] = Field(None, description="ID del master product")
-    ingredient_ids: Optional[List[int]] = Field(
-        default=None, description="IDs de ingredientes"
-    )
+    brand_id: Optional[int] = Field(None)
+    product_master_id: Optional[int] = Field(None)
+    ingredient_ids: Optional[List[int]] = None
 
-    model_config = ConfigDict(
-        extra="forbid",
-        json_schema_extra={
-            "example": {
-                "title": "Paracetamol 500mg caja 10 tabletas",
-                "image": "https://example.com/img.png",
-                "price_retail": 35.0,
-                "price_cost": 20.0,
-                "description": "Caja con 10 tabletas",
-                "sku": "PARA500-10TAB",
-                "is_taxable": True,
-                "tax_percentage": 16.0,
-                "unit_name": "caja",
-                "base_unit_name": "tableta",
-                "units_per_base": 10,
-                "brand_id": 2,
-                "product_master_id": 1,
-                "ingredient_ids": [4, 8]
-            }
-        }
-    )
+    model_config = ConfigDict(extra="forbid")
 
 
 # =========================================================
-# 🟡 Update schema (todos los campos opcionales)
+# 🟡 Update
 # =========================================================
 class ProductUpdate(BaseModel):
     title: Optional[ProductTitleStr] = None
@@ -115,7 +102,6 @@ class ProductUpdate(BaseModel):
     allow_without_stock: Optional[AllowWithoutStockFlag] = None
     is_active: Optional[IsActiveFlag] = None
 
-    # --- Relaciones ---
     brand_id: Optional[int] = None
     product_master_id: Optional[int] = None
     ingredient_ids: Optional[List[int]] = None
@@ -124,7 +110,7 @@ class ProductUpdate(BaseModel):
 
 
 # =========================================================
-# 🔵 Response schema (sin relaciones completas)
+# 🔵 Response (sin relaciones)
 # =========================================================
 class ProductResponse(ProductBase):
     id: int
@@ -134,23 +120,19 @@ class ProductResponse(ProductBase):
     brand_id: Optional[int] = None
     product_master_id: Optional[int] = None
 
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =========================================================
-# 🧩 Detailed response (con relaciones)
+# 🧩 Detallado (con relaciones)
 # =========================================================
 class ProductDetailsResponse(ProductResponse):
     brand: Optional["ProductBrandResponse"] = None
-    master: Optional["ProductMasterResponse"] = None
+    product_master: Optional["ProductMasterResponse"] = None
     batches: Optional[List["ProductBatchResponse"]] = None
     ingredients: Optional[List["IngredientResponse"]] = None
 
-    model_config = ConfigDict(
-        from_attributes=True
-    )
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =========================================================
@@ -168,7 +150,6 @@ class ProductSearchParams(BaseModel):
 # =========================================================
 # 🔁 Forward references
 # =========================================================
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..product_batch.schemas import ProductBatchResponse
     from ..product_brands.schemas import ProductBrandResponse

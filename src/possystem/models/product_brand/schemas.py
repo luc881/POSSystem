@@ -2,9 +2,11 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 
+from .products_schemas_common import ProductSimpleResponse
+
 
 # =========================================================
-# 🔹 Base schema (campos compartidos)
+# 🔹 Base schema
 # =========================================================
 class ProductBrandBase(BaseModel):
     name: str = Field(..., max_length=200)
@@ -12,7 +14,7 @@ class ProductBrandBase(BaseModel):
 
 
 # =========================================================
-# 🟢 Create schema
+# 🟢 Create
 # =========================================================
 class ProductBrandCreate(ProductBrandBase):
     model_config = ConfigDict(
@@ -27,67 +29,33 @@ class ProductBrandCreate(ProductBrandBase):
 
 
 # =========================================================
-# 🟡 Update schema (todos los campos opcionales)
+# 🟡 Update
 # =========================================================
 class ProductBrandUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=200)
     logo: Optional[str] = Field(None, max_length=255)
 
-    model_config = ConfigDict(
-        extra="forbid",
-        json_schema_extra={
-            "example": {
-                "logo": "https://example.com/logos/genomalab_v2.png"
-            }
-        }
-    )
+    model_config = ConfigDict(extra="forbid")
 
 
 # =========================================================
-# 🔵 Response schema (sin relaciones)
+# 🔵 Response simple
 # =========================================================
 class ProductBrandResponse(ProductBrandBase):
     id: int
     created_at: Optional[datetime]
 
-    model_config = ConfigDict(
-        from_attributes=True,
-        json_schema_extra={
-            "example": {
-                "id": 1,
-                "name": "Genoma Lab",
-                "logo": "https://example.com/logos/genomalab.png",
-                "created_at": "2025-11-12T09:30:00"
-            }
-        }
-    )
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =========================================================
-# 🧩 Detailed response (con relación a productos)
+# 🧩 Detailed response (con productos)
 # =========================================================
 class ProductBrandDetailsResponse(ProductBrandResponse):
-    products: Optional[List["ProductSimpleResponse"]] = None
+    products: Optional[List[ProductSimpleResponse]] = None
 
-    model_config = ConfigDict(
-        from_attributes=True,
-        json_schema_extra={
-            "example": {
-                "id": 1,
-                "name": "Genoma Lab",
-                "logo": "https://example.com/logos/genomalab.png",
-                "products": [
-                    {
-                        "id": 20,
-                        "title": "Paracetamol 500mg Genoma Lab",
-                        "sku": "PARA500-GEN",
-                        "price_retail": 39.0,
-                        "is_active": True
-                    }
-                ]
-            }
-        }
-    )
+    model_config = ConfigDict(from_attributes=True)
+
 
 
 # =========================================================
