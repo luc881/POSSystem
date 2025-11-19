@@ -46,3 +46,34 @@ async def create(ingredient: IngredientCreate, db: db_dependency):
     db.commit()
     db.refresh(db_ingredient)
     return db_ingredient
+
+@router.put("/{ingredient_id}",
+            response_model=IngredientResponse,
+            summary="Update an existing ingredient",
+            description="Update the details of an existing ingredient by its ID.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_UPDATE_INGREDIENTS)
+async def update(ingredient_id: int, ingredient: IngredientUpdate, db: db_dependency):
+    db_ingredient = db.query(Ingredient).filter(Ingredient.id == ingredient_id).first()
+    if not db_ingredient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ingredient not found."
+        )
+
+    # Check if updating the name to one that already exists
+    if ingredient.name and ingredient.name != db_ingredient.name:
+        existing_ingredient = db.query(Ingredient).filter(Ingredient.name == ingredient.name).first()
+        if existing_ingredient:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Ingredient with this name already exists."
+            )
+
+
+    for key, value in ingredient.model_dump(exclude_unset=True).items():
+        setattr(db_ingredient, key, value)
+
+    db.commit()
+    db.refresh(db_ingredient)
+    return db_ingredient
