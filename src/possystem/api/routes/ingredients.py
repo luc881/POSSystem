@@ -77,3 +77,20 @@ async def update(ingredient_id: int, ingredient: IngredientUpdate, db: db_depend
     db.commit()
     db.refresh(db_ingredient)
     return db_ingredient
+
+@router.delete("/{ingredient_id}",
+               summary="Delete an ingredient",
+               description="Delete an existing ingredient by its ID.",
+               status_code=status.HTTP_204_NO_CONTENT,
+               dependencies=CAN_DELETE_INGREDIENTS)
+async def delete(ingredient_id: int, db: db_dependency):
+    db_ingredient = db.query(Ingredient).filter(Ingredient.id == ingredient_id).first()
+    if not db_ingredient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Ingredient not found."
+        )
+
+    db.delete(db_ingredient)
+    db.commit()
+    return None
