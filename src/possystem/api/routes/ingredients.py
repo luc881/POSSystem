@@ -24,3 +24,25 @@ router = APIRouter(
 async def read_all(db: db_dependency):
     ingredients = db.query(Ingredient).all()
     return ingredients
+
+@router.post("/",
+             response_model=IngredientResponse,
+             summary="Create a new ingredient",
+             description="Create a new ingredient with the provided details.",
+             status_code=status.HTTP_201_CREATED,
+             dependencies=CAN_CREATE_INGREDIENTS)
+async def create(ingredient: IngredientCreate, db: db_dependency):
+
+    # chech if ingredient with the same name exists
+    existing_ingredient = db.query(Ingredient).filter(Ingredient.name == ingredient.name).first()
+    if existing_ingredient:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ingredient with this name already exists."
+        )
+
+    db_ingredient = Ingredient(**ingredient.model_dump())
+    db.add(db_ingredient)
+    db.commit()
+    db.refresh(db_ingredient)
+    return db_ingredient

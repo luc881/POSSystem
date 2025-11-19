@@ -2,14 +2,18 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 import re
+from possystem.types.ingredients import (
+    IngredientTitleStr,
+    IngredientDescriptionStr,
+)
 
 
 # =========================================================
 # 🔹 Base
 # =========================================================
 class IngredientBase(BaseModel):
-    name: str = Field(..., max_length=255, min_length=1)
-    description: Optional[str] = None
+    name: IngredientTitleStr
+    description: Optional[IngredientDescriptionStr] = None
 
     @field_validator("name")
     @classmethod
