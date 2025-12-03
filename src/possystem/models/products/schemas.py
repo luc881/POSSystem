@@ -31,7 +31,19 @@ class ProductSimpleResponse(BaseModel):
     price_retail: PriceRetail
     is_active: IsActiveFlag
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "id": 10,
+                "title": "Paracetamol 500mg",
+                "sku": "PARA500",
+                "price_retail": 25.0,
+                "is_active": True
+            }
+        }
+    )
+
 
 
 # =========================================================
@@ -71,7 +83,34 @@ class ProductCreate(ProductBase):
     product_master_id: Optional[int] = Field(None)
     ingredient_ids: Optional[List[int]] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "example": {
+                "title": "Ibuprofeno 400mg",
+                "image": "https://example.com/img.png",
+                "price_retail": 45.5,
+                "price_cost": 30.0,
+                "description": "Caja con 10 tabletas",
+                "sku": "IBU400",
+                "is_discount": False,
+                "max_discount": 0,
+                "is_taxable": True,
+                "tax_percentage": 16,
+                "allow_warranty": False,
+                "warranty_days": None,
+                "unit_name": "pieza",
+                "base_unit_name": None,
+                "units_per_base": None,
+                "allow_without_stock": True,
+                "is_active": True,
+                "brand_id": 1,
+                "product_master_id": None,
+                "ingredient_ids": [1, 2]
+            }
+        }
+    )
+
 
 
 # =========================================================
@@ -106,7 +145,32 @@ class ProductUpdate(BaseModel):
     product_master_id: Optional[int] = None
     ingredient_ids: Optional[List[int]] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "example": {
+                "title": "Ibuprofeno 400mg - Nueva presentación",
+                "image": "https://example.com/new.png",
+                "price_retail": 48.0,
+                "price_cost": 31.0,
+                "description": "Nueva caja de 12 tabletas",
+                "sku": "IBU400",
+                "is_discount": True,
+                "max_discount": 10,
+                "is_taxable": True,
+                "tax_percentage": 16,
+                "allow_warranty": False,
+                "warranty_days": None,
+                "unit_name": "pieza",
+                "base_unit_name": None,
+                "units_per_base": None,
+                "allow_without_stock": True,
+                "is_active": True,
+                "ingredient_ids": [1, 3]
+            }
+        }
+    )
+
 
 
 # =========================================================
@@ -116,11 +180,39 @@ class ProductResponse(ProductBase):
     id: int
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-
     brand_id: Optional[int] = None
     product_master_id: Optional[int] = None
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "id": 12,
+                "title": "Ibuprofeno 400mg",
+                "image": "https://example.com/img.png",
+                "price_retail": 45.5,
+                "price_cost": 30.0,
+                "description": "Caja con 10 tabletas",
+                "sku": "IBU400",
+                "is_discount": False,
+                "max_discount": 0,
+                "is_taxable": True,
+                "tax_percentage": 16,
+                "allow_warranty": False,
+                "warranty_days": None,
+                "unit_name": "pieza",
+                "base_unit_name": None,
+                "units_per_base": None,
+                "allow_without_stock": True,
+                "is_active": True,
+                "brand_id": 1,
+                "product_master_id": None,
+                "created_at": "2024-02-12T10:00:00Z",
+                "updated_at": "2024-02-15T13:22:00Z"
+            }
+        }
+    )
+
 
 
 # =========================================================
@@ -132,7 +224,61 @@ class ProductDetailsResponse(ProductResponse):
     batches: Optional[List["ProductBatchResponse"]] = None
     ingredients: Optional[List["IngredientResponse"]] = None
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "id": 12,
+                "title": "Ibuprofeno 400mg",
+                "image": "https://example.com/img.png",
+                "price_retail": 45.5,
+                "price_cost": 30.0,
+                "description": "Caja con 10 tabletas",
+                "sku": "IBU400",
+                "is_discount": False,
+                "max_discount": 0,
+                "is_taxable": True,
+                "tax_percentage": 16,
+                "allow_warranty": False,
+                "warranty_days": None,
+                "unit_name": "pieza",
+                "base_unit_name": None,
+                "units_per_base": None,
+                "allow_without_stock": True,
+                "is_active": True,
+                "brand_id": 1,
+                "product_master_id": 5,
+                "created_at": "2024-02-12T10:00:00Z",
+                "updated_at": "2024-02-15T13:22:00Z",
+
+                "brand": {
+                    "id": 1,
+                    "name": "Genfar"
+                },
+
+                "product_master": {
+                    "id": 5,
+                    "name": "Analgésicos",
+                    "description": "Medicamentos para dolor"
+                },
+
+                "batches": [
+                    {
+                        "id": 101,
+                        "batch_number": "L202401A",
+                        "expiration_date": "2026-01-01",
+                        "quantity": 35
+                    }
+                ],
+
+                "ingredients": [
+                    {"id": 1, "name": "Ibuprofeno"},
+                    {"id": 2, "name": "Estearato de magnesio"}
+                ]
+            }
+        }
+    )
+
 
 
 # =========================================================
@@ -144,7 +290,18 @@ class ProductSearchParams(BaseModel):
     brand_id: Optional[int] = None
     product_master_id: Optional[int] = None
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(
+        extra="forbid",
+        json_schema_extra={
+            "example": {
+                "title": "ibu",
+                "is_active": True,
+                "brand_id": 1,
+                "product_master_id": 5
+            }
+        }
+    )
+
 
 
 # =========================================================
