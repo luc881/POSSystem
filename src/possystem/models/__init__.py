@@ -3,20 +3,35 @@ from .roles.schemas import RoleWithPermissions, RoleResponse
 from .permissions.schemas import PermissionWithRoles, PermissionResponse
 from .branches.schemas import BranchWithUsersResponse, BranchResponse
 from .users.schemas import UserResponse, UserDetailsResponse
-from .products.schemas import ProductResponse
+from .products.schemas import ProductResponse, ProductDetailsResponse
 from .product_batch.schemas import ProductBatchDetailsResponse, ProductBatchResponse
+from .product_brand.schemas import ProductBrandResponse
+from .product_master.schemas import ProductMasterResponse
+from .ingredients.schemas import IngredientResponse
 
-# Resolve forward references
+# =========================================================
+# 🔧 Resolve forward references
+# =========================================================
 RoleWithPermissions.model_rebuild()
 PermissionWithRoles.model_rebuild()
 BranchWithUsersResponse.model_rebuild()
 BranchResponse.model_rebuild()
 UserResponse.model_rebuild()
 UserDetailsResponse.model_rebuild()
+
+ProductResponse.model_rebuild()
+ProductDetailsResponse.model_rebuild()
+
 ProductBatchResponse.model_rebuild()
 ProductBatchDetailsResponse.model_rebuild()
 
-# Import ORM models correctly with relative paths
+ProductBrandResponse.model_rebuild()
+ProductMasterResponse.model_rebuild()
+IngredientResponse.model_rebuild()
+
+# =========================================================
+# 🧩 Import ORM models
+# =========================================================
 from .users.orm import User
 from .roles.orm import Role
 from .permissions.orm import Permission
@@ -35,8 +50,6 @@ from .sale_batch_usage.orm import SaleBatchUsage
 from .product_master.orm import ProductMaster
 from .product_brand.orm import ProductBrand
 from .ingredients.orm import Ingredient
-ProductBatchDetailsResponse.model_rebuild()
-ProductBatchResponse.model_rebuild()
 
 # when you have all coorect you can try
 # # src/possystem/models/__init__.py
