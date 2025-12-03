@@ -187,6 +187,21 @@ class UserSearchParams(BaseModel):
         return v
 
 
+class ChangePasswordRequest(BaseModel):
+    old_password: SecretStr = Field(...)
+    new_password: SecretStr = Field(...)
+
+    @field_validator("new_password")
+    def validate_new_password(cls, v: SecretStr):
+        pwd = v.get_secret_value()
+        if len(pwd) < 8:
+            raise ValueError("La contraseña debe tener al menos 8 caracteres.")
+        if not any(c.isupper() for c in pwd):
+            raise ValueError("Debe contener al menos una mayúscula.")
+        if not any(c.isdigit() for c in pwd):
+            raise ValueError("Debe contener al menos un número.")
+        return v
+
 
 # Forward reference resolution
 from typing import TYPE_CHECKING

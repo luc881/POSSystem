@@ -3,7 +3,7 @@ from starlette import status
 from ...models.users.orm import User
 from typing import Annotated
 from sqlalchemy.orm import Session
-from ...models.users.schemas import UserResponse, UserCreate, UserUpdate, UserDetailsResponse, UserSearchParams
+from ...models.users.schemas import UserResponse, UserCreate, UserUpdate, UserDetailsResponse, UserSearchParams, ChangePasswordRequest
 from ...models.branches.orm import Branch
 from ...models.roles.orm import Role
 from ...db.session import get_db
@@ -183,6 +183,61 @@ async def update_user(user_id: int, user: UserUpdate, db: db_dependency):
     db.refresh(existing_user)
 
     return existing_user
+
+
+@router.put("/{user_id}/change-password",
+            summary="Change user password",
+            description="Allows a user to change their password by providing the old password.",
+            status_code=status.HTTP_200_OK,
+            dependencies=CAN_UPDATE_USERS)
+async def change_password(
+    user_id: int,
+    data: ChangePasswordRequest,
+    db: db_dependency
+):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    # 1️⃣ validar password anterior
+    old_pass = data.old_password.get_secret_value()
+    if not bcrypt_context.verify(old_pass, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña anterior es incorrecta"
+        )
+
+    # 2️⃣ obtener contraseña nueva
+    new_pass = data.new_password.get_secret_value()
+
+    # 2.5️⃣ evitar que sea igual a la actual
+    if bcrypt_context.verify(new_pass, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La nueva contraseña no puede ser igual a la anterior."
+        )
+
+    # 3️⃣ validar reglas de seguridad
+    if len(new_pass) < 8 or not any(c.isupper() for c in new_pass) or not any(c.isdigit() for c in new_pass):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La nueva contraseña no cumple los requisitos mínimos."
+        )
+
+    # 4️⃣ generar hash
+    hashed = bcrypt_context.hash(new_pass)
+    user.password = hashed
+
+    db.commit()
+    db.refresh(user)
+
+    return {"message": "Contraseña actualizada correctamente"}
+
+
 
 
 

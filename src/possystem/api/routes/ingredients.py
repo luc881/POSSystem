@@ -26,11 +26,11 @@ async def read_all(db: db_dependency):
     return ingredients
 
 @router.post("/",
-             response_model=IngredientResponse,
-             summary="Create a new ingredient",
-             description="Create a new ingredient with the provided details.",
-             status_code=status.HTTP_201_CREATED,
-             dependencies=CAN_CREATE_INGREDIENTS)
+            response_model=IngredientResponse,
+            summary="Create a new ingredient",
+            description="Create a new ingredient with the provided details.",
+            status_code=status.HTTP_201_CREATED,
+            dependencies=CAN_CREATE_INGREDIENTS)
 async def create(ingredient: IngredientCreate, db: db_dependency):
 
     # chech if ingredient with the same name exists
@@ -79,10 +79,10 @@ async def update(ingredient_id: int, ingredient: IngredientUpdate, db: db_depend
     return db_ingredient
 
 @router.delete("/{ingredient_id}",
-               summary="Delete an ingredient",
-               description="Delete an existing ingredient by its ID.",
-               status_code=status.HTTP_204_NO_CONTENT,
-               dependencies=CAN_DELETE_INGREDIENTS)
+            summary="Delete an ingredient",
+            description="Delete an existing ingredient by its ID.",
+            status_code=status.HTTP_204_NO_CONTENT,
+            dependencies=CAN_DELETE_INGREDIENTS)
 async def delete(ingredient_id: int, db: db_dependency):
     db_ingredient = db.query(Ingredient).filter(Ingredient.id == ingredient_id).first()
     if not db_ingredient:
