@@ -6,7 +6,6 @@ from ...db.session import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 from ..product_has_ingredients.orm import product_has_ingredients
-from ..ingredients.orm import Ingredient
 
 
 class Product(Base):

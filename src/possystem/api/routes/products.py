@@ -59,25 +59,57 @@ async def read_product(product_id: int, db: db_dependency):
 
 
 @router.post("/",
-            response_model=ProductResponse,
+            response_model=ProductDetailsResponse,
             summary="Create a new product",
-            description="Create a new product with the provided details.",
             status_code=status.HTTP_201_CREATED,
             dependencies=CAN_CREATE_PRODUCTS)
-async def create_product(product: ProductCreate, db: db_dependency):
-    existing_product = db.query(Product).filter(Product.sku == product.sku).first()
+async def create_product(product_request: ProductCreate, db: db_dependency):
+
+    # 1. Validar SKU duplicado
+    existing_product = db.query(Product).filter(Product.sku == product_request.sku).first()
     if existing_product:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Product with this SKU already exists."
         )
 
-
-    new_product = Product(**product.model_dump(mode="json"))
-    db.add(new_product)
+    # 2. Crear modelo base sin ingredientes
+    product_model = Product(
+        **product_request.model_dump(mode="json", exclude={"ingredient_ids"})
+    )
+    db.add(product_model)
     db.commit()
-    db.refresh(new_product)
-    return new_product
+    db.refresh(product_model)
+
+    # 3. Asignar ingredientes si se enviaron
+    if product_request.ingredient_ids:
+        from possystem.models.ingredients.orm import Ingredient
+
+        ingredients = (
+            db.query(Ingredient)
+            .filter(Ingredient.id.in_(product_request.ingredient_ids))
+            .all()
+        )
+
+        if not ingredients:
+            raise HTTPException(status_code=404, detail="No valid ingredients found")
+
+        # Checar IDs faltantes (igual que roles)
+        found = {i.id for i in ingredients}
+        missing = set(product_request.ingredient_ids) - found
+        if missing:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Ingredients not found: {list(missing)}"
+            )
+
+        # Asignación tipo "role.permissions.extend()"
+        product_model.ingredients.extend(ingredients)
+        db.commit()
+        db.refresh(product_model)
+
+    return product_model
+
 
 @router.put("/{product_id}",
             response_model=ProductResponse,
