@@ -112,32 +112,66 @@ async def create_product(product_request: ProductCreate, db: db_dependency):
 
 
 @router.put("/{product_id}",
-            response_model=ProductResponse,
+            response_model=ProductDetailsResponse,
             summary="Update an existing product",
-            description="Update the details of an existing product.",
             status_code=status.HTTP_200_OK,
             dependencies=CAN_UPDATE_PRODUCTS)
-async def update_product(product_id: int, product: ProductUpdate, db: db_dependency):
-    existing_product = db.query(Product).filter(Product.id == product_id).first()
-    if not existing_product:
+async def update_product(product_id: int, product_request: ProductUpdate, db: db_dependency):
+
+    # 1. Verificar existe
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Product not found."
         )
 
-
-    if product.sku and product.sku != existing_product.sku:
-        sku_exists = db.query(Product).filter(Product.sku == product.sku).first()
+    # 2. Validar SKU si cambia
+    if product_request.sku and product_request.sku != product.sku:
+        sku_exists = db.query(Product).filter(Product.sku == product_request.sku).first()
         if sku_exists:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Product with this SKU already exists."
             )
-    for key, value in product.model_dump(exclude_unset=True, mode="json").items():
-        setattr(existing_product, key, value)
+
+    # 3. Actualizar campos normales
+    for key, value in product_request.model_dump(
+            mode="json",  # 👈 NECESARIO
+            exclude={"ingredient_ids"},
+            exclude_unset=True
+    ).items():
+        setattr(product, key, value)
+
+    # 4. Actualizar ingredientes si se enviaron
+    if product_request.ingredient_ids is not None:
+        from possystem.models.ingredients.orm import Ingredient
+
+        ingredients = (
+            db.query(Ingredient)
+            .filter(Ingredient.id.in_(product_request.ingredient_ids))
+            .all()
+        )
+
+        if not ingredients and product_request.ingredient_ids:
+            raise HTTPException(status_code=404, detail="No valid ingredients found")
+
+        # Buscar faltantes
+        found = {i.id for i in ingredients}
+        missing = set(product_request.ingredient_ids) - found
+        if missing:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Ingredients not found: {list(missing)}"
+            )
+
+        # Reemplazar la lista completa (igual que roles)
+        product.ingredients = ingredients
+
     db.commit()
-    db.refresh(existing_product)
-    return existing_product
+    db.refresh(product)
+    return product
+
 
 @router.patch("/{product_id}/toggle-active",
             response_model=ProductResponse,
